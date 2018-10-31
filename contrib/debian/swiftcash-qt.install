@@ -1,0 +1,6 @@
+usr/local/bin/swiftcash-qt usr/bin
+share/pixmaps/swiftcash32.xpm usr/share/pixmaps
+share/pixmaps/swiftcash16.xpm usr/share/pixmaps
+share/pixmaps/swiftcash128.png usr/share/pixmaps
+debian/swiftcash-qt.desktop usr/share/applications
+debian/swiftcash-qt.protocol usr/share/kde4/services/

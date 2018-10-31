@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=SwiftCash
+Comment=SwiftCash P2P Cryptocurrency
+Exec=swiftcash-qt %u
+Terminal=false
+Type=Application
+Icon=swiftcash128
+MimeType=x-scheme-handler/swiftcash;
+Categories=Office;Finance;
+Name[en_US]=swiftcash-qt.desktop

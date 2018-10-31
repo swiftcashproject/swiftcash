@@ -1,0 +1,26 @@
+[Unit]
+Description=SwiftCash's distributed currency daemon
+After=network.target
+
+[Service]
+User=swiftcash
+Group=swiftcash
+
+Type=forking
+PIDFile=/var/lib/swiftcashd/swiftcashd.pid
+
+ExecStart=/usr/bin/swiftcashd -daemon -pid=/var/lib/swiftcashd/swiftcashd.pid \
+          -conf=/etc/swiftcash/swiftcash.conf -datadir=/var/lib/swiftcashd
+
+ExecStop=-/usr/bin/swiftcash-cli -conf=/etc/swiftcash/swiftcash.conf \
+         -datadir=/var/lib/swiftcashd stop
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

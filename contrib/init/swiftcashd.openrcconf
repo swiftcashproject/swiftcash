@@ -1,0 +1,26 @@
+# /etc/conf.d/swiftcashd: config file for /etc/init.d/swiftcashd
+
+# Config file location
+#BITCOIND_CONFIGFILE="/etc/swiftcash/swiftcash.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
+#BITCOIND_PIDDIR="/var/run/swiftcashd"
+
+# What filename to give the pidfile
+#BITCOIND_PIDFILE="${BITCOIND_PIDDIR}/swiftcashd.pid"
+
+# Where to write swiftcashd data (be mindful that the blockchain is large)
+#BITCOIND_DATADIR="/var/lib/swiftcashd"
+
+# User and group to own swiftcashd process
+#BITCOIND_USER="swiftcash"
+#BITCOIND_GROUP="swiftcash"
+
+# Path to swiftcashd executable
+#BITCOIND_BIN="/usr/bin/swiftcashd"
+
+# Nice value to run swiftcashd under
+#BITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+BITCOIND_OPTS=""

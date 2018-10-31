@@ -1,0 +1,5 @@
+swiftcash (1.0.0-1) xenial; urgency=medium
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Markus GH <msg768@hotmail.com>  Fri, 25 Oct 2018 11:16:17 +1100
