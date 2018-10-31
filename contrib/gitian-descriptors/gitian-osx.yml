@@ -2,7 +2,7 @@
 name: "swiftcash-osx-1.0.0"
 enable_cache: true
 suites:
-- "xenial"
+- "trusty"
 architectures:
 - "amd64"
 packages:
