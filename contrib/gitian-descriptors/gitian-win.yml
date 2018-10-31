@@ -1,5 +1,5 @@
 ---
-name: "swiftcash-win-1.2"
+name: "swiftcash-win-1.0.0"
 enable_cache: true
 suites:
 - "trusty"
