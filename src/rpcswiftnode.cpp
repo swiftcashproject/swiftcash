@@ -319,20 +319,20 @@ UniValue getswiftnodecount (const UniValue& params, bool fHelp)
 
     UniValue obj(UniValue::VOBJ);
     int nCount = 0;
-    int ipv4 = 0, ipv6 = 0, onion = 0;
+    //int ipv4 = 0, ipv6 = 0, onion = 0;
 
     if (chainActive.Tip())
         mnodeman.GetNextSwiftnodeInQueueForPayment(chainActive.Tip()->nHeight, true, nCount);
 
-    mnodeman.CountNetworks(ActiveProtocol(), ipv4, ipv6, onion);
+    //mnodeman.CountNetworks(ActiveProtocol(), ipv4, ipv6, onion);
 
     obj.push_back(Pair("total", mnodeman.size()));
     obj.push_back(Pair("stable", mnodeman.stable_size()));
     obj.push_back(Pair("enabled", mnodeman.CountEnabled()));
     obj.push_back(Pair("inqueue", nCount));
-    obj.push_back(Pair("ipv4", ipv4));
-    obj.push_back(Pair("ipv6", ipv6));
-    obj.push_back(Pair("onion", onion));
+    //obj.push_back(Pair("ipv4", ipv4));
+    //obj.push_back(Pair("ipv6", ipv6));
+    //obj.push_back(Pair("onion", onion));
 
     return obj;
 }
