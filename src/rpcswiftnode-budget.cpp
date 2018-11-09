@@ -380,7 +380,6 @@ UniValue mnbudgetvote(const UniValue& params, bool fHelp)
     uint256 hash = ParseHashV(params[1], "parameter 1");
     std::string strVote = params[2].get_str();
 
-    if (strVote != "yes" && strVote != "no") return "You can only vote 'yes' or 'no'";
     int nVote = VOTE_ABSTAIN;
     if (strVote == "yes") nVote = VOTE_YES;
     if (strVote == "no") nVote = VOTE_NO;
@@ -816,7 +815,6 @@ UniValue mnbudgetrawvote(const UniValue& params, bool fHelp)
     uint256 hashProposal = ParseHashV(params[2], "Proposal hash");
     std::string strVote = params[3].get_str();
 
-    if (strVote != "yes" && strVote != "no") return "You can only vote 'yes' or 'no'";
     int nVote = VOTE_ABSTAIN;
     if (strVote == "yes") nVote = VOTE_YES;
     if (strVote == "no") nVote = VOTE_NO;
