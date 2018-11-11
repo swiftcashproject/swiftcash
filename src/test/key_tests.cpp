@@ -17,14 +17,14 @@
 
 using namespace std;
 
-static const string strSecret1     ("2a6Rd6XtMKvFrjkDi6FcfSrJkpaKc382bCDadKjxPsSAHKXoZok");
-static const string strSecret2     ("2YtPcre7RfCg6TdakgACcAiFBakczN41n1D68nvseWST5eVqqxU");
-static const string strSecret1C    ("7w4wgKRKeiW4aXfm6NBWQh6dNQz57eN21vWXRKibVwc3xfUaExcT");
-static const string strSecret2C    ("7qjpqG6oMqcXZ6YTymqcEDs3bhyXrBvJRdvMfPinYYwL7HbEPDnQ");
-static const CBitcoinAddress addr1 ("GPbEQ1hJxpJkWBDKMpc4y2KkugwuUaRUTY");
-static const CBitcoinAddress addr2 ("GMLyt6XF2uyf5D154j7VW8oYGbcmvREGBm");
-static const CBitcoinAddress addr1C("GRswJtXD3dWyWpz8oXdbxWeTEvYAuXmQUx");
-static const CBitcoinAddress addr2C("GfpzbEUtk8je9RvaSMuCkScEU6fvichQLm");
+static const string strSecret1     ("7RyykSAJ6rjEbrd6af1f3sW5jFgvuKZgKjT278EtNKu8TYc6GRi");
+static const string strSecret2     ("7QVdtzDK4beP8GiFxuTjHrXEfb5StR8DNHsQMNShspzJkUGqo3Z");
+static const string strSecret1C    ("VPGVUi42UrVR2r2KdYmtwfuMsVqEuvwEZgMqt2xHj8R5v2BGCQQh");
+static const string strSecret2C    ("VGhPrTXLisuzf6M73kYyfPaTKKQdFwUqayTU4ueTRLowLeHJKcB5");
+static const CBitcoinAddress addr1 ("SRyT5tbS9VeSwKM9ZTrBR1pUWj9xCxvDS7");
+static const CBitcoinAddress addr2 ("ShVhSJghDSTXnazvUjZZS3QwrU3DkyiRbr");
+static const CBitcoinAddress addr1C("SgSQegGurMWSL5vTkosgCUzQicmpsiAaep");
+static const CBitcoinAddress addr2C("STb1mLGsrP79hjP4pLU7iGngs78g7JKoYD");
 
 
 static const string strAddressBad("Xta1praZQjyELweyMByXyiREw1ZRsjXzVP");
@@ -172,19 +172,19 @@ BOOST_AUTO_TEST_CASE(key_test1)
     BOOST_CHECK(key1.Sign(hashMsg, detsig));
     BOOST_CHECK(key1C.Sign(hashMsg, detsigc));
     BOOST_CHECK(detsig == detsigc);
-    BOOST_CHECK(detsig == ParseHex("30450221008e7fe2176fc31d4c8ade9f7f07361409eff432d62e98dce653a95850a7793f910220487bcbf390003988a0cc46f3ed2bf013b78ca3a40406bde7991004487ba58695"));
+    BOOST_CHECK(detsig == ParseHex("3044022040b0ca2120198f5a15abacce9b6eced0137aef8ff229b515cef77c21d8937b1b022020d3c7b033875efe5dcbd1f4f560cdc6f9c5228f615f3fdde2d69c40bf52ae11"));
     BOOST_CHECK(key2.Sign(hashMsg, detsig));
     BOOST_CHECK(key2C.Sign(hashMsg, detsigc));
     BOOST_CHECK(detsig == detsigc);
-    BOOST_CHECK(detsig == ParseHex("30440220469e065172b99b782ac742d54a568867eb13274864665e605272a8f11c696cdf02205892001019e2813b39887c3f5e67048751b16ebb5fd2f9f3a38639538234e4f1"));
+    BOOST_CHECK(detsig == ParseHex("30450221008d56eabb4b7d6d78ea1fe5e7fedf4551ebcef0423a81b03a3b4f386642194b12022017a197dbba26e05158100dc7e755a2a78a38ba41d67cb8b181e59ba4c316072d"));
     BOOST_CHECK(key1.SignCompact(hashMsg, detsig));
     BOOST_CHECK(key1C.SignCompact(hashMsg, detsigc));
-    BOOST_CHECK(detsig == ParseHex("1b8e7fe2176fc31d4c8ade9f7f07361409eff432d62e98dce653a95850a7793f91487bcbf390003988a0cc46f3ed2bf013b78ca3a40406bde7991004487ba58695"));
-    BOOST_CHECK(detsigc == ParseHex("1f8e7fe2176fc31d4c8ade9f7f07361409eff432d62e98dce653a95850a7793f91487bcbf390003988a0cc46f3ed2bf013b78ca3a40406bde7991004487ba58695"));
+    BOOST_CHECK(detsig == ParseHex("1b40b0ca2120198f5a15abacce9b6eced0137aef8ff229b515cef77c21d8937b1b20d3c7b033875efe5dcbd1f4f560cdc6f9c5228f615f3fdde2d69c40bf52ae11"));
+    BOOST_CHECK(detsigc == ParseHex("1f40b0ca2120198f5a15abacce9b6eced0137aef8ff229b515cef77c21d8937b1b20d3c7b033875efe5dcbd1f4f560cdc6f9c5228f615f3fdde2d69c40bf52ae11"));
     BOOST_CHECK(key2.SignCompact(hashMsg, detsig));
     BOOST_CHECK(key2C.SignCompact(hashMsg, detsigc));
-    BOOST_CHECK(detsig == ParseHex("1c469e065172b99b782ac742d54a568867eb13274864665e605272a8f11c696cdf5892001019e2813b39887c3f5e67048751b16ebb5fd2f9f3a38639538234e4f1"));
-    BOOST_CHECK(detsigc == ParseHex("20469e065172b99b782ac742d54a568867eb13274864665e605272a8f11c696cdf5892001019e2813b39887c3f5e67048751b16ebb5fd2f9f3a38639538234e4f1"));
+    BOOST_CHECK(detsig == ParseHex("1c8d56eabb4b7d6d78ea1fe5e7fedf4551ebcef0423a81b03a3b4f386642194b1217a197dbba26e05158100dc7e755a2a78a38ba41d67cb8b181e59ba4c316072d"));
+    BOOST_CHECK(detsigc == ParseHex("208d56eabb4b7d6d78ea1fe5e7fedf4551ebcef0423a81b03a3b4f386642194b1217a197dbba26e05158100dc7e755a2a78a38ba41d67cb8b181e59ba4c316072d"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

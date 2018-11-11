@@ -6,11 +6,7 @@ Bitcoin base58 encoding and decoding.
 
 Based on https://bitcointalk.org/index.php?topic=1026.0 (public domain)
 '''
-import hashlib
-
-# for compatibility with following code...
-class SHA256:
-    new = hashlib.sha256
+import sha3
 
 if str != bytes:
     # Python 3.x
@@ -72,8 +68,10 @@ def b58decode(v, length = None):
     return result
 
 def checksum(v):
-    """Return 32-bit checksum based on SHA256"""
-    return SHA256.new(SHA256.new(v).digest()).digest()[0:4]
+    """Return 32-bit checksum based on KECCAK_256"""
+    k = sha3.keccak_256()
+    k.update(v)
+    return k.digest()[0:4]
 
 def b58encode_chk(v):
     """b58encode a string, with 32-bit checksum"""
