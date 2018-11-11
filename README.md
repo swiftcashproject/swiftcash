@@ -32,4 +32,5 @@ Please reach out at info@swiftcash.cc or info@swiftcash.org
 Community proposals will be allowed to use 70% of the block rewards for budgetting as calculated with the following formula. 10% of the budget should be used for SwiftRewards which will later be coded into the blockchain. Any amount that is not used can be mined in the future for budgetting or other purposes such as mining or staking. SwiftCash block rewards start with a minimum of 150 SWIFT per block after block 10,000, and slowly curve towards 0. It takes 8 years for block rewards to slowly halve for the first time. The second halving will take 16 years, third halving 32 years and so on, until maximum supply of 5,000,000,000 SWIFT is reached.
 
 Maximum Block Rewards = (0.5 + 4000 * 525600) / (8*525600 + nHeight - 10000 + 1)
+#
 Minimum Block Rewards = (0.5 + 1200 * 525600) / (8*525600 + nHeight - 10000 + 1)
