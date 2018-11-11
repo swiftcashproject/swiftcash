@@ -340,7 +340,7 @@ BOOST_AUTO_TEST_CASE(test_IsStandard)
     t.vout[0].nValue = 5011; // dust
     BOOST_CHECK(!IsStandardTx(t, reason));
 
-    t.vout[0].nValue = 6011; // not dust
+    t.vout[0].nValue = 300001; // not dust
     BOOST_CHECK(IsStandardTx(t, reason));
 
     t.vout[0].scriptPubKey = CScript() << OP_1;
