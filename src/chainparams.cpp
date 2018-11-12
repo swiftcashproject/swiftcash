@@ -287,8 +287,8 @@ public:
         fTestnetToBeDeprecatedFieldRPC = true;
 
         nPoolMaxTransactions = 2;
-        strSporkKey = "0321975d486d8fee5bd94a9f86987b81cf702fb356458e3f6dbe5c5b847690dcf1";
-        strSwiftnodePoolDummyAddress = "se5BWuA1ghhAQ4yPqjVGedk27mdsFKKLkD";
+        strSporkKey = "02c78ca70bcaea5468843854bebae65123b0e8ad99b0cbda98504160b71179d42b";
+        strSwiftnodePoolDummyAddress = "THSwiJRv9UBw5pHVFxvzji5odtySjgyskh";
         nStartSwiftnodePayments = genesis.nTime + 86400; // 24 hours after genesis
         nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short
                                        // here because we only have a 8 block finalization window on testnet
