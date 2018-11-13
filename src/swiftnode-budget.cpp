@@ -931,7 +931,7 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
     CAmount nSubsidy = 0;
 
     if (nHeight < 10000)
-        nSubsidy = 15 * COIN; // fair launch - give appx 1 week to users to set up their wallets and nodes
+        nSubsidy = 20 * COIN; // fair launch - give appx 1 week to users to set up their wallets and nodes
     else
         nSubsidy = floor(0.5+((double)(2800 * 525600)/(8*525600 + nHeight - 10000 + 1))) * COIN; // 70% 0f actual subsidy planned
 

@@ -23,7 +23,7 @@ Please reach out at info@swiftcash.cc or info@swiftcash.org
 
 | **Block Height** | **SwiftNodes**     | **PoS Miners**     |
 |------------------|--------------------|--------------------|
-| 201-10000        | 20% (~7 SWIFT)     | 10% (~3 SWIFT)     | 
+| 201-10000        | 20% (~10 SWIFT)     | 10% (~5 SWIFT)     | 
 | 10001-Infinite   | 20% (~100-0 SWIFT) | 10% (~50-0 SWIFT)  |
 |------------------|--------------------|--------------------|
 

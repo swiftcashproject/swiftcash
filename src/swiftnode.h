@@ -15,7 +15,7 @@
 #include "timedata.h"
 #include "util.h"
 
-#define SWIFTNODE_MIN_CONFIRMATIONS 15
+#define SWIFTNODE_MIN_CONFIRMATIONS 20
 #define SWIFTNODE_MIN_MNP_SECONDS (10 * 60)
 #define SWIFTNODE_MIN_MNB_SECONDS (5 * 60)
 #define SWIFTNODE_PING_SECONDS (5 * 60)
