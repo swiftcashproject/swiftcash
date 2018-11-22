@@ -194,10 +194,11 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
 
+    const int nStartThreshold = 12 * 1440;
     int nBlockStart = params[3].get_int();
-    if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
-        int nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
-        throw runtime_error(strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nNext));
+    int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
+    if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold))) {
+        throw runtime_error(strprintf("Invalid block start - must be at least 12 days before a budget cycle block. Next valid block: %d", nNext));
     }
 
     int nBlockEnd = nBlockStart + GetBudgetPaymentCycleBlocks() * nPaymentCount; // End must be AFTER current cycle
@@ -288,10 +289,11 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
 
+    const int nStartThreshold = 12 * 1440;
     int nBlockStart = params[3].get_int();
-    if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
-        int nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
-        throw runtime_error(strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nNext));
+    int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
+    if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold))) {
+        throw runtime_error(strprintf("Invalid block start - must be at least 12 days before a budget cycle block. Next valid block: %d", nNext));
     }
 
     int nBlockEnd = nBlockStart + (GetBudgetPaymentCycleBlocks() * nPaymentCount); // End must be AFTER current cycle
