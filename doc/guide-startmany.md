@@ -122,7 +122,7 @@ If you generated a new swiftnode private key, you will need to update the remote
 
 Shut down the daemon and then edit the file.
 
-```sudo nano .swiftcash/swiftcash.conf```
+```sudo nano .swiftcashproject/swiftcash.conf```
 
 ### Edit the swiftnodeprivkey
 If you generated a new swiftnode private key, you will need to update the swiftnodeprivkey value in your remote swiftcash.conf file.

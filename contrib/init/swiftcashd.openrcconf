@@ -1,7 +1,7 @@
 # /etc/conf.d/swiftcashd: config file for /etc/init.d/swiftcashd
 
 # Config file location
-#BITCOIND_CONFIGFILE="/etc/swiftcash/swiftcash.conf"
+#BITCOIND_CONFIGFILE="/etc/swiftcashproject/swiftcash.conf"
 
 # What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
 #BITCOIND_PIDDIR="/var/run/swiftcashd"
