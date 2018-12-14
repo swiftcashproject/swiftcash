@@ -10,9 +10,9 @@ Type=forking
 PIDFile=/var/lib/swiftcashd/swiftcashd.pid
 
 ExecStart=/usr/bin/swiftcashd -daemon -pid=/var/lib/swiftcashd/swiftcashd.pid \
-          -conf=/etc/swiftcashproject/swiftcash.conf -datadir=/var/lib/swiftcashd
+          -conf=/etc/swiftcash/swiftcash.conf -datadir=/var/lib/swiftcashd
 
-ExecStop=-/usr/bin/swiftcash-cli -conf=/etc/swiftcashproject/swiftcash.conf \
+ExecStop=-/usr/bin/swiftcash-cli -conf=/etc/swiftcash/swiftcash.conf \
          -datadir=/var/lib/swiftcashd stop
 
 Restart=always

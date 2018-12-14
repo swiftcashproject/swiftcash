@@ -35,7 +35,7 @@ generate one from the shell yourself like this:
 
 bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'
 
-Once you have a password in hand, set rpcpassword= in /etc/swiftcashproject/swiftcash.conf
+Once you have a password in hand, set rpcpassword= in /etc/swiftcash/swiftcash.conf
 
 For an example configuration file that describes the configuration settings,
 see contrib/debian/examples/swiftcash.conf.
@@ -46,7 +46,7 @@ see contrib/debian/examples/swiftcash.conf.
 All three configurations assume several paths that might need to be adjusted.
 
 Binary:              /usr/bin/swiftcashd
-Configuration file:  /etc/swiftcashproject/swiftcash.conf
+Configuration file:  /etc/swiftcash/swiftcash.conf
 Data directory:      /var/lib/swiftcashd
 PID file:            /var/run/swiftcashd/swiftcashd.pid (OpenRC and Upstart)
                      /var/lib/swiftcashd/swiftcashd.pid (systemd)

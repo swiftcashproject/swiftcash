@@ -95,7 +95,7 @@ Issue the following:
 Make note of the hash (which is your collaterla_output) and index.
 
 ### Enter your SwiftNode details into your swiftnode.conf file
-[From the swiftcash github repo](https://github.com/swiftcashproject/swiftcash/blob/master/doc/swiftnode_conf.md)
+[From the swiftcash github repo](https://github.com/swiftcash/swiftcash/blob/master/doc/swiftnode_conf.md)
 
 The new swiftnode.conf format consists of a space seperated text file. Each line consisting of an alias, IP address followed by port, swiftnode private key, collateral output transaction id and collateral output index, donation address and donation percentage (the latter two are optional and should be in format "address:percentage").
 
@@ -122,7 +122,7 @@ If you generated a new swiftnode private key, you will need to update the remote
 
 Shut down the daemon and then edit the file.
 
-```sudo nano .swiftcashproject/swiftcash.conf```
+```sudo nano .swiftcash/swiftcash.conf```
 
 ### Edit the swiftnodeprivkey
 If you generated a new swiftnode private key, you will need to update the swiftnodeprivkey value in your remote swiftcash.conf file.
