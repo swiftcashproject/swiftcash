@@ -10,6 +10,7 @@
 #include "amount.h"
 #include "askpassphrasedialog.h"
 #include "swiftnodelist.h"
+#include "proposallist.h" 
 
 #include <QStackedWidget>
 #include <ui_interface.h>
@@ -69,6 +70,7 @@ private:
     SendCoinsDialog* sendCoinsPage;
     BlockExplorer* explorerWindow;
     SwiftnodeList* swiftnodeListPage;
+	ProposalList *proposalListPage;
 
     TransactionView* transactionView;
 
@@ -84,6 +86,8 @@ public slots:
     void gotoSwiftnodePage();
     /** Switch to explorer page */
     void gotoBlockExplorerPage();
+    /** Switch to proposal page */
+    void gotoProposalPage();	
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
