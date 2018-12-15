@@ -103,6 +103,10 @@ QT_MOC_CPP = \
   qt/moc_transactionview.cpp \
   qt/moc_utilitydialog.cpp \
   qt/moc_walletframe.cpp \
+  qt/moc_columnalignedlayout.cpp \
+  qt/moc_proposalfilterproxy.cpp \
+  qt/moc_proposaltablemodel.cpp \
+  qt/moc_proposallist.cpp \
   qt/moc_walletmodel.cpp \
   qt/moc_walletview.cpp
 
@@ -171,6 +175,11 @@ BITCOIN_QT_H = \
   qt/splashscreen.h \
   qt/trafficgraphwidget.h \
   qt/transactiondesc.h \
+  qt/columnalignedlayout.h \
+  qt/proposalfilterproxy.h \
+  qt/proposallist.h \
+  qt/proposalrecord.h \
+  qt/proposaltablemodel.h \
   qt/transactiondescdialog.h \
   qt/transactionfilterproxy.h \
   qt/transactionrecord.h \
@@ -205,6 +214,7 @@ RES_ICONS = \
   qt/res/icons/connect4_16.png \
   qt/res/icons/debugwindow.png \
   qt/res/icons/edit.png \
+  qt/res/icons/proposal.png \   
   qt/res/icons/edit_black.png \
   qt/res/icons/editcopy.png \
   qt/res/icons/editpaste.png \
@@ -305,6 +315,11 @@ BITCOIN_QT_CPP += \
   qt/transactionrecord.cpp \
   qt/transactiontablemodel.cpp \
   qt/transactionview.cpp \
+  qt/columnalignedlayout.cpp \
+  qt/proposalfilterproxy.cpp \
+  qt/proposallist.cpp \
+  qt/proposalrecord.cpp \
+  qt/proposaltablemodel.cpp \
   qt/walletframe.cpp \
   qt/walletmodel.cpp \
   qt/walletmodeltransaction.cpp \

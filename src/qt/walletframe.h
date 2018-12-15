@@ -65,6 +65,8 @@ public slots:
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to explorer page */
     void gotoBlockExplorerPage();
+    /** Switch to proposal page */
+    void gotoProposalPage();
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
