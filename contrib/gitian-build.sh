@@ -330,6 +330,7 @@ then
             git commit -a -m "Add ${VERSION} unsigned sigs for ${SIGNER}"
             popd
         fi
+    fi
 fi
 
 # Verify the build
