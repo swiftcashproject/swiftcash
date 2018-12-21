@@ -27,6 +27,7 @@
         <file alias="options">res/icons/configure.png</file>
         <file alias="receiving_addresses">res/icons/receive.png</file>
 	<file alias="proposal_active">res/icons/proposal_active.png</file>
+	<file alias="proposal">res/icons/proposal.png</file>
         <file alias="receiving_addresses_active">res/icons/receive_active.png</file>
         <file alias="editpaste">res/icons/editpaste.png</file>
         <file alias="editpaste_black">res/icons/editpaste_black.png</file>
