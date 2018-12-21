@@ -409,6 +409,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     proposalAction->setStatusTip(tr("Browse proposals"));
     proposalAction->setToolTip(proposalAction->statusTip());
     proposalAction->setCheckable(true);
+    proposalAction->setIcon(proposalIcon);
     proposalAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_7));
     tabGroup->addAction(proposalAction);
 
