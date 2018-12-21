@@ -402,15 +402,19 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 #endif // ENABLE_WALLET
 
-    proposalIcon.addPixmap(proposal_active,QIcon::Selected,QIcon::On);
-    proposalIcon.addPixmap(proposal,QIcon::Selected,QIcon::Off);	
-	
-	
-    proposalAction = new QAction(QIcon(":/icons/proposal_active"), tr("&Proposals"), this);
+    QPixmap proposalsIconInactive(":/icons/proposal");
+    QPixmap proposalsIconActive(":icons/proposal_active");
+    QIcon proposalsIcon(proposalsIconInactive);
+
+    proposalsIcon.addPixmap(proposalsIconActive,QIcon::Selected,QIcon::On);
+    proposalsIcon.addPixmap(proposalsIconActive,QIcon::Selected,QIcon::Off);
+    proposalsIcon.addPixmap(proposalsIconActive,QIcon::Active,QIcon::On);
+    proposalsIcon.addPixmap(proposalsIconActive,QIcon::Active,QIcon::Off);	
+
+    proposalAction = new QAction(proposalsIcon, tr("&Proposals"), this);
     proposalAction->setStatusTip(tr("Browse proposals"));
     proposalAction->setToolTip(proposalAction->statusTip());
-    proposalAction->setCheckable(true);
-    proposalAction->setIcon(proposalIcon);
+    proposalAction->setCheckable(true);    
     proposalAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_7));
     tabGroup->addAction(proposalAction);
 
