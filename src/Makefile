@@ -483,7 +483,7 @@ am__qt_libbitcoinqt_a_SOURCES_DIST = qt/bitcoinaddressvalidator.cpp \
 	qt/locale/swiftcash_tr.ts qt/locale/swiftcash_uk.ts \
 	qt/locale/swiftcash_zh_CN.ts qt/locale/swiftcash_zh_TW.ts \
 	qt/paymentrequest.proto qt/res/icons/add.png \
-	qt/res/icons/address-book.png \
+	qt/res/icons/edit.png qt/res/icons/address-book.png \
 	qt/res/icons/address-book_black.png qt/res/icons/swiftcash.ico \
 	qt/res/icons/swiftcash.png qt/res/icons/swiftcash_testnet.ico \
 	qt/res/icons/swiftcash_testnet.png qt/res/icons/browse.png \
@@ -493,7 +493,7 @@ am__qt_libbitcoinqt_a_SOURCES_DIST = qt/bitcoinaddressvalidator.cpp \
 	qt/res/icons/connect0_16.png qt/res/icons/connect1_16.png \
 	qt/res/icons/connect2_16.png qt/res/icons/connect3_16.png \
 	qt/res/icons/connect4_16.png qt/res/icons/debugwindow.png \
-	qt/res/icons/edit.png qt/res/icons/proposal_active.png \
+	qt/res/icons/proposal.png qt/res/icons/proposal_active.png \
 	qt/res/icons/edit_black.png qt/res/icons/editcopy.png \
 	qt/res/icons/editpaste.png qt/res/icons/editpaste_black.png \
 	qt/res/icons/explorer.png qt/res/icons/export.png \
@@ -2145,6 +2145,7 @@ EXTRA_DIST = leveldb $(am__append_17)
 #  qt/res/icons/connect4_16.png \
 #  qt/res/icons/debugwindow.png \
 #  qt/res/icons/edit.png \
+#  qt/res/icons/proposal.png \
 #  qt/res/icons/proposal_active.png \
 #  qt/res/icons/edit_black.png \
 #  qt/res/icons/editcopy.png \
