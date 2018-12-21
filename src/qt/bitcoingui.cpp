@@ -402,9 +402,10 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 #endif // ENABLE_WALLET
 
-    proposalIcon.addFile(":/icons/proposal_active",QSize(40,40),QIcon::Normal,QIcon::On);
-    proposalIcon.addFile(":/icons/proposal",QSize(40,40),QIcon::Normal,QIcon::Off);
-
+    proposalIcon.addPixmap(proposal_active,QIcon::Selected,QIcon::On);
+    proposalIcon.addPixmap(proposal,QIcon::Selected,QIcon::Off);	
+	
+	
     proposalAction = new QAction(QIcon(":/icons/proposal_active"), tr("&Proposals"), this);
     proposalAction->setStatusTip(tr("Browse proposals"));
     proposalAction->setToolTip(proposalAction->statusTip());
