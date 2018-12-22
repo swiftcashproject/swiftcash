@@ -104,7 +104,7 @@ void ProposalTableModel::refreshProposals() {
         //dataObj = arr2.at( 1 );
 
 		UniValue bObj(UniValue::VOBJ);
-		budgetToST(pbudgetProposal, bObj);		
+		budgetToST(pbudgetProposal, bObj);
 
         int votesNeeded = 0;
         int voteGap = 0;
@@ -204,9 +204,9 @@ QVariant ProposalTableModel::data(const QModelIndex &index, int role) const
             } else {
                 return QColor(23, 168, 26);
             }
-        } 
+        }
 
-        return COLOR_BAREADDRESS;
+        return COLOR_BLACK;
         break;
     case ProposalRole:
         return rec->name;
@@ -243,7 +243,7 @@ QVariant ProposalTableModel::headerData(int section, Qt::Orientation orientation
         else if (role == Qt::TextAlignmentRole)
         {
             return Qt::AlignVCenter;
-        } 
+        }
         else if (role == Qt::ToolTipRole)
         {
             switch(section)

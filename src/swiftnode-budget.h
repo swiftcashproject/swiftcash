@@ -473,7 +473,7 @@ public:
 
     /*
         json object with name, short-description, long-description, pdf-url and any other info
-        This allows the proposal website to stay 100% decentralized
+        This allows the proposal's website to stay 100% decentralized
     */
     std::string strURL;
     int nBlockStart;

@@ -144,19 +144,6 @@ ProposalList::ProposalList(   QWidget *parent) :
     labelOverviewHeaderLeft->setFont(fontHeaderLeft);
 
     horizontalLayout_Header->addWidget(labelOverviewHeaderLeft);
-    // QSpacerItem* horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    // horizontalLayout_Header->addItem(horizontalSpacer_3);
-
-
-
-    QTableView *view = new QTableView(this);
-
-    //view->horizontalHeaderview->setDefaultAlignment(Qt::AlignLeft);
-
-    view->setShowGrid(false);
-    //view->setTextAlignment(Qt::AlignLeft);
-
-
     vlayout->addLayout(horizontalLayout_Header);
 
     QSpacerItem* verticalSpacer_3 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Preferred);
@@ -164,8 +151,11 @@ ProposalList::ProposalList(   QWidget *parent) :
     vlayout->addLayout(hlayout);
     QSpacerItem* verticalSpacer_5 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Preferred);
     vlayout->addItem(verticalSpacer_5);
+
+    QTableView *view = new QTableView(this);
     vlayout->addWidget(view);
     vlayout->setSpacing(0);
+
     int width = view->verticalScrollBar()->sizeHint().width();
     hlayout->addSpacing(width);
     hlayout->setTableColumnsToTrack(view->horizontalHeader());
@@ -205,7 +195,7 @@ ProposalList::ProposalList(   QWidget *parent) :
     QAction *voteYesAction = new QAction(tr("Vote yes"), this);
     QAction *voteAbstainAction = new QAction(tr("Vote abstain"), this);
     QAction *voteNoAction = new QAction(tr("Vote no"), this);
-    QAction *openUrlAction = new QAction(tr("Visit proposal website"), this);
+    QAction *openUrlAction = new QAction(tr("Visit proposal's website"), this);
 
     contextMenu = new QMenu(this);
     contextMenu->addAction(voteYesAction);
