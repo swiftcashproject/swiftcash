@@ -2,13 +2,13 @@
 name: "swiftcash-win-1.0.1"
 enable_cache: true
 suites:
-- "trusty"
+- "bionic"
 architectures:
 - "amd64"
 packages:
 - "curl"
 - "g++"
-- "git-core"
+- "git"
 - "pkg-config"
 - "autoconf"
 - "libtool"
@@ -21,6 +21,7 @@ packages:
 - "zip"
 - "ca-certificates"
 - "python"
+- "rename"
 remotes:
 - "url": "https://github.com/swiftcashproject/swiftcash.git"
   "dir": "swiftcash"
