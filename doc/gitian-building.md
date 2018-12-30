@@ -303,7 +303,7 @@ Execute the following as user `debian`:
 
 ```bash
 cd gitian-builder
-bin/make-base-vm --lxc --arch amd64 --suite trusty
+bin/make-base-vm --lxc --arch amd64 --suite bionic
 ```
 
 There will be a lot of warnings printed during build of the images. These can be ignored.
@@ -352,7 +352,7 @@ Output from `gbuild` will look something like
     Resolving deltas: 100% (25724/25724), done.
     From https://github.com/swiftcashproject/swiftcash
     ... (new tags, new branch etc)
-    --- Building for trusty x86_64 ---
+    --- Building for bionic x86_64 ---
     Stopping target if it is up
     Making a new image copy
     stdin: is not a tty
