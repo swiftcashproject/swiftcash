@@ -1513,14 +1513,6 @@ bool CBudgetProposal::IsValid(std::string& strError, bool fCheckCollateral)
         }
     }
 
-    /*
-        TODO: There might be an issue with multisig in the coinbase on mainnet, we will add support for it in a future release.
-    */
-    if (address.IsPayToScriptHash()) {
-        strError = "Proposal " + strProposalName + ": Multisig is not currently supported.";
-        return false;
-    }
-
     //if proposal doesn't gain traction within 2 weeks, remove it
     // nTime not being saved correctly
     // -- TODO: We should keep track of the last time the proposal was valid, if it's invalid for 2 weeks, erase it
