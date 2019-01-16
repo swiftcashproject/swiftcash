@@ -530,7 +530,7 @@ bool CSwiftnodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     std::string strPayeesPossible = "";
 
-    CAmount nReward = GetBlockValue(nBlockHeight);
+    CAmount nReward = GetBlockValue(nBlockHeight - 1);
 
     if (IsSporkActive(SPORK_4_SWIFTNODE_PAYMENT_ENFORCEMENT)) {
         // Get a stable number of swiftnodes by ignoring newly activated (< 8000 sec old) swiftnodes
