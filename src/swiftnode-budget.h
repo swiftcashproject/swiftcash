@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -41,7 +41,6 @@ enum class TrxValidationStatus {
 
 static const CAmount PROPOSAL_FEE_TX = (100 * COIN); // fee for preparing budgets
 static const CAmount BUDGET_FEE_TX = (10 * COIN); // fee for finalizing budgets
-static const int64_t MINIMUM_VOTES_REQUIRED = 100; // minimum votes required for proposals to pass in main net
 static const int64_t BUDGET_VOTE_UPDATE_MIN = 60 * 60; // minimum seconds required for swiftnodes to update their votes
 static map<uint256, int> mapPayment_History;
 
