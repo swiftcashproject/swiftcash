@@ -1548,7 +1548,7 @@ int64_t GetBlockValue(int nHeight)
     int64_t nSubsidy = 0;
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-	return 20000 * COIN;
+        return 20000 * COIN;
     }
 
     if (nHeight == 0)
@@ -1562,7 +1562,7 @@ int64_t GetBlockValue(int nHeight)
     else if (nHeight < 10000)
         nSubsidy = 15 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else
-        nSubsidy = floor(0.5+((double)(1200 * 525600)/(8*525600 + nHeight - 10000 + 1))) * COIN; // 30% of actual subsidy planned
+        nSubsidy = ( (double)(20*60 * 525600)/(20*525600 + nHeight - 10000) ) * COIN; // 30% of actual subsidy planned
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
