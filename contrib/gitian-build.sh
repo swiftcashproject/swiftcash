@@ -21,6 +21,7 @@ url=https://github.com/swiftcashproject/swiftcash
 proc=2
 mem=2000
 lxc=true
+docker=false
 osslTarUrl=http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
 osslPatchUrl=https://bitcoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
 scriptName=$(basename -- "$0")
@@ -48,6 +49,7 @@ Options:
 -j		Number of processes to use. Default 2
 -m		Memory to allocate in MiB. Default 2000
 --kvm           Use KVM instead of LXC
+--docker        Use Docker instead of LXC
 --setup         Setup the gitian building environment. Uses KVM. If you want to use lxc, use the --lxc option. Only works on Debian-based systems (Ubuntu, Debian)
 --detach-sign   Create the assert file for detached signing. Will not commit anything.
 --no-commit     Do not commit anything to git
@@ -161,6 +163,11 @@ while :; do
         --kvm)
             lxc=false
             ;;
+        # docker
+        --docker)
+            lxc=false
+            docker=true
+            ;;
         # Detach sign
         --detach-sign)
             signProg="true"
@@ -186,6 +193,11 @@ then
     export USE_LXC=1
     export LXC_BRIDGE=lxcbr0
     sudo ifconfig lxcbr0 up 10.0.2.2
+else
+    if [[ $docker = true ]]
+    then
+        export USE_DOCKER=1
+    fi
 fi
 
 # Check for OSX SDK
@@ -246,7 +258,12 @@ then
         sudo apt-get install lxc
         bin/make-base-vm --suite bionic --arch amd64 --lxc
     else
-        bin/make-base-vm --suite bionic --arch amd64
+        if [[ -n "$USE_DOCKER" ]]
+        then
+            bin/make-base-vm --suite bionic --arch amd64 --docker
+        else
+            bin/make-base-vm --suite bionic --arch amd64
+        fi
     fi
     popd
 fi
