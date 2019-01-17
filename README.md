@@ -7,7 +7,7 @@ SwiftCash (SWIFT) is a decentralized, peer-to-peer transactional currency which 
 - Fast transactions featuring instant locks on zero confirmation transactions, we call it _SwiftTX_.
 - Decentralized blockchain voting providing for consensus based advancement of the current SwiftNode
   technology used to secure the network and provide the above features, each SwiftNode is secured
-  with a collateral of 20,000 SWIFT.
+  with a collateral of 50,000 SWIFT.
 
 More information at [swiftcash.cc](http://www.swiftcash.cc) or [swiftcash.org](http://www.swiftcash.org)
 
@@ -28,7 +28,7 @@ Please reach out at info@swiftcash.cc or info@swiftcash.org
 
 ### Minimum & Maximum Block Rewards
 
-Community proposals will be allowed to use 70% of the block rewards for budgetting as calculated with the following formula. 10% of the budget should be used for SwiftRewards which will later be coded into the blockchain. Any amount that is not used can be mined in the future for budgetting or other purposes such as mining or staking. SwiftCash block rewards start with a minimum of 150 SWIFT per block after block 10,000, and slowly curve towards 0. It takes 8 years for block rewards to slowly halve for the first time. The second halving will take 16 years, third halving 32 years and so on, until maximum supply of 5,000,000,000 SWIFT is reached.
+Community proposals will be allowed to use 70% of the block rewards for budgetting as calculated with the following formula. 10% of the budget should be used for SwiftRewards which will later be coded into the blockchain. Any amount that is not used can be mined in the future for budgetting or other purposes such as mining or staking. SwiftCash block rewards start with a minimum of 60 SWIFT per block after block 10,000, and slowly curve towards 0. It takes 20 years for block rewards to slowly halve for the first time. The second halving will take another 40 years, third halving, another 80 years and so on, until maximum supply of 5,000,000,000 SWIFT is reached.
 
 Maximum Block Rewards = (20 * 200 * 525600) / (20 * 525600 + nHeight - 10000)
 
