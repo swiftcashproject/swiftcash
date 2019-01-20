@@ -16,8 +16,8 @@ More information at [swiftcash.cc](http://www.swiftcash.cc) or [swiftcash.org](h
 Please reach out at info@swiftcash.cc or info@swiftcash.org
 
 ### Coin Specs
-| Block Time                       | ~1 minute             |
 |----------------------------------|-----------------------|
+| Block Time                       | ~1 minute             |
 | Algorithm                        | Keccak                |
 | Difficulty Adjustment (Timespan) | 40 blocks             |
 | Difficulty Adjustment (Interval) | Every block           |
@@ -26,7 +26,6 @@ Please reach out at info@swiftcash.cc or info@swiftcash.org
 | Maximum Supply (Total)           | 5,000,000,000 SWIFT   |
 | Proposal Fee                     | 100 SWIFT             |
 | Budget Fee                       | 10 SWIFT              |
-|----------------------------------|-----------------------|
 
 ### Block Rewards Distribution
 
@@ -34,7 +33,6 @@ Please reach out at info@swiftcash.cc or info@swiftcash.org
 |------------------|--------------------|--------------------|
 | 201-10000        | 20% (~10 SWIFT)    | 10% (~5 SWIFT)     | 
 | 10001-Infinite   | 20% (~40-0 SWIFT)  | 10% (~20-0 SWIFT)  |
-|------------------|--------------------|--------------------|
 
 ### Minimum & Maximum Block Rewards
 
