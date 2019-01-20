@@ -16,11 +16,19 @@ More information at [swiftcash.cc](http://www.swiftcash.cc) or [swiftcash.org](h
 Please reach out at info@swiftcash.cc or info@swiftcash.org
 
 ### Coin Specs
-| Block Time                  | ~1 minute             |
-| ForkDrops Phase (PoW Phase) | ~80,000,000 SWIFT     |
-| Max Coin Supply (PoS Phase) | ~4,920,000,000 SWIFT  |
+| Block Time                       | ~1 minute             |
+|----------------------------------|-----------------------|
+| Algorithm                        | Keccak                |
+| Difficulty Adjustment (Timespan) | 40 blocks             |
+| Difficulty Adjustment (Interval) | Every block           |
+| ForkDrops Phase (PoW Phase)      | ~80,000,000 SWIFT     |
+| Max Coin Supply (PoS Phase)      | ~4,920,000,000 SWIFT  |
+| Maximum Supply (Total)           | 5,000,000,000 SWIFT   |
+| Proposal Fee                     | 100 SWIFT             |
+| Budget Fee                       | 10 SWIFT              |
+|----------------------------------|-----------------------|
 
-### Reward Distribution
+### Block Rewards Distribution
 
 | **Block Height** | **SwiftNodes**     | **PoS Miners**     |
 |------------------|--------------------|--------------------|
