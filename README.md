@@ -16,6 +16,7 @@ More information at [swiftcash.cc](http://www.swiftcash.cc) or [swiftcash.org](h
 Please reach out at info@swiftcash.cc or info@swiftcash.org
 
 ### Coin Specs
+|                                  |                       |
 |----------------------------------|-----------------------|
 | Block Time                       | ~1 minute             |
 | Algorithm                        | Keccak                |
