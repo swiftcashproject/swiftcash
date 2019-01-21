@@ -2097,13 +2097,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
-    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
+    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev;
 
     int64_t nTime1 = GetTimeMicros();
     nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
-    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nFees;
+    // burn the fees during the pos phase
+    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
 
     //Check that the block does not overmint
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
