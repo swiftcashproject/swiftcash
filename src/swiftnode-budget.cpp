@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -684,8 +684,6 @@ TrxValidationStatus CBudgetManager::IsTransactionValid(const CTransaction& txNew
 
     std::string strProposals = "";
     int nCountThreshold = nHighestCount - mnodeman.CountEnabled(ActiveProtocol()) / 10;
-    if (Params().NetworkID() == CBaseChainParams::MAIN && nCountThreshold < MINIMUM_VOTES_REQUIRED)
-        nCountThreshold = MINIMUM_VOTES_REQUIRED;
     bool fThreshold = false;
     it = mapFinalizedBudgets.begin();
     while (it != mapFinalizedBudgets.end()) {
@@ -801,11 +799,7 @@ std::vector<CBudgetProposal*> CBudgetManager::GetBudget()
 
     int nBlockStart = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
     int nBlockEnd = nBlockStart + GetBudgetPaymentCycleBlocks() - 1;
-    int nCountThreshold = nHighestCount - mnodeman.CountEnabled(ActiveProtocol()) / 10;
-    if (Params().NetworkID() == CBaseChainParams::MAIN && nCountThreshold < MINIMUM_VOTES_REQUIRED)
-        nCountThreshold = MINIMUM_VOTES_REQUIRED;
     CAmount nTotalBudget = GetTotalBudget(nBlockStart);
-
 
     std::vector<std::pair<CBudgetProposal*, int> >::iterator it2 = vBudgetPorposalsSort.begin();
     while (it2 != vBudgetPorposalsSort.end()) {
@@ -815,15 +809,13 @@ std::vector<CBudgetProposal*> CBudgetManager::GetBudget()
         //prop start/end should be inside this period
         if (pbudgetProposal->fValid && pbudgetProposal->nBlockStart <= nBlockStart &&
             pbudgetProposal->nBlockEnd >= nBlockEnd &&
-            // check the highest budget proposals (+/- 10% to assist in consensus)
-            pbudgetProposal->GetVoteCount() >= nCountThreshold &&
             pbudgetProposal->GetYeas() - pbudgetProposal->GetNays() >= mnodeman.CountEnabled(ActiveProtocol()) / 10 &&
             pbudgetProposal->IsEstablished()) {
 
-            LogPrint("mnbudget","CBudgetManager::GetBudget() -   Check 1 passed: valid=%d | %ld <= %ld | %ld >= %ld | Yeas=%d Nays=%d Count=%d | Threshold=%d | established=%d\n",
+            LogPrint("mnbudget","CBudgetManager::GetBudget() -   Check 1 passed: valid=%d | %ld <= %ld | %ld >= %ld | Yeas=%d Nays=%d Count=%d | established=%d\n",
                       pbudgetProposal->fValid, pbudgetProposal->nBlockStart, nBlockStart, pbudgetProposal->nBlockEnd,
                       nBlockEnd, pbudgetProposal->GetYeas(), pbudgetProposal->GetNays(), mnodeman.CountEnabled(ActiveProtocol()) / 10,
-                      nCountThreshold, pbudgetProposal->IsEstablished());
+                      pbudgetProposal->IsEstablished());
 
             if (pbudgetProposal->GetAmount() + nBudgetAllocated <= nTotalBudget) {
                 pbudgetProposal->SetAllotted(pbudgetProposal->GetAmount());
@@ -836,10 +828,10 @@ std::vector<CBudgetProposal*> CBudgetManager::GetBudget()
             }
         }
         else {
-            LogPrint("mnbudget","CBudgetManager::GetBudget() -   Check 1 failed: valid=%d | %ld <= %ld | %ld >= %ld | Yeas=%d Nays=%d Count=%d | Threshold=%d | established=%d\n",
+            LogPrint("mnbudget","CBudgetManager::GetBudget() -   Check 1 failed: valid=%d | %ld <= %ld | %ld >= %ld | Yeas=%d Nays=%d Count=%d | established=%d\n",
                       pbudgetProposal->fValid, pbudgetProposal->nBlockStart, nBlockStart, pbudgetProposal->nBlockEnd,
                       nBlockEnd, pbudgetProposal->GetYeas(), pbudgetProposal->GetNays(), mnodeman.CountEnabled(ActiveProtocol()) / 10,
-                      nCountThreshold, pbudgetProposal->IsEstablished());
+                      pbudgetProposal->IsEstablished());
         }
 
         ++it2;
@@ -933,7 +925,7 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
     if (nHeight < 10000)
         nSubsidy = 20 * COIN; // fair launch - give appx 1 week to users to set up their wallets and nodes
     else
-        nSubsidy = floor(0.5+((double)(2800 * 525600)/(8*525600 + nHeight - 10000 + 1))) * COIN; // 70% 0f actual subsidy planned
+        nSubsidy = ( (double)(20*140 * 525600)/(20*525600 + nHeight - 10000) ) * COIN; // 70% 0f actual subsidy planned
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
@@ -1511,14 +1503,6 @@ bool CBudgetProposal::IsValid(std::string& strError, bool fCheckCollateral)
             strError = "Proposal " + strProposalName + ": Invalid collateral";
             return false;
         }
-    }
-
-    /*
-        TODO: There might be an issue with multisig in the coinbase on mainnet, we will add support for it in a future release.
-    */
-    if (address.IsPayToScriptHash()) {
-        strError = "Proposal " + strProposalName + ": Multisig is not currently supported.";
-        return false;
     }
 
     //if proposal doesn't gain traction within 2 weeks, remove it

@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -96,7 +96,7 @@ static void CheckBlockIndex();
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "DarkNet Signed Message:\n";
+const string strMessageMagic = "SwiftCash Signed Message:\n";
 
 // Internal stuff
 namespace
@@ -1548,7 +1548,8 @@ int64_t GetBlockValue(int nHeight)
     int64_t nSubsidy = 0;
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-	return 20000 * COIN;
+        if (nHeight < 2000) return nHeight * 10000 * COIN; // increasing rewards
+        else return ( (double)(20*500 * 525600)/(20*525600 + nHeight - 2000) ) * COIN; // decreasing rewards
     }
 
     if (nHeight == 0)
@@ -1562,7 +1563,7 @@ int64_t GetBlockValue(int nHeight)
     else if (nHeight < 10000)
         nSubsidy = 15 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else
-        nSubsidy = floor(0.5+((double)(1200 * 525600)/(8*525600 + nHeight - 10000 + 1))) * COIN; // 30% of actual subsidy planned
+        nSubsidy = ( (double)(20*60 * 525600)/(20*525600 + nHeight - 10000) ) * COIN; // 30% of actual subsidy planned
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
@@ -2081,7 +2082,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                     return false;
             control.Add(vChecks);
         }
-        nValueOut += tx.GetValueOut();
+        nValueOut += tx.GetValueOut(false);
 
         CTxUndo undoDummy;
         if (i > 0) {
@@ -2096,13 +2097,14 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
-    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
+    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev;
 
     int64_t nTime1 = GetTimeMicros();
     nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
-    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nFees;
+    // burn the fees during the pos phase
+    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
 
     //Check that the block does not overmint
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {

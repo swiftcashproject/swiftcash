@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2015-2018 PIVX developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -129,7 +130,7 @@ CTransaction& CTransaction::operator=(const CTransaction &tx) {
     return *this;
 }
 
-CAmount CTransaction::GetValueOut() const
+CAmount CTransaction::GetValueOut(bool ignoreOP) const
 {
     CAmount nValueOut = 0;
     for (std::vector<CTxOut>::const_iterator it(vout.begin()); it != vout.end(); ++it)
@@ -140,6 +141,9 @@ CAmount CTransaction::GetValueOut() const
 
         if ((nValueOut + it->nValue) < nValueOut)
             throw std::runtime_error("CTransaction::GetValueOut() : value out of range : wraps the int64_t boundary");
+
+        if (!ignoreOP && it->scriptPubKey.size() >= 1 && it->scriptPubKey[0] == OP_RETURN)
+            continue;
 
         nValueOut += it->nValue;
     }
