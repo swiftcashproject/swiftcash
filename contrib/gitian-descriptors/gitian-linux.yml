@@ -1,5 +1,5 @@
 ---
-name: "swiftcash-linux-1.0.1"
+name: "swiftcash-linux-2.0.0"
 enable_cache: true
 suites:
 - "bionic"
