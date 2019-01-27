@@ -104,6 +104,7 @@ QT_MOC_CPP = \
   qt/moc_utilitydialog.cpp \
   qt/moc_walletframe.cpp \
   qt/moc_columnalignedlayout.cpp \
+  qt/moc_checkboxbackground.cpp \
   qt/moc_proposalfilterproxy.cpp \
   qt/moc_proposaltablemodel.cpp \
   qt/moc_proposallist.cpp \
@@ -176,6 +177,7 @@ BITCOIN_QT_H = \
   qt/trafficgraphwidget.h \
   qt/transactiondesc.h \
   qt/columnalignedlayout.h \
+  qt/checkboxbackground.h \
   qt/proposalfilterproxy.h \
   qt/proposallist.h \
   qt/proposalrecord.h \
@@ -317,6 +319,7 @@ BITCOIN_QT_CPP += \
   qt/transactiontablemodel.cpp \
   qt/transactionview.cpp \
   qt/columnalignedlayout.cpp \
+  qt/checkboxbackground.cpp \
   qt/proposalfilterproxy.cpp \
   qt/proposallist.cpp \
   qt/proposalrecord.cpp \

@@ -117,13 +117,11 @@ ProposalList::ProposalList(   QWidget *parent) :
     abstainVotesWidget->setObjectName("abstainVotesWidget");
     hlayout->addWidget(abstainVotesWidget);
 
-    votesNeededWidget = new QLineEdit(this);
+    votesNeededWidget = new QCheckBoxBackground(this);
     votesNeededWidget->setAttribute(Qt::WA_MacShowFocusRect, 0);
-#if QT_VERSION >= 0x040700
-    votesNeededWidget->setPlaceholderText(tr("Min votes needed"));
-#endif
-    votesNeededWidget->setValidator(new QIntValidator(-100, 100, this));
     votesNeededWidget->setObjectName("votesNeededWidget");
+    votesNeededWidget->setAlignment(Qt::AlignCenter);
+    votesNeededWidget->setContentsMargins(0,0,0,0);
     hlayout->addWidget(votesNeededWidget);
 
     QVBoxLayout *vlayout = new QVBoxLayout(this);
@@ -215,7 +213,7 @@ ProposalList::ProposalList(   QWidget *parent) :
     connect(noVotesWidget, SIGNAL(textChanged(QString)), this, SLOT(changedNoVotes(QString)));
     connect(abstainVotesWidget, SIGNAL(textChanged(QString)), this, SLOT(changedAbstainVotes(QString)));
     connect(amountWidget, SIGNAL(textChanged(QString)), this, SLOT(changedAmount(QString)));
-    connect(votesNeededWidget, SIGNAL(textChanged(QString)), this, SLOT(changedVotesNeeded(QString)));
+    connect(votesNeededWidget, SIGNAL(stateChanged(int)), this, SLOT(changedVotesNeeded(int)));
 
     connect(view, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(openProposalUrl()));
     connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
@@ -282,8 +280,6 @@ void ProposalList::refreshProposals(bool force) {
     secondsLabel->setText(tr("List will be updated in 0 second(s)"));
 }
 
-
-
 void ProposalList::changedAmount(const QString &minAmount)
 {
     if(!proposalProxyModel)
@@ -292,14 +288,12 @@ void ProposalList::changedAmount(const QString &minAmount)
     proposalProxyModel->setMinAmount(minAmount.toInt());
 }
 
-void ProposalList::changedVotesNeeded(const QString &votesNeeded)
+void ProposalList::changedVotesNeeded(int votesNeeded)
 {
     if(!proposalProxyModel)
         return;
 
-    int value = votesNeeded == "" ? 0 : votesNeeded.toInt();
-
-    proposalProxyModel->setVotesNeeded(value);
+    proposalProxyModel->setVotesNeeded(votesNeeded);
 }
 
 void ProposalList::changedProposal(const QString &proposal)
@@ -323,7 +317,7 @@ void ProposalList::chooseStartDate(const QString &startDate)
     if(!proposalProxyModel)
         return;
 
-    proposalProxyModel->setMinYesVotes(startDate.toInt());
+    proposalProxyModel->setProposalStart(startDate.toInt());
 }
 
 void ProposalList::chooseEndDate(const QString &endDate)
@@ -331,7 +325,7 @@ void ProposalList::chooseEndDate(const QString &endDate)
     if(!proposalProxyModel)
         return;
 
-    proposalProxyModel->setMinYesVotes(endDate.toInt());
+    proposalProxyModel->setProposalEnd(endDate.toInt());
 }
 
 void ProposalList::changedNoVotes(const QString &minNoVotes)

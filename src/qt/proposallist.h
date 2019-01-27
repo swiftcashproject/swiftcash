@@ -8,6 +8,7 @@
 #include "guiutil.h"
 #include "proposaltablemodel.h"
 #include "columnalignedlayout.h"
+#include "checkboxbackground.h"
 #include <QWidget>
 #include <QKeyEvent>
 #include <QTimer>
@@ -75,20 +76,14 @@ private:
     QLineEdit *noVotesWidget;
     QLineEdit *abstainVotesWidget;
     QLineEdit *amountWidget;
-    QLineEdit *votesNeededWidget;
+    QCheckBoxBackground *votesNeededWidget;
     QLabel *secondsLabel;
 
     QMenu *contextMenu;
-
-    //LineEdit *startDateRangeWidget;
     QLineEdit *proposalStartDate;
-
-    //QLineEdit *endDateRangeWidget;
     QLineEdit *proposalEndDate;
     ColumnAlignedLayout *hlayout;
 
-    //QWidget *createStartDateRangeWidget();
-    //QWidget *createEndDateRangeWidget();
     void vote_click_handler(const std::string voteString);
 
     GUIUtil::TableViewLastColumnResizingFixer *columnResizingFixer;
@@ -97,8 +92,6 @@ private:
 
 private Q_SLOTS:
     void contextualMenu(const QPoint &);
-    //void startDateRangeChanged();
-    //void endDateRangeChanged();
     void voteYes();
     void voteNo();
     void voteAbstain();
@@ -116,7 +109,7 @@ public Q_SLOTS:
     void changedYesVotes(const QString &minYesVotes);
     void changedNoVotes(const QString &minNoVotes);
     void changedAbstainVotes(const QString &minAbstainVotes);
-    void changedVotesNeeded(const QString &votesNeeded);
+    void changedVotesNeeded(int votesNeeded);
     void changedAmount(const QString &minAmount);
 
 };

@@ -9,13 +9,10 @@
 
 #include <QDateTime>
 
-//const QDateTime ProposalFilterProxy::MIN_DATE = QDateTime::fromTime_t(0);
-//const QDateTime ProposalFilterProxy::MAX_DATE = QDateTime::fromTime_t(0xFFFFFFFF);
-
 ProposalFilterProxy::ProposalFilterProxy(QObject *parent) :
     QSortFilterProxyModel(parent),
-    startDate(INT_MIN),
-    endDate(INT_MIN),
+    startDate(0),
+    endDate(0),
     proposalName(),
     minAmount(0),
     votesNeeded(0),
@@ -36,7 +33,7 @@ bool ProposalFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex &sou
     int yesVotes = index.data(ProposalTableModel::YesVotesRole).toInt();
     int noVotes = index.data(ProposalTableModel::NoVotesRole).toInt();
     int abstainVotes = index.data(ProposalTableModel::AbstainVotesRole).toInt();
-    int votesNeeded = index.data(ProposalTableModel::VotesNeededRole).toInt();
+    int numVotesNeeded = index.data(ProposalTableModel::VotesNeededRole).toInt();
 
     if(proposalStartDate < startDate)
        return false;
@@ -52,19 +49,19 @@ bool ProposalFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex &sou
         return false;
     if(abstainVotes < minAbstainVotes)
         return false;
-    if(votesNeeded < 0)
+    if(votesNeeded && !numVotesNeeded)
         return false;
 
     return true;
 }
 
-void ProposalFilterProxy::setProposalStart(const CAmount& minimum)
+void ProposalFilterProxy::setProposalStart(int minimum)
 {
     this->startDate = minimum;
     invalidateFilter();
 }
 
-void ProposalFilterProxy::setProposalEnd(const CAmount& minimum)
+void ProposalFilterProxy::setProposalEnd(int minimum)
 {
     this->endDate = minimum;
     invalidateFilter();
@@ -78,29 +75,29 @@ void ProposalFilterProxy::setProposal(const QString &proposal)
 
 void ProposalFilterProxy::setMinAmount(const CAmount& minimum)
 {
-    this->minAmount = minimum;
+    this->minAmount = minimum * BitcoinUnits::factor(BitcoinUnits::SWIFT);
     invalidateFilter();
 }
 
-void ProposalFilterProxy::setVotesNeeded(const CAmount& minimum)
+void ProposalFilterProxy::setVotesNeeded(int needed)
 {
-    this->votesNeeded = minimum;
+    this->votesNeeded = (needed > 0);
     invalidateFilter();
 }
 
-void ProposalFilterProxy::setMinYesVotes(const CAmount& minimum)
+void ProposalFilterProxy::setMinYesVotes(int minimum)
 {
     this->minYesVotes = minimum;
     invalidateFilter();
 }
 
-void ProposalFilterProxy::setMinNoVotes(const CAmount& minimum)
+void ProposalFilterProxy::setMinNoVotes(int minimum)
 {
     this->minNoVotes = minimum;
     invalidateFilter();
 }
 
-void ProposalFilterProxy::setMinAbstainVotes(const CAmount& minimum)
+void ProposalFilterProxy::setMinAbstainVotes(int minimum)
 {
     this->minAbstainVotes = minimum;
     invalidateFilter();
