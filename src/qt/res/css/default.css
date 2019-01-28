@@ -197,6 +197,10 @@ QLabel { /* Base Text Size & Color */
 	background-color: #e7e7e7;
 }
 
+QCheckBoxBackground {
+	background-color: #e7e7e7;
+}
+
 /* .QValidatedLineEdit:checked, .QLineEdit:checked */
 
 .QValidatedLineEdit:disabled, .QLineEdit:disabled, .QTextEdit:disabled {
