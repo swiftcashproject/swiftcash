@@ -365,7 +365,6 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
             "        { ... }                       (json object) vote candidate\n"
             "        ,...\n"
             "  ],\n"
-            "  \"swiftnode_payments\" : true|false,         (boolean) true, if swiftnode payments are enabled\n"
             "  \"enforce_swiftnode_payments\" : true|false  (boolean) true, if swiftnode payments are enforced\n"
             "}\n"
 
@@ -578,7 +577,6 @@ UniValue getblocktemplate(const UniValue& params, bool fHelp)
         result.push_back(Pair("payee_amount", ""));
     }
 
-    result.push_back(Pair("swiftnode_payments", pblock->nTime > Params().StartSwiftnodePayments()));
     result.push_back(Pair("enforce_swiftnode_payments", true));
 
     return result;

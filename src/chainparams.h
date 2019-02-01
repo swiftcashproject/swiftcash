@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 The PIVX Core developers
-// Copyright (c) 2017 The SwiftCash Core developers
+// Copyright (c) 2018-2019 The SwiftCash Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -95,7 +95,6 @@ public:
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     std::string SporkKey() const { return strSporkKey; }
     std::string SwiftnodePoolDummyAddress() const { return strSwiftnodePoolDummyAddress; }
-    int64_t StartSwiftnodePayments() const { return nStartSwiftnodePayments; }
     int64_t Budget_Fee_Confirmations() const { return nBudget_Fee_Confirmations; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
 
@@ -139,7 +138,6 @@ protected:
     int nPoolMaxTransactions;
     std::string strSporkKey;
     std::string strSwiftnodePoolDummyAddress;
-    int64_t nStartSwiftnodePayments;
     int64_t nBudget_Fee_Confirmations;
 };
 
