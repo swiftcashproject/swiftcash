@@ -1,6 +1,9 @@
-// Copyright (c) 2014-2015 The Dash Developers
+// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2014 Bitcoin developers
+// Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Distributed under the MIT/X11 software license, see the accompanying
+// Copyright (c) 2018-2019 SwiftCash developers
+// Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "activeswiftnode.h"
@@ -197,8 +200,11 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     const int nStartThreshold = 12 * 1440;
     int nBlockStart = params[3].get_int();
     int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
-    if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold))) {
+    if (CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {
         throw runtime_error(strprintf("Invalid block start - must be at least 12 days before a budget cycle block. Next valid block: %d", nNext));
+    } else if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
+        nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
+        throw runtime_error(strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nNext));
     }
 
     int nBlockEnd = nBlockStart + GetBudgetPaymentCycleBlocks() * nPaymentCount; // End must be AFTER current cycle
@@ -292,8 +298,11 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
     const int nStartThreshold = 12 * 1440;
     int nBlockStart = params[3].get_int();
     int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
-    if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold))) {
+    if (CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {
         throw runtime_error(strprintf("Invalid block start - must be at least 12 days before a budget cycle block. Next valid block: %d", nNext));
+    } else if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
+        nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
+        throw runtime_error(strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nNext));
     }
 
     int nBlockEnd = nBlockStart + (GetBudgetPaymentCycleBlocks() * nPaymentCount); // End must be AFTER current cycle
