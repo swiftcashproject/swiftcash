@@ -1548,8 +1548,9 @@ int64_t GetBlockValue(int nHeight)
     int64_t nSubsidy = 0;
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if (nHeight < 2000) return nHeight * 10000 * COIN; // increasing rewards
-        else return ( (double)(20*500 * 525600)/(20*525600 + nHeight - 2000) ) * COIN; // decreasing rewards
+        if(nHeight < Params().LAST_POW_BLOCK()) return 100000 * COIN; // constant rewards
+        else if (nHeight < 800) return ((double)nHeight/100) * 1000 * COIN; // increasing rewards
+        else return ( (double)(20*50 * 525600)/(20*525600 + nHeight - 800) ) * COIN; // decreasing rewards
     }
 
     if (nHeight == 0)
