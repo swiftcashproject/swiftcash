@@ -54,11 +54,6 @@ void QCheckBoxBackground::setContentsMargins(int left, int top, int right, int b
     hLayout->setContentsMargins(left, top, right, bottom);
 }
 
-void QCheckBoxBackground::stateChanged(int state)
-{
-    checkBox->stateChanged(state);
-}
-
 void QCheckBoxBackground::handleStateChanged(int state)
 {
     emit stateChanged(state);
