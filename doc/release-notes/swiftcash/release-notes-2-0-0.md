@@ -1,4 +1,4 @@
-swiftcash (2.0.0-1) xenial; urgency=medium
+v2.0.0
 
   * Reduced the theoretical block rewards from 500 to 200 per block
   * Changed SwiftNode collateral to 50K SWIFT
