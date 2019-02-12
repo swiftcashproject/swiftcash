@@ -22,8 +22,8 @@ Please reach out at info@swiftcash.cc or info@swiftcash.org
 | Algorithm                        | Keccak                |
 | Difficulty Adjustment (Timespan) | 40 blocks             |
 | Difficulty Adjustment (Interval) | Every block           |
-| ForkDrops Phase (PoW Phase)      | ~80,000,000 SWIFT     |
-| Max Coin Supply (PoS Phase)      | ~4,920,000,000 SWIFT  |
+| ForkDrops Phase (PoW Phase)      | ~78,000,000 SWIFT     |
+| Max Coin Supply (PoS Phase)      | ~4,922,000,000 SWIFT  |
 | Maximum Supply (Total)           | 5,000,000,000 SWIFT   |
 | Proposal Fee                     | 100 SWIFT             |
 | Budget Fee                       | 10 SWIFT              |
