@@ -1563,9 +1563,9 @@ int64_t GetBlockValue(int nHeight)
 
     if (nHeight == 0)
 	nSubsidy = 0;
-    else if (nHeight < 40)
+    else if (nHeight < 39)
         nSubsidy = 2000000 * COIN; // mining forkdrops - appx. 77M SWIFT needed
-    else if (nHeight == 40)
+    else if (nHeight == 39)
 	nSubsidy = 1270162 * COIN; // exact amount of forkdrops = 77,270,162 SWIFT
     else if(nHeight < Params().LAST_POW_BLOCK())
 	nSubsidy = 0 * COIN; // forkdrop phase - dropping about 77M SWIFT on eligible addresses (read the whitepaper)
