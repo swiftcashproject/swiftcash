@@ -1563,12 +1563,12 @@ int64_t GetBlockValue(int nHeight)
 
     if (nHeight == 0)
 	nSubsidy = 0;
-    else if (nHeight < 143)
-        nSubsidy = 2000000 * COIN; // mining forkdrops - appx. 300M SWIFT needed
-    else if (nHeight == 143)
-	nSubsidy = 682821 * COIN; // exact amount of forkdrops + 1M initial development = 284,682,821 SWIFT
+    else if (nHeight < 40)
+        nSubsidy = 2000000 * COIN; // mining forkdrops - appx. 77M SWIFT needed
+    else if (nHeight == 40)
+	nSubsidy = 1270162 * COIN; // exact amount of forkdrops + 1M initial development = 77,270,162 SWIFT
     else if(nHeight < Params().LAST_POW_BLOCK())
-	nSubsidy = 0 * COIN; // forkdrop phase - dropping about 300M SWIFT on eligible smartcash holders (read the whitepaper)
+	nSubsidy = 0 * COIN; // forkdrop phase - dropping about 77M SWIFT on eligible addresses (read the whitepaper)
     else if (nHeight < 10000)
         nSubsidy = 15 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else
