@@ -43,7 +43,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     // define text to place
     QString titleText       = tr(PACKAGE_NAME);
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightText   = QString::fromUtf8("Copyright (C) 2009-2010 Satoshi Nakamoto\nCopyright (C) 2009-2015 Bitcoin Developers\nCopyright (C) 2014-2015 Dash Developers\nCopyright (C) 2015-2018 PIVX Developers\nCopyright (C) 2018 SwiftCash Developers");
+    QString copyrightText   = QString::fromUtf8("Copyright (C) 2009-2010 Satoshi Nakamoto\nCopyright (C) 2009-2015 Bitcoin Developers\nCopyright (C) 2014-2015 Dash Developers\nCopyright (C) 2015-2018 PIVX Developers\nCopyright (C) 2018-2019 SwiftCash Developers");
     QString titleAddText    = networkStyle->getTitleAddText();
 
     QString font            = QApplication::font().toString();
