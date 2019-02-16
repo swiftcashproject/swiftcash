@@ -1,4 +1,4 @@
-swiftcash (2.0.1-xenial1) xenial; urgency=medium
+v2.0.1
 
   * Fixed some minor issues with the fake stake attack fix
   * Added some locks to main.cpp to avoid possible crashes/freezing
