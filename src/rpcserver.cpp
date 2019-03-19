@@ -346,6 +346,7 @@ static const CRPCCommand vRPCCommands[] =
         {"swiftcash", "submitbudget", &submitbudget, true, true, false},
         {"swiftcash", "mnbudgetvote", &mnbudgetvote, true, true, false},
         {"swiftcash", "getbudgetvotes", &getbudgetvotes, true, true, false},
+        {"swiftcash", "getinflation", &getinflation, true, true, false},
         {"swiftcash", "getnextsuperblock", &getnextsuperblock, true, true, false},
         {"swiftcash", "getbudgetprojection", &getbudgetprojection, true, true, false},
         {"swiftcash", "getbudgetinfo", &getbudgetinfo, true, true, false},
