@@ -119,6 +119,20 @@ UniValue getblockcount(const UniValue& params, bool fHelp)
     return chainActive.Height();
 }
 
+UniValue getmoneysupply(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getmoneysupply\n"
+            "\nReturns the current circulating supply.\n"
+            "\nResult:\n"
+            "n    (numeric) The current circulating supply\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getmoneysupply", "") + HelpExampleRpc("getmoneysupply", ""));
+
+    return ValueFromAmount(chainActive.Tip()->nMoneySupply);
+}
+
 UniValue getinflation(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
