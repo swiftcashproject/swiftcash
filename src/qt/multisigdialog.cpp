@@ -49,6 +49,7 @@ MultisigDialog::MultisigDialog(QWidget* parent) : QDialog(parent, Qt::WindowSyst
     isFirstRawTx = true;
     ui->keyScrollArea->hide();
     ui->txInputsScrollArea->hide();
+    ui->transactionHex->setMaxLength(INT_MAX);
 
     connect(ui->commitButton, SIGNAL(clicked()), this, SLOT(commitMultisigTx()));
 
