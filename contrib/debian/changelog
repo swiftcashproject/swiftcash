@@ -1,6 +1,8 @@
-swiftcash (2.0.1-xenial1) xenial; urgency=medium
+swiftcash (2.0.2-xenial1) xenial; urgency=medium
 
-  * Fixed some minor issues with the fake stake attack fix
-  * Added some locks to main.cpp to avoid possible crashes/freezing
+  * Increased hex length in multisigdialog to 512000
+  * Added getinflation RPC function
+  * Added getroi RPC function
+  * Added getmoneysupply RPC function
 
- -- Markus GH <msg768@hotmail.com>  Fri, 15 Feb 2019 22:15:52 +1100
+ -- Markus GH <msg768@hotmail.com>  Wed, 24 Apr 2019 22:10:12 +1100
