@@ -163,14 +163,6 @@ public:
         vSeeds.push_back(CDNSSeedData("seed2.swiftcash.cc", "seed2.swiftcash.cc"));
         vSeeds.push_back(CDNSSeedData("seed3.swiftcash.cc", "seed3.swiftcash.cc"));
 
-        vSeeds.push_back(CDNSSeedData("seed1.swiftcash.me", "seed1.swiftcash.me"));
-        vSeeds.push_back(CDNSSeedData("seed2.swiftcash.me", "seed2.swiftcash.me"));
-        vSeeds.push_back(CDNSSeedData("seed3.swiftcash.me", "seed3.swiftcash.me"));
-
-        vSeeds.push_back(CDNSSeedData("seed1.swiftcash.org", "seed1.swiftcash.org"));
-        vSeeds.push_back(CDNSSeedData("seed2.swiftcash.org", "seed2.swiftcash.org"));
-        vSeeds.push_back(CDNSSeedData("seed3.swiftcash.org", "seed3.swiftcash.org"));
-
         vSeeds.push_back(CDNSSeedData("seed1.swiftcash.space", "seed1.swiftcash.space"));
         vSeeds.push_back(CDNSSeedData("seed2.swiftcash.space", "seed2.swiftcash.space"));
         vSeeds.push_back(CDNSSeedData("seed3.swiftcash.space", "seed3.swiftcash.space"));
@@ -252,9 +244,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("testnetseed.swiftcash.cc", "testnetseed.swiftcash.cc"));
-        vSeeds.push_back(CDNSSeedData("testnetseed.swiftcash.org", "testnetseed.swiftcash.org"));
         vSeeds.push_back(CDNSSeedData("testnetseed.swiftcash.space", "testnetseed.swiftcash.space"));
-        vSeeds.push_back(CDNSSeedData("testnetseed.swiftcash.me", "testnetseed.swiftcash.me"));
 
 
         // Testnet SwiftCash addresses start with 'T'
