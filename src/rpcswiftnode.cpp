@@ -1,6 +1,6 @@
 // Copyright (c) 2009-2012 Bitcoin developers
 // Copyright (c) 2015-2018 PIVX developers
-// copyright (c) 2018 SwiftCash developers
+// copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,10 +8,13 @@
 #include "db.h"
 #include "init.h"
 #include "main.h"
+#include "amount.h"
 #include "swiftnode-budget.h"
 #include "swiftnode-payments.h"
 #include "swiftnodeconfig.h"
+#include "swiftnode.h"
 #include "swiftnodeman.h"
+#include "swiftnode-sync.h"
 #include "rpcserver.h"
 #include "utilmoneystr.h"
 
@@ -335,6 +338,41 @@ UniValue getswiftnodecount (const UniValue& params, bool fHelp)
     //obj.push_back(Pair("onion", onion));
 
     return obj;
+}
+
+UniValue getroi(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getroi\n"
+            "\nReturns the annual ROI for SwiftNode and Staking.\n"
+            "\nResult:\n"
+            "swiftnode    (numeric) SwiftNode ROI\n"
+            "staking      (numeric) Staking ROI\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getroi", "") + HelpExampleRpc("getroi", ""));
+
+    double swiftnode, staking;
+    int64_t blockRewards = 0;
+    int blockHeight = (int)chainActive.Height();
+
+    for(int i=blockHeight; i<blockHeight+525600; i++) {
+       blockRewards += GetBlockValue(i);
+    }
+
+    int swiftnodes = mnodeman.size();
+    if(swiftnodes == 0) {
+       swiftnode = 0;
+    } else {
+       swiftnode = ((double)blockRewards*2/3/COIN)/(swiftnodes*SWIFTNODE_COLLATERAL)*100;
+    }
+
+    staking = ((double)blockRewards*1/3/COIN)/((double)GetDifficulty()*100)*100;
+
+    UniValue result(UniValue::VOBJ);
+    result.push_back(Pair("swiftnode", swiftnode));
+    result.push_back(Pair("staking", staking));
+    return result;
 }
 
 UniValue swiftnodecurrent (const UniValue& params, bool fHelp)

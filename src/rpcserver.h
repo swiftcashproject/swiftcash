@@ -1,6 +1,7 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2015-2018 PIVX developers
+// copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -230,6 +231,8 @@ extern UniValue signrawtransaction(const UniValue& params, bool fHelp);
 extern UniValue sendrawtransaction(const UniValue& params, bool fHelp);
 
 extern UniValue getblockcount(const UniValue& params, bool fHelp); // in rpcblockchain.cpp
+extern UniValue getinflation(const UniValue& params, bool fHelp);
+extern UniValue getmoneysupply(const UniValue& params, bool fHelp);
 extern UniValue getbestblockhash(const UniValue& params, bool fHelp);
 extern UniValue getdifficulty(const UniValue& params, bool fHelp);
 extern UniValue settxfee(const UniValue& params, bool fHelp);
@@ -255,6 +258,7 @@ extern UniValue swiftnodedebug(const UniValue& params, bool fHelp);
 extern UniValue startswiftnode(const UniValue& params, bool fHelp);
 extern UniValue createswiftnodekey(const UniValue& params, bool fHelp);
 extern UniValue getswiftnodeoutputs(const UniValue& params, bool fHelp);
+extern UniValue getroi(const UniValue& params, bool fHelp);
 extern UniValue listswiftnodeconf(const UniValue& params, bool fHelp);
 extern UniValue getswiftnodestatus(const UniValue& params, bool fHelp);
 extern UniValue getswiftnodewinners(const UniValue& params, bool fHelp);

@@ -2,6 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
+// copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -291,6 +292,9 @@ static const CRPCCommand vRPCCommands[] =
         {"blockchain", "invalidateblock", &invalidateblock, true, true, false},
         {"blockchain", "reconsiderblock", &reconsiderblock, true, true, false},
         {"blockchain", "verifychain", &verifychain, true, false, false},
+        {"blockchain", "getinflation", &getinflation, true, true, false},
+        {"blockchain", "getmoneysupply", &getmoneysupply, true, true, false},
+
 
         /* Mining */
         {"mining", "getblocktemplate", &getblocktemplate, true, false, false},
@@ -337,6 +341,7 @@ static const CRPCCommand vRPCCommands[] =
         {"swiftcash", "startswiftnode", &startswiftnode, true, true, false},
         {"swiftcash", "createswiftnodekey", &createswiftnodekey, true, true, false},
         {"swiftcash", "getswiftnodeoutputs", &getswiftnodeoutputs, true, true, false},
+        {"swiftcash", "getroi", &getroi, true, true, false},
         {"swiftcash", "listswiftnodeconf", &listswiftnodeconf, true, true, false},
         {"swiftcash", "getswiftnodestatus", &getswiftnodestatus, true, true, false},
         {"swiftcash", "getswiftnodewinners", &getswiftnodewinners, true, true, false},

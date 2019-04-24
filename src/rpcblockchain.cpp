@@ -119,6 +119,50 @@ UniValue getblockcount(const UniValue& params, bool fHelp)
     return chainActive.Height();
 }
 
+UniValue getmoneysupply(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getmoneysupply\n"
+            "\nReturns the current circulating supply.\n"
+            "\nResult:\n"
+            "n    (numeric) The current circulating supply\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getmoneysupply", "") + HelpExampleRpc("getmoneysupply", ""));
+
+    return ValueFromAmount(chainActive.Tip()->nMoneySupply);
+}
+
+UniValue getinflation(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+            "getinflation\n"
+            "\nReturns the minimum and maximum annual inflation of the blockchain.\n"
+            "\nResult:\n"
+            "min    (numeric) Minimum annual inflation\n"
+            "max    (numeric) Maximum annual inflation\n"
+            "\nExamples:\n" +
+            HelpExampleCli("getinflation", "") + HelpExampleRpc("getinflation", ""));
+
+    double minimumInflation, maximumInflation;
+    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+    int64_t blockRewards = 0;
+    int blockHeight = (int)chainActive.Height();
+
+    for(int i=blockHeight; i<blockHeight+525600; i++) {
+       blockRewards += GetBlockValue(i);
+    }
+
+    minimumInflation = (double)blockRewards/nMoneySupply*100;
+    maximumInflation = ((double)blockRewards/30)*100*100/nMoneySupply;
+
+    UniValue result(UniValue::VOBJ);
+    result.push_back(Pair("min", minimumInflation));
+    result.push_back(Pair("max", maximumInflation));
+    return result;
+}
+
 UniValue getbestblockhash(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 0)
