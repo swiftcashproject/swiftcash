@@ -18,9 +18,8 @@ SwiftRewards is an idea that is intended to help us with a consistent and stable
 - Decentralized blockchain voting enabling consensus-based advancement of the current SwiftNode
   technology used to secure the network and provide the above features, each SwiftNode is secured
   with a collateral of 50,000 SWIFT.
-
-More information at [swiftcash.cc](http://www.swiftcash.cc)
-For enquiries, please reach out to info@swiftcash.cc
+- More information can be found at [swiftcash.cc](http://www.swiftcash.cc)
+- For enquiries, please reach out to info@swiftcash.cc
 
 ### Coin Specs
 |                                  |                       |
@@ -49,3 +48,20 @@ Community proposals will be allowed to use 70% of the block rewards for budgetti
 Maximum Block Rewards = (20 * 200 * 525600) / (20 * 525600 + nHeight - 10000)
 
 Minimum Block Rewards = (20 * 60 * 525600) / (20 * 525600 + nHeight - 10000)
+
+### License
+Copyright (C) 2018-2019 SwiftCash Developers <br />
+This software is provided as is and with no warranty under the MIT license.
+
+### Donation Addresses
+* SWIFT: `SXucSXaV5HURNyJUWnPrVFHTdRzoU2u19F`
+* BTC: `13atMuQvjApUEuV5voxRVFMV6HHA5FjMFT`
+* LTC: `LMoqd7ikoq4XViBF6wwimGRFJVeSB6JmDh`
+* DOGE: `D7iyuAMa2aikmufgfPwz31X5yR1TMt698E`
+
+### Support
+For support, join http://discord.swiftcash.cc
+
+### Whitepaper
+To find out more about SwiftCash, consider reading our whitepaper!
+https://swiftcash.cc/assets/whitepaper.pdf
