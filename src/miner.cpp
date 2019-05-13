@@ -107,7 +107,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (Params().MineBlocksOnDemand())
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
 
-    pblock->nVersion = 4;
+    pblock->nVersion = 5;
 
     // Create coinbase tx
     CMutableTransaction txNew;
