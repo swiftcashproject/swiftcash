@@ -67,8 +67,8 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1540687441, // * UNIX timestamp of last checkpoint block
-    0,     	// * total number of transactions between genesis and last checkpoint
+    1557281089, // * UNIX timestamp of last checkpoint block
+    243128, 	// * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     250         // * estimated number of transactions per day after checkpoint
 };
@@ -111,9 +111,9 @@ public:
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         nSubsidyHalvingInterval = 1050000;
         nMaxReorganizationDepth = 100;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
+        nEnforceBlockUpgradeMajority = 8100; // 75%
+        nRejectBlockOutdatedMajority = 10260; // 95%
+        nToCheckBlockUpgradeMajority = 10800; // Approximate expected amount of blocks in 7 days (1440*7.5)
         nMinerThreads = 0;
         nTargetTimespan = 40 * 60; // SwiftCash: 40 minutes
         nTargetSpacing = 1 * 60;  // SwiftCash: 1 minute
@@ -224,9 +224,9 @@ public:
         pchMessageStart[3] = 0x8a;
         vAlertPubKey = ParseHex("02c1d175e8a526d9ee25770b7b3d3a4f850f00b611130c2e07c1682aa3a74d5436");
         nDefaultPort = 28544;
-        nEnforceBlockUpgradeMajority = 51;
-        nRejectBlockOutdatedMajority = 75;
-        nToCheckBlockUpgradeMajority = 100;
+        nEnforceBlockUpgradeMajority = 4320; // 75%
+        nRejectBlockOutdatedMajority = 5472; // 95%
+        nToCheckBlockUpgradeMajority = 5760; // 4 days
         nMinerThreads = 0;
         nTargetTimespan = 40 * 60; // SwiftCash: 40 minutes
         nTargetSpacing = 1 * 60; // SwiftCash: 1 minute
