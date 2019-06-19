@@ -92,10 +92,39 @@
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_Header" stretch="1,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_Header" stretch="1,0,1">
              <property name="spacing">
               <number>6</number>
              </property>
+             <item>
+              <widget class="QLabel" name="labelOverviewHeaderLeft">
+               <property name="minimumSize">
+                <size>
+                 <width>464</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>20</pointsize>
+                 <weight>75</weight>
+                 <bold>true</bold>
+                </font>
+               </property>
+               <property name="text">
+                <string>OVERVIEW</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
              <item>
               <spacer name="horizontalSpacer_Header">
                <property name="orientation">
@@ -206,7 +235,7 @@
                        <string>The displayed information may be out of date. Your wallet automatically synchronizes with the SwiftCash network after a connection is established, but this process has not completed yet.</string>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QLabel { color: red; }</string>
+                       <string notr="true">QLabel { color: #E1755A; }</string>
                       </property>
                       <property name="text">
                        <string notr="true">(out of sync)</string>
@@ -659,7 +688,7 @@
                        <string>The displayed information may be out of date. Your wallet automatically synchronizes with the SwiftCash network after a connection is established, but this process has not completed yet.</string>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QLabel { color: red; }</string>
+                       <string notr="true">QLabel { color: #E1755A; }</string>
                       </property>
                       <property name="text">
                        <string notr="true">(out of sync)</string>

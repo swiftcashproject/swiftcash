@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -50,6 +50,7 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QProgressBar>
+#include <QFontDatabase>
 #include <QProgressDialog>
 #include <QSettings>
 #include <QStackedWidget>
@@ -137,6 +138,21 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
 #endif
     setWindowTitle(windowTitle);
 
+    // Load fonts
+    QFontDatabase::addApplicationFont(":/fonts/Montserrat-Bold");
+    QFontDatabase::addApplicationFont(":/fonts/Montserrat-ExtraLight");
+    QFontDatabase::addApplicationFont(":/fonts/Montserrat-Italic");
+    QFontDatabase::addApplicationFont(":/fonts/Montserrat-Light");
+    QFontDatabase::addApplicationFont(":/fonts/Montserrat-Medium");
+    QFontDatabase::addApplicationFont(":/fonts/Montserrat-Regular");
+    QFontDatabase::addApplicationFont(":/fonts/Montserrat-Thin");
+    QFontDatabase::addApplicationFont(":/fonts/Lato-Black");
+    QFontDatabase::addApplicationFont(":/fonts/Lato-Bold");
+    QFontDatabase::addApplicationFont(":/fonts/Lato-Hairline");
+    QFontDatabase::addApplicationFont(":/fonts/Lato-Italic");
+    QFontDatabase::addApplicationFont(":/fonts/Lato-Light");
+    QFontDatabase::addApplicationFont(":/fonts/Lato-Regular");
+
     rpcConsole = new RPCConsole(enableWallet ? this : 0);
 #ifdef ENABLE_WALLET
     if (enableWallet) {
@@ -179,12 +195,19 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
     frameBlocksLayout->setContentsMargins(3, 0, 3, 0);
     frameBlocksLayout->setSpacing(3);
     unitDisplayControl = new UnitDisplayStatusBarControl();
-    labelStakingIcon = new QLabel();
+
+    labelStakingIcon = new QPushButton();
+    labelStakingIcon->setObjectName("labelStakingIcon");
+    labelStakingIcon->setFlat(true); // Make the button look like a label, but clickable
+    labelStakingIcon->setStyleSheet(".QPushButton { background-color: rgba(255, 255, 255, 0);}");
+    labelStakingIcon->setMaximumSize(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE);
+
     labelEncryptionIcon = new QPushButton();
     labelEncryptionIcon->setObjectName("labelEncryptionIcon");
     labelEncryptionIcon->setFlat(true); // Make the button look like a label, but clickable
     labelEncryptionIcon->setStyleSheet(".QPushButton { background-color: rgba(255, 255, 255, 0);}");
     labelEncryptionIcon->setMaximumSize(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE);
+
     labelConnectionsIcon = new QPushButton();
     labelConnectionsIcon->setObjectName("labelConnectionsIcon");
     labelConnectionsIcon->setFlat(true); // Make the button look like a label, but clickable
@@ -197,7 +220,7 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
         frameBlocksLayout->addWidget(unitDisplayControl);
         frameBlocksLayout->addStretch();
         frameBlocksLayout->addWidget(labelEncryptionIcon);
-        frameBlocksLayout->addStretch();
+	frameBlocksLayout->addStretch();
         frameBlocksLayout->addWidget(labelStakingIcon);
     }
 #endif // ENABLE_WALLET
@@ -352,7 +375,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     historyIcon.addPixmap(historyIconActive,QIcon::Active,QIcon::On);
     historyIcon.addPixmap(historyIconActive,QIcon::Active,QIcon::Off);
 
-    historyAction = new QAction(historyIcon, tr("&Transactions"), this);
+    historyAction = new QAction(historyIcon, tr("&History"), this);
     historyAction->setStatusTip(tr("Browse transaction history"));
     historyAction->setToolTip(historyAction->statusTip());
     historyAction->setCheckable(true);
@@ -412,7 +435,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     proposalsIcon.addPixmap(proposalsIconActive,QIcon::Active,QIcon::Off);	
 
     proposalAction = new QAction(proposalsIcon, tr("&Proposals"), this);
-    proposalAction->setStatusTip(tr("Browse proposals"));
+    proposalAction->setStatusTip(tr("Browse proposals/budgets"));
     proposalAction->setToolTip(proposalAction->statusTip());
     proposalAction->setCheckable(true);    
     proposalAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_7));
@@ -422,10 +445,10 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     quitAction->setStatusTip(tr("Quit application"));
     quitAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Q));
     quitAction->setMenuRole(QAction::QuitRole);
-    aboutAction = new QAction(networkStyle->getAppIcon(), tr("&About SwiftCash Core"), this);
+    aboutAction = new QAction(QIcon(":/icons/overview"), tr("&About SwiftCash Core"), this);
     aboutAction->setStatusTip(tr("Show information about SwiftCash Core"));
     aboutAction->setMenuRole(QAction::AboutRole);
-    aboutQtAction = new QAction(QIcon(":/qt-project.org/qmessagebox/images/qtlogo-64.png"), tr("About &Qt"), this);
+    aboutQtAction = new QAction(QIcon(":/icons/about_qt"), tr("About &Qt"), this);
     aboutQtAction->setStatusTip(tr("Show information about Qt"));
     aboutQtAction->setMenuRole(QAction::AboutQtRole);
     optionsAction = new QAction(QIcon(":/icons/options"), tr("&Options..."), this);
@@ -444,51 +467,51 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     unlockWalletAction = new QAction(tr("&Unlock Wallet..."), this);
     unlockWalletAction->setToolTip(tr("Unlock wallet"));
     lockWalletAction = new QAction(tr("&Lock Wallet"), this);
-    signMessageAction = new QAction(QIcon(":/icons/edit_black"), tr("Sign &message..."), this);
+    signMessageAction = new QAction(QIcon(":/icons/edit_black"), tr("Sign &Message..."), this);
     signMessageAction->setStatusTip(tr("Sign messages with your SWIFT addresses to prove you own them"));
-    verifyMessageAction = new QAction(QIcon(":/icons/transaction_black"), tr("&Verify message..."), this);
+    verifyMessageAction = new QAction(QIcon(":/icons/transaction_black"), tr("&Verify Message..."), this);
     verifyMessageAction->setStatusTip(tr("Verify messages to ensure they were signed with specified SWIFT addresses"));
-    bip38ToolAction = new QAction(QIcon(":/icons/key"), tr("&BIP38 tool"), this);
+    bip38ToolAction = new QAction(QIcon(":/icons/key"), tr("&BIP38 Tool"), this);
     bip38ToolAction->setToolTip(tr("Encrypt and decrypt private keys using a passphrase"));
     multiSendAction = new QAction(QIcon(":/icons/edit_black"), tr("&MultiSend"), this);
     multiSendAction->setToolTip(tr("MultiSend Settings"));
     multiSendAction->setCheckable(true);
 
-    openInfoAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Information"), this);
+    openInfoAction = new QAction(QIcon(":/icons/info"), tr("&Information"), this);
     openInfoAction->setStatusTip(tr("Show diagnostic information"));
-    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug console"), this);
+    openRPCConsoleAction = new QAction(QIcon(":/icons/debugwindow"), tr("&Debug Console"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging console"));
     openNetworkAction = new QAction(QIcon(":/icons/connect_4"), tr("&Network Monitor"), this);
     openNetworkAction->setStatusTip(tr("Show network monitor"));
-    openPeersAction = new QAction(QIcon(":/icons/connect_4"), tr("&Peers list"), this);
+    openPeersAction = new QAction(QIcon(":/icons/connect_4"), tr("&Peers List"), this);
     openPeersAction->setStatusTip(tr("Show peers info"));
     openRepairAction = new QAction(QIcon(":/icons/options"), tr("Wallet &Repair"), this);
     openRepairAction->setStatusTip(tr("Show wallet repair options"));
     openConfEditorAction = new QAction(QIcon(":/icons/edit_black"), tr("Open Wallet &Configuration File"), this);
     openConfEditorAction->setStatusTip(tr("Open configuration file"));
-    openMNConfEditorAction = new QAction(QIcon(":/icons/edit_black"), tr("Open &Swiftnode Configuration File"), this);
+    openMNConfEditorAction = new QAction(QIcon(":/icons/edit_black"), tr("Open &SwiftNode Configuration File"), this);
     openMNConfEditorAction->setStatusTip(tr("Open SwiftNode configuration file"));
     showBackupsAction = new QAction(QIcon(":/icons/browse"), tr("Show Automatic &Backups"), this);
     showBackupsAction->setStatusTip(tr("Show automatically created wallet backups"));
 
-    usedSendingAddressesAction = new QAction(QIcon(":/icons/address-book_black"), tr("&Sending addresses..."), this);
+    usedSendingAddressesAction = new QAction(QIcon(":/icons/address-book_black"), tr("&Sending Addresses..."), this);
     usedSendingAddressesAction->setStatusTip(tr("Show the list of used sending addresses and labels"));
-    usedReceivingAddressesAction = new QAction(QIcon(":/icons/address-book_black"), tr("&Receiving addresses..."), this);
+    usedReceivingAddressesAction = new QAction(QIcon(":/icons/address-book_black"), tr("&Receiving Addresses..."), this);
     usedReceivingAddressesAction->setStatusTip(tr("Show the list of used receiving addresses and labels"));
 
-    multisigCreateAction = new QAction(QIcon(":/icons/address-book_black"), tr("&Multisignature creation..."), this);
+    multisigCreateAction = new QAction(QIcon(":/icons/address-book_black"), tr("&Multisignature Creation..."), this);
     multisigCreateAction->setStatusTip(tr("Create a new multisignature address and add it to this wallet"));
-    multisigSpendAction = new QAction(QIcon(":/icons/send_black"), tr("&Multisignature spending..."), this);
+    multisigSpendAction = new QAction(QIcon(":/icons/send_black"), tr("&Multisignature Spending..."), this);
     multisigSpendAction->setStatusTip(tr("Spend from a multisignature address"));
-    multisigSignAction = new QAction(QIcon(":/icons/editpaste_black"), tr("&Multisignature signing..."), this);
+    multisigSignAction = new QAction(QIcon(":/icons/editpaste_black"), tr("&Multisignature Signing..."), this);
     multisigSignAction->setStatusTip(tr("Sign with a multisignature address"));
 
-    openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
+    openAction = new QAction(QIcon(":/icons/editcopy"), tr("Open &URI..."), this);
     openAction->setStatusTip(tr("Open a swiftcash: URI or payment request"));
-    openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain explorer"), this);
+    openBlockExplorerAction = new QAction(QIcon(":/icons/explorer"), tr("&Blockchain Explorer"), this);
     openBlockExplorerAction->setStatusTip(tr("Block explorer window"));
 
-    showHelpMessageAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Command-line options"), this);
+    showHelpMessageAction = new QAction(QIcon(":/icons/info"), tr("&Command-Line Options"), this);
     showHelpMessageAction->setMenuRole(QAction::NoRole);
     showHelpMessageAction->setStatusTip(tr("Show the SwiftCash Core help message to get a list with possible SwiftCash command-line options"));
 
@@ -1196,11 +1219,11 @@ void BitcoinGUI::setStakingStatus()
 
     if (nLastCoinStakeSearchInterval) {
         labelStakingIcon->show();
-        labelStakingIcon->setPixmap(QIcon(":/icons/staking_active").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+        labelStakingIcon->setIcon(QIcon(":/icons/staking_active").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
         labelStakingIcon->setToolTip(tr("Staking is active\n MultiSend: %1").arg(fMultiSend ? tr("Active") : tr("Not Active")));
     } else {
         labelStakingIcon->show();
-        labelStakingIcon->setPixmap(QIcon(":/icons/staking_inactive").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+        labelStakingIcon->setIcon(QIcon(":/icons/staking_inactive").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
         labelStakingIcon->setToolTip(tr("Staking is not active\n MultiSend: %1").arg(fMultiSend ? tr("Active") : tr("Not Active")));
     }
 }
@@ -1351,14 +1374,14 @@ void BitcoinGUI::handleRestart(QStringList args)
 UnitDisplayStatusBarControl::UnitDisplayStatusBarControl() : optionsModel(0),
                                                              menu(0)
 {
-    createContextMenu();
-    setToolTip(tr("Unit to show amounts in. Click to select another unit."));
+    //createContextMenu();
+    //setToolTip(tr("Unit to show amounts in. Click to select another unit."));
 }
 
 /** So that it responds to button clicks */
 void UnitDisplayStatusBarControl::mousePressEvent(QMouseEvent* event)
 {
-    onDisplayUnitsClicked(event->pos());
+    //onDisplayUnitsClicked(event->pos());
 }
 
 /** Creates context menu, its actions, and wires up all the relevant signals for mouse events. */
@@ -1391,9 +1414,9 @@ void UnitDisplayStatusBarControl::setOptionsModel(OptionsModel* optionsModel)
 void UnitDisplayStatusBarControl::updateDisplayUnit(int newUnits)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
-        setPixmap(QIcon(":/icons/unit_" + BitcoinUnits::id(newUnits)).pixmap(39, STATUSBAR_ICONSIZE));
+        //setPixmap(QIcon(":/icons/unit_" + BitcoinUnits::id(newUnits)).pixmap(39, STATUSBAR_ICONSIZE));
     } else {
-        setPixmap(QIcon(":/icons/unit_t" + BitcoinUnits::id(newUnits)).pixmap(39, STATUSBAR_ICONSIZE));
+        //setPixmap(QIcon(":/icons/unit_t" + BitcoinUnits::id(newUnits)).pixmap(39, STATUSBAR_ICONSIZE));
     }
 }
 

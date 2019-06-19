@@ -195,6 +195,7 @@ BITCOIN_QT_H = \
   qt/winshutdownmonitor.h
 
 RES_ICONS = \
+  qt/res/icons/about_qt.png \
   qt/res/icons/add.png \
   qt/res/icons/address-book.png \
   qt/res/icons/address-book_black.png \
@@ -220,6 +221,7 @@ RES_ICONS = \
   qt/res/icons/proposal.png \
   qt/res/icons/edit_black.png \
   qt/res/icons/editcopy.png \
+  qt/res/icons/info.png \
   qt/res/icons/editpaste.png \
   qt/res/icons/editpaste_black.png \
   qt/res/icons/explorer.png \
@@ -249,6 +251,7 @@ RES_ICONS = \
   qt/res/icons/staking_active.png \
   qt/res/icons/staking_inactive.png \
   qt/res/icons/synced.png \
+  qt/res/icons/verify.png \
   qt/res/icons/transaction0.png \
   qt/res/icons/transaction2.png \
   qt/res/icons/transaction_black.png \
@@ -335,17 +338,55 @@ RES_IMAGES = \
   qt/res/images/about.png \
   qt/res/images/splash.png \
   qt/res/images/splash_testnet.png \
-  qt/res/images/downArrow_small_dark.png \
-  qt/res/images/downArrow_small.png \
-  qt/res/images/upArrow_small_dark.png \
-  qt/res/images/upArrow_small.png \
-  qt/res/images/leftArrow_small_dark.png \
-  qt/res/images/rightArrow_small_dark.png \
   qt/res/images/qtreeview_selected.png \
-  qt/res/images/walletFrame.png
+  qt/res/images/downArrow_normal.png \
+  qt/res/images/downArrow_hover.png \
+  qt/res/images/upArrow_normal.png \
+  qt/res/images/upArrow_hover.png \
+  qt/res/images/rightArrow_normal.png \
+  qt/res/images/rightArrow_hover.png \
+  qt/res/images/downArrow_normal_small.png \
+  qt/res/images/downArrow_hover_small.png \
+  qt/res/images/upArrow_normal_small.png \
+  qt/res/images/upArrow_hover_small.png \
+  qt/res/images/rightArrow_normal_small.png \
+  qt/res/images/rightArrow_hover_small.png  \
+  qt/res/images/rightArrow_normal_small.png \
+  qt/res/images/checkbox_normal.png \
+  qt/res/images/checkbox_normal_hover.png \
+  qt/res/images/checkbox_normal_pressed.png \
+  qt/res/images/checkbox_checked.png \
+  qt/res/images/checkbox_partly_checked.png \
+  qt/res/images/checkbox_checked_hover.png \
+  qt/res/images/checkbox_checked_pressed.png \
+  qt/res/images/checkbox_disabled.png \
+  qt/res/images/checkbox_disabled_checked.png \
+  qt/res/images/radio_normal.png \
+  qt/res/images/radio_normal_hover.png \
+  qt/res/images/radio_normal_pressed.png \
+  qt/res/images/radio_checked.png \
+  qt/res/images/radio_checked_hover.png \
+  qt/res/images/radio_checked_pressed.png \
+  qt/res/images/radio_disabled.png \
+  qt/res/images/radio_disabled_checked.png
 
 RES_CSS = \
   qt/res/css/default.css
+
+RES_TEXT = \
+  qt/res/fonts/Montserrat/Montserrat-Bold.ttf \
+  qt/res/fonts/Montserrat/Montserrat-ExtraLight.ttf \
+  qt/res/fonts/Montserrat/Montserrat-Italic.ttf \
+  qt/res/fonts/Montserrat/Montserrat-Light.ttf \
+  qt/res/fonts/Montserrat/Montserrat-Medium.ttf \
+  qt/res/fonts/Montserrat/Montserrat-Regular.ttf \
+  qt/res/fonts/Montserrat/Montserrat-Thin.ttf \
+  qt/res/fonts/Lato/Lato-Black.ttf \
+  qt/res/fonts/Lato/Lato-Bold.ttf \
+  qt/res/fonts/Lato/Lato-Hairline.ttf \
+  qt/res/fonts/Lato/Lato-Italic.ttf \
+  qt/res/fonts/Lato/Lato-Light.ttf \
+  qt/res/fonts/Lato/Lato-Regular.ttf
 
 RES_MOVIES = $(wildcard $(srcdir)/qt/res/movies/spinner-*.png)
 

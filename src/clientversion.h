@@ -1,4 +1,5 @@
 // Copyright (c) 2009-2014 Bitcoin developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -63,6 +64,7 @@ extern const std::string CLIENT_DATE;
 
 std::string FormatVersion(int nVersion);
 std::string FormatFullVersion();
+std::string FormatCopyRightYears();
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
 
 #endif // WINDRES_PREPROC

@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -117,14 +117,14 @@ void Bip38ToolDialog::on_encryptKeyButton_ENC_clicked()
     QString qstrPassphrase = ui->passphraseIn_ENC->text();
     QString strInvalid;
     if (!isValidPassphrase(qstrPassphrase, strInvalid)) {
-        ui->statusLabel_ENC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_ENC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_ENC->setText(tr("The entered passphrase is invalid. ") + strInvalid + QString(" is not valid") + QString(" ") + tr("Allowed: 0-9,a-z,A-Z,") + specialChar);
         return;
     }
 
     CBitcoinAddress addr(ui->addressIn_ENC->text().toStdString());
     if (!addr.IsValid()) {
-        ui->statusLabel_ENC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_ENC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_ENC->setText(tr("The entered address is invalid.") + QString(" ") + tr("Please check the address and try again."));
         return;
     }
@@ -132,21 +132,21 @@ void Bip38ToolDialog::on_encryptKeyButton_ENC_clicked()
     CKeyID keyID;
     if (!addr.GetKeyID(keyID)) {
         ui->addressIn_ENC->setValid(false);
-        ui->statusLabel_ENC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_ENC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_ENC->setText(tr("The entered address does not refer to a key.") + QString(" ") + tr("Please check the address and try again."));
         return;
     }
 
     WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::BIP_38, true));
     if (!ctx.isValid()) {
-        ui->statusLabel_ENC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_ENC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_ENC->setText(tr("Wallet unlock was cancelled."));
         return;
     }
 
     CKey key;
     if (!pwalletMain->GetKey(keyID, key)) {
-        ui->statusLabel_ENC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_ENC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_ENC->setText(tr("Private key for the entered address is not available."));
         return;
     }
@@ -185,7 +185,7 @@ void Bip38ToolDialog::on_decryptKeyButton_DEC_clicked()
     uint256 privKey;
     bool fCompressed;
     if (!BIP38_Decrypt(strPassphrase, strKey, privKey, fCompressed)) {
-        ui->statusLabel_DEC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_DEC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_DEC->setText(tr("Failed to decrypt.") + QString(" ") + tr("Please check the key and passphrase and try again."));
         return;
     }
@@ -202,7 +202,7 @@ void Bip38ToolDialog::on_importAddressButton_DEC_clicked()
 {
     WalletModel::UnlockContext ctx(model->requestUnlock(AskPassphraseDialog::Context::BIP_38, true));
     if (!ctx.isValid()) {
-        ui->statusLabel_DEC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_DEC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_DEC->setText(tr("Wallet unlock was cancelled."));
         return;
     }
@@ -211,14 +211,14 @@ void Bip38ToolDialog::on_importAddressButton_DEC_clicked()
     CPubKey pubkey = key.GetPubKey();
 
     if (!address.IsValid() || !key.IsValid() || CBitcoinAddress(pubkey.GetID()).ToString() != address.ToString()) {
-        ui->statusLabel_DEC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_DEC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_DEC->setText(tr("Data Not Valid.") + QString(" ") + tr("Please try again."));
         return;
     }
 
     CKeyID vchAddress = pubkey.GetID();
     {
-        ui->statusLabel_DEC->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel_DEC->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel_DEC->setText(tr("Please wait while key is imported"));
 
         pwalletMain->MarkDirty();
@@ -226,7 +226,7 @@ void Bip38ToolDialog::on_importAddressButton_DEC_clicked()
 
         // Don't throw error in case a key is already there
         if (pwalletMain->HaveKey(vchAddress)) {
-            ui->statusLabel_DEC->setStyleSheet("QLabel { color: red; }");
+            ui->statusLabel_DEC->setStyleSheet("QLabel { color: #E1755A; }");
             ui->statusLabel_DEC->setText(tr("Key Already Held By Wallet"));
             return;
         }
@@ -234,7 +234,7 @@ void Bip38ToolDialog::on_importAddressButton_DEC_clicked()
         pwalletMain->mapKeyMetadata[vchAddress].nCreateTime = 1;
 
         if (!pwalletMain->AddKeyPubKey(key, pubkey)) {
-            ui->statusLabel_DEC->setStyleSheet("QLabel { color: red; }");
+            ui->statusLabel_DEC->setStyleSheet("QLabel { color: #E1755A; }");
             ui->statusLabel_DEC->setText(tr("Error Adding Key To Wallet"));
             return;
         }
@@ -244,7 +244,7 @@ void Bip38ToolDialog::on_importAddressButton_DEC_clicked()
         pwalletMain->ScanForWalletTransactions(chainActive.Genesis(), true);
     }
 
-    ui->statusLabel_DEC->setStyleSheet("QLabel { color: green; }");
+    ui->statusLabel_DEC->setStyleSheet("QLabel { color: #5ae16c; }");
     ui->statusLabel_DEC->setText(tr("Successfully Added Private Key To Wallet"));
 }
 

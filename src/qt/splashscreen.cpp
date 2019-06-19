@@ -1,5 +1,5 @@
 // Copyright (c) 2011-2015 Bitcoin developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -43,10 +43,10 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     // define text to place
     QString titleText       = tr(PACKAGE_NAME);
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightText   = QString::fromUtf8("MIT License\nCopyright (C) 2018-2019\nSwiftCash Developers");
+    QString copyrightText   = QString("MIT License\nCopyright (C) %1\nSwiftCash Developers").arg(QString::fromStdString(FormatCopyRightYears()));
     QString titleAddText    = networkStyle->getTitleAddText();
 
-    QString font            = QApplication::font().toString();
+    QString font            = "Lato"; //QApplication::font().toString();
 
     // create a bitmap according to device pixelratio
     QSize splashSize(480*devicePixelRatio,320*devicePixelRatio);
@@ -90,7 +90,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
 
     pixPaint.setFont(QFont(font, 15*fontFactor));
 
-    // if the version string is to long, reduce size
+    // if the version string is too long, reduce size
     fm = pixPaint.fontMetrics();
     int versionTextWidth  = fm.width(versionText);
     if(versionTextWidth > titleTextWidth+paddingRight-10) {
@@ -101,10 +101,10 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
 
     // draw copyright stuff
     {
-        pixPaint.setFont(QFont(font, 10*fontFactor));
+        pixPaint.setFont(QFont(font, 14*fontFactor));
         const int x = pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight;
         const int y = paddingTop+titleCopyrightVSpace;
-        QRect copyrightRect(x, y, pixmap.width() - x - paddingRight, pixmap.height() - y);
+        QRect copyrightRect(x, y, pixmap.width() - x - paddingRight, pixmap.height()*2 - y);
         pixPaint.drawText(copyrightRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, copyrightText);
     }
 

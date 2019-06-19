@@ -1,5 +1,5 @@
 // Copyright (c) 2017 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -216,7 +216,7 @@ void MultisigDialog::on_importAddressButton_clicked(){
     string sRedeem = ui->importRedeem->text().toStdString();
 
     if(sRedeem.empty()){
-        ui->addMultisigStatus->setStyleSheet("QLabel { color: red; }");
+        ui->addMultisigStatus->setStyleSheet("QLabel { color: #E1755A; }");
         ui->addMultisigStatus->setText("Import box empty!");
         return;
     }
@@ -269,7 +269,7 @@ bool MultisigDialog::addMultisig(int m, vector<string> keys){
                                        " has been added to the wallet.\nSend the redeem below for other owners to import:\n" +
                                        QString::fromStdString(redeem.ToString()));
     }catch(const runtime_error& e) {
-        ui->addMultisigStatus->setStyleSheet("QLabel { color: red; }");
+        ui->addMultisigStatus->setStyleSheet("QLabel { color: #E1755A; }");
         ui->addMultisigStatus->setText(tr(e.what()));
         return false;
     }
@@ -297,7 +297,7 @@ void MultisigDialog::on_createButton_clicked()
                 QWidget* input = qobject_cast<QWidget*>(ui->inputsList->itemAt(i)->widget());
                 QLineEdit* txIdLine = input->findChild<QLineEdit*>("txInputId");
                 if(txIdLine->text().isEmpty()){
-                    ui->createButtonStatus->setStyleSheet("QLabel { color: red; }");
+                    ui->createButtonStatus->setStyleSheet("QLabel { color: #E1755A; }");
                     ui->createButtonStatus->setText(tr("Invalid Tx Hash."));
                     return;
                 }
@@ -305,7 +305,7 @@ void MultisigDialog::on_createButton_clicked()
                 QSpinBox* txVoutLine = input->findChild<QSpinBox*>("txInputVout");
                 int nOutput = txVoutLine->value();
                 if(nOutput < 0){
-                    ui->createButtonStatus->setStyleSheet("QLabel { color: red; }");
+                    ui->createButtonStatus->setStyleSheet("QLabel { color: #E1755A; }");
                     ui->createButtonStatus->setText(tr("Vout position must be positive."));
                     return;
                 }
@@ -372,7 +372,7 @@ void MultisigDialog::on_createButton_clicked()
 
         }
     }catch(const runtime_error& e){
-        ui->createButtonStatus->setStyleSheet("QTextEdit{ color: red }");
+        ui->createButtonStatus->setStyleSheet("QTextEdit{ color: #E1755A }");
         ui->createButtonStatus->setText(tr(e.what()));
     }
 }
@@ -533,7 +533,7 @@ void MultisigDialog::on_signButton_clicked()
         ui->signButtonStatus->setText(buildMultisigTxStatusString(fComplete, tx));
 
     }catch(const runtime_error& e){
-        ui->signButtonStatus->setStyleSheet("QTextEdit{ color: red }");
+        ui->signButtonStatus->setStyleSheet("QTextEdit{ color: #E1755A }");
         ui->signButtonStatus->setText(tr(e.what()));
     }
 }
@@ -840,7 +840,7 @@ void MultisigDialog::on_addAddressButton_clicked()
 {
     //max addresses 15
     if(ui->addressList->count() >= 15){
-        ui->addMultisigStatus->setStyleSheet("QLabel { color: red; }");
+        ui->addMultisigStatus->setStyleSheet("QLabel { color: #E1755A; }");
         ui->addMultisigStatus->setText(tr("Maximum possible addresses reached. (15)"));
         return;
     }
@@ -1033,7 +1033,7 @@ void MultisigDialog::on_addPrivKeyButton_clicked()
     }
 
     if(ui->keyList->count() >= 15){
-        ui->signButtonStatus->setStyleSheet("QTextEdit{ color: red }");
+        ui->signButtonStatus->setStyleSheet("QTextEdit{ color: #E1755A }");
         ui->signButtonStatus->setText(tr("Maximum (15)"));
         return;
     }

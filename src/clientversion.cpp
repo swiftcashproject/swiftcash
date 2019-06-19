@@ -1,4 +1,5 @@
 // Copyright (c) 2012-2014 Bitcoin developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -89,6 +90,11 @@ std::string FormatVersion(int nVersion)
 std::string FormatFullVersion()
 {
     return FormatVersion(CLIENT_VERSION);
+}
+
+std::string FormatCopyRightYears()
+{
+    return strprintf("2018-%d", COPYRIGHT_YEAR);
 }
 
 /**

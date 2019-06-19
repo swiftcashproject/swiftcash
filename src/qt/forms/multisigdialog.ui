@@ -22,9 +22,6 @@
   <layout class="QVBoxLayout" name="verticalLayout_8">
    <item>
     <widget class="QTabWidget" name="multisigTabWidget">
-     <property name="styleSheet">
-      <string notr="true">QScrollArea{border: 1px solid #5b4c7c;}</string>
-     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -591,17 +588,6 @@ Please be patient after clicking import.</string>
       </layout>
      </widget>
      <widget class="QWidget" name="signMultisigTransaction">
-      <property name="styleSheet">
-       <string notr="true">txScrollArea:{
-	border: 1px solid #5b4c7c;
-}
-keyScrollArea:{
-	border: 1px solid #5b4c7c;
-}
-txScrollArea:{
-	border: 1px solid #5b4c7c;
-}</string>
-      </property>
       <attribute name="title">
        <string>&amp;Sign MultiSignature Tx</string>
       </attribute>

@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 Bitcoin developers
 // Copyright (c) 2017-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -238,7 +238,7 @@ void OptionsDialog::on_cancelButton_clicked()
 
 void OptionsDialog::showRestartWarning(bool fPersistent)
 {
-    ui->statusLabel->setStyleSheet("QLabel { color: red; }");
+    ui->statusLabel->setStyleSheet("QLabel { color: #E1755A; }");
 
     if (fPersistent) {
         ui->statusLabel->setText(tr("Client restart required to activate changes."));
@@ -264,14 +264,14 @@ void OptionsDialog::doProxyIpChecks(QValidatedLineEdit* pUiProxyIp, QLineEdit* p
     if (!(fProxyIpValid = LookupNumeric(strAddrProxy.c_str(), addrProxy))) {
         disableOkButton();
         pUiProxyIp->setValid(false);
-        ui->statusLabel->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel->setText(tr("The supplied proxy address is invalid."));
         return;
     }
     // Check proxy port
     if (!pUiProxyPort->hasAcceptableInput()){
         disableOkButton();
-        ui->statusLabel->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel->setText(tr("The supplied proxy port is invalid."));
         return;
     }
@@ -279,7 +279,7 @@ void OptionsDialog::doProxyIpChecks(QValidatedLineEdit* pUiProxyIp, QLineEdit* p
     proxyType checkProxy = proxyType(addrProxy);
     if (!checkProxy.IsValid()) {
         disableOkButton();
-        ui->statusLabel->setStyleSheet("QLabel { color: red; }");
+        ui->statusLabel->setStyleSheet("QLabel { color: #E1755A; }");
         ui->statusLabel->setText(tr("The supplied proxy settings are invalid."));
         return;
     }

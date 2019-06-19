@@ -83,7 +83,7 @@ private:
     WalletFrame* walletFrame;
 
     UnitDisplayStatusBarControl* unitDisplayControl;
-    QLabel* labelStakingIcon;
+    QPushButton* labelStakingIcon;
     QPushButton* labelEncryptionIcon;
     QPushButton* labelConnectionsIcon;
     QLabel* labelBlocksIcon;

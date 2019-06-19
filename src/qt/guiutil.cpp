@@ -60,7 +60,6 @@
 #include <QUrlQuery>
 #include <QMouseEvent>
 
-
 #if BOOST_FILESYSTEM_VERSION >= 3
 static boost::filesystem::detail::utf8_codecvt_facet utf8;
 #endif

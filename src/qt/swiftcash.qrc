@@ -1,6 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/icons">
-        <file alias="bitcoin">res/icons/swiftcash.png</file>
+        <file alias="about_qt">res/icons/about_qt.png</file>
+        <file alias="swiftcash">res/icons/swiftcash.png</file>
         <file alias="address-book">res/icons/address-book.png</file>
         <file alias="address-book_black">res/icons/address-book_black.png</file>
         <file alias="quit">res/icons/quit.png</file>
@@ -12,6 +13,7 @@
         <file alias="connect_2">res/icons/connect2_16.png</file>
         <file alias="connect_3">res/icons/connect3_16.png</file>
         <file alias="connect_4">res/icons/connect4_16.png</file>
+        <file alias="verify">res/icons/verify.png</file>
         <file alias="transaction_0">res/icons/transaction0.png</file>
         <file alias="transaction_confirmed">res/icons/transaction2.png</file>
         <file alias="transaction_black">res/icons/transaction_black.png</file>
@@ -33,8 +35,9 @@
         <file alias="editpaste_black">res/icons/editpaste_black.png</file>
         <file alias="explorer">res/icons/explorer.png</file>
         <file alias="editcopy">res/icons/editcopy.png</file>
+        <file alias="info">res/icons/info.png</file>
         <file alias="add">res/icons/add.png</file>
-        <file alias="bitcoin_testnet">res/icons/swiftcash_testnet.png</file>
+        <file alias="swiftcash_testnet">res/icons/swiftcash_testnet.png</file>
         <file alias="edit">res/icons/edit.png</file>
         <file alias="edit_black">res/icons/edit_black.png</file>
         <file alias="history">res/icons/history.png</file>
@@ -72,16 +75,39 @@
     </qresource>
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
-        <file alias="downArrow_small">res/images/downArrow_small_dark.png</file>
-        <file alias="downArrow_small_white">res/images/downArrow_small.png</file>
-        <file alias="upArrow_small">res/images/upArrow_small_dark.png</file>
-        <file alias="upArrow_small_white">res/images/upArrow_small.png</file>
-        <file alias="leftArrow_small">res/images/leftArrow_small_dark.png</file>
-        <file alias="rightArrow_small">res/images/rightArrow_small_dark.png</file>
         <file alias="qtreeview_selected">res/images/qtreeview_selected.png</file>
-        <file alias="walletFrame">res/images/walletFrame.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
+        <file alias="downArrow_normal">res/images/downArrow_normal.png</file>
+        <file alias="downArrow_hover">res/images/downArrow_hover.png</file>
+        <file alias="upArrow_normal">res/images/upArrow_normal.png</file>
+        <file alias="upArrow_hover">res/images/upArrow_hover.png</file>
+        <file alias="rightArrow_normal">res/images/rightArrow_normal.png</file>
+        <file alias="rightArrow_hover">res/images/rightArrow_hover.png</file>
+        <file alias="downArrow_normal_small">res/images/downArrow_normal_small.png</file>
+        <file alias="downArrow_hover_small">res/images/downArrow_hover_small.png</file>
+        <file alias="upArrow_normal_small">res/images/upArrow_normal_small.png</file>
+        <file alias="upArrow_hover_small">res/images/upArrow_hover_small.png</file>
+        <file alias="rightArrow_normal_small">res/images/rightArrow_normal_small.png</file>
+        <file alias="rightArrow_hover_small">res/images/rightArrow_hover_small.png</file>
+        <file alias="checkbox_normal">res/images/checkbox_normal.png</file>
+        <file alias="checkbox_normal_hover">res/images/checkbox_normal_hover.png</file>
+        <file alias="checkbox_normal_pressed">res/images/checkbox_normal_pressed.png</file>
+        <file alias="checkbox_checked">res/images/checkbox_checked.png</file>
+        <file alias="checkbox_partly_checked">res/images/checkbox_partly_checked.png</file>
+        <file alias="checkbox_checked_hover">res/images/checkbox_checked_hover.png</file>
+        <file alias="checkbox_checked_pressed">res/images/checkbox_checked_pressed.png</file>
+        <file alias="checkbox_disabled">res/images/checkbox_disabled.png</file>
+        <file alias="checkbox_disabled_checked">res/images/checkbox_disabled_checked.png</file>
+        <file alias="radio_normal">res/images/radio_normal.png</file>
+        <file alias="radio_normal_hover">res/images/radio_normal_hover.png</file>
+        <file alias="radio_normal_pressed">res/images/radio_normal_pressed.png</file>
+        <file alias="radio_checked">res/images/radio_checked.png</file>
+        <file alias="radio_checked_hover">res/images/radio_checked_hover.png</file>
+        <file alias="radio_checked_pressed">res/images/radio_checked_pressed.png</file>
+        <file alias="radio_disabled">res/images/radio_disabled.png</file>
+        <file alias="radio_disabled_checked">res/images/radio_disabled_checked.png</file>
+
     </qresource>
     <qresource prefix="/movies">
         <file alias="spinner-000">res/movies/spinner-000.png</file>
@@ -119,5 +145,20 @@
         <file alias="spinner-032">res/movies/spinner-032.png</file>
         <file alias="spinner-033">res/movies/spinner-033.png</file>
         <file alias="spinner-034">res/movies/spinner-034.png</file>
+    </qresource>
+    <qresource prefix="/fonts">
+    <file alias="Montserrat-Bold">res/fonts/Montserrat/Montserrat-Bold.ttf</file>
+    <file alias="Montserrat-ExtraLight">res/fonts/Montserrat/Montserrat-ExtraLight.ttf</file>
+    <file alias="Montserrat-Italic">res/fonts/Montserrat/Montserrat-Italic.ttf</file>
+    <file alias="Montserrat-Light">res/fonts/Montserrat/Montserrat-Light.ttf</file>
+    <file alias="Montserrat-Medium">res/fonts/Montserrat/Montserrat-Medium.ttf</file>
+    <file alias="Montserrat-Regular">res/fonts/Montserrat/Montserrat-Regular.ttf</file>
+    <file alias="Montserrat-Thin">res/fonts/Montserrat/Montserrat-Thin.ttf</file>
+    <file alias="Lato-Black">res/fonts/Lato/Lato-Black.ttf</file>
+    <file alias="Lato-Bold">res/fonts/Lato/Lato-Bold.ttf</file>
+    <file alias="Lato-Hairline">res/fonts/Lato/Lato-Hairline.ttf</file>
+    <file alias="Lato-Italic">res/fonts/Lato/Lato-Italic.ttf</file>
+    <file alias="Lato-Light">res/fonts/Lato/Lato-Light.ttf</file>
+    <file alias="Lato-Regular">res/fonts/Lato/Lato-Regular.ttf</file>
     </qresource>
 </RCC>

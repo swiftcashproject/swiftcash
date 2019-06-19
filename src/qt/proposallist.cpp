@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -109,6 +109,7 @@ ProposalList::ProposalList(   QWidget *parent) :
     hlayout->addWidget(noVotesWidget);
 
     abstainVotesWidget = new QLineEdit(this);
+    abstainVotesWidget->setMaximumWidth(10);
     abstainVotesWidget->setAttribute(Qt::WA_MacShowFocusRect, 0);
 #if QT_VERSION >= 0x040700
     abstainVotesWidget->setPlaceholderText(tr("Min abstain votes"));
@@ -134,7 +135,7 @@ ProposalList::ProposalList(   QWidget *parent) :
     labelOverviewHeaderLeft->setObjectName(QStringLiteral("labelOverviewHeaderLeft"));
     labelOverviewHeaderLeft->setMinimumSize(QSize(464, 60));
     labelOverviewHeaderLeft->setMaximumSize(QSize(16777215, 60));
-    labelOverviewHeaderLeft->setText(tr("Proposals"));
+    labelOverviewHeaderLeft->setText(tr("PROPOSALS"));
     QFont fontHeaderLeft;
     fontHeaderLeft.setPointSize(20);
     fontHeaderLeft.setBold(true);

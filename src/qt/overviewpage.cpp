@@ -41,6 +41,8 @@ public:
     {
         painter->save();
 
+	painter->setFont(QFont("Lato"));
+
         QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
         QRect mainRect = option.rect;
         mainRect.moveLeft(ICON_OFFSET);
