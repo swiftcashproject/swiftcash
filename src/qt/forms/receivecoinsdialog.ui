@@ -18,7 +18,7 @@
      </property>
      <item>
       <widget class="QFrame" name="frame_Header">
-       <layout class="QVBoxLayout" name="verticalLayout_Header" stretch="0">
+       <layout class="QVBoxLayout" name="verticalLayout_8" stretch="0">
         <property name="leftMargin">
          <number>0</number>
         </property>
@@ -66,7 +66,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_Header">
+           <spacer name="horizontalSpacer_3">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>

@@ -123,6 +123,7 @@ ProposalList::ProposalList(   QWidget *parent) :
     votesNeededWidget->setObjectName("votesNeededWidget");
     votesNeededWidget->setAlignment(Qt::AlignCenter);
     votesNeededWidget->setContentsMargins(0,0,0,0);
+    votesNeededWidget->hide();
     hlayout->addWidget(votesNeededWidget);
 
     QVBoxLayout *vlayout = new QVBoxLayout(this);
@@ -249,6 +250,9 @@ ProposalList::ProposalList(   QWidget *parent) :
     proposalList->setColumnWidth(ProposalTableModel::NoVotes, NO_VOTES_COLUMN_WIDTH);
     proposalList->setColumnWidth(ProposalTableModel::AbstainVotes, ABSTAIN_COLUMN_WIDTH);
     proposalList->setColumnWidth(ProposalTableModel::VotesNeeded, VOTES_NEEDED_COLUMN_WIDTH);
+
+
+    proposalList->setColumnHidden(ProposalTableModel::VotesNeeded, true);
 
     columnResizingFixer = new GUIUtil::TableViewLastColumnResizingFixer(proposalList, PROPOSAL_COLUMN_WIDTH, MINIMUM_COLUMN_WIDTH);
 
