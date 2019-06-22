@@ -1,6 +1,6 @@
 // Copyright (c) 2011-2013 Bitcoin developers
 // Copyright (c) 2017 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -462,7 +462,7 @@ void TransactionView::computeSum()
         amount += index.data(TransactionTableModel::AmountRole).toLongLong();
     }
     QString strAmount(BitcoinUnits::formatWithUnit(nDisplayUnit, amount, true, BitcoinUnits::separatorNever));
-    if (amount < 0) strAmount = "<span style='color:red;'>" + strAmount + "</span>";
+    if (amount < 0) strAmount = "<span style='color: #E1755A;'>" + strAmount + "</span>";
     emit trxAmount(strAmount);
 }
 
