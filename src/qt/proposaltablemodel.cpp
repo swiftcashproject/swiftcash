@@ -200,9 +200,9 @@ QVariant ProposalTableModel::data(const QModelIndex &index, int role) const
     case Qt::ForegroundRole:
         if(index.column() == VotesNeeded) {
             if(rec->votesNeeded > 0) {
-                return COLOR_NEGATIVE;
+                return QColor(225, 117, 90);
             } else {
-                return QColor(23, 168, 26);
+                return QColor(90, 225, 108);
             }
         }
 
