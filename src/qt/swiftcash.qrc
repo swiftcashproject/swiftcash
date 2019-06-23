@@ -107,7 +107,6 @@
         <file alias="radio_checked_pressed">res/images/radio_checked_pressed.png</file>
         <file alias="radio_disabled">res/images/radio_disabled.png</file>
         <file alias="radio_disabled_checked">res/images/radio_disabled_checked.png</file>
-
     </qresource>
     <qresource prefix="/movies">
         <file alias="spinner-000">res/movies/spinner-000.png</file>
@@ -147,18 +146,18 @@
         <file alias="spinner-034">res/movies/spinner-034.png</file>
     </qresource>
     <qresource prefix="/fonts">
-    <file alias="Montserrat-Bold">res/fonts/Montserrat/Montserrat-Bold.ttf</file>
-    <file alias="Montserrat-ExtraLight">res/fonts/Montserrat/Montserrat-ExtraLight.ttf</file>
-    <file alias="Montserrat-Italic">res/fonts/Montserrat/Montserrat-Italic.ttf</file>
-    <file alias="Montserrat-Light">res/fonts/Montserrat/Montserrat-Light.ttf</file>
-    <file alias="Montserrat-Medium">res/fonts/Montserrat/Montserrat-Medium.ttf</file>
-    <file alias="Montserrat-Regular">res/fonts/Montserrat/Montserrat-Regular.ttf</file>
-    <file alias="Montserrat-Thin">res/fonts/Montserrat/Montserrat-Thin.ttf</file>
-    <file alias="Lato-Black">res/fonts/Lato/Lato-Black.ttf</file>
-    <file alias="Lato-Bold">res/fonts/Lato/Lato-Bold.ttf</file>
-    <file alias="Lato-Hairline">res/fonts/Lato/Lato-Hairline.ttf</file>
-    <file alias="Lato-Italic">res/fonts/Lato/Lato-Italic.ttf</file>
-    <file alias="Lato-Light">res/fonts/Lato/Lato-Light.ttf</file>
-    <file alias="Lato-Regular">res/fonts/Lato/Lato-Regular.ttf</file>
+        <file alias="Montserrat-Bold">res/fonts/Montserrat/Montserrat-Bold.ttf</file>
+        <file alias="Montserrat-ExtraLight">res/fonts/Montserrat/Montserrat-ExtraLight.ttf</file>
+        <file alias="Montserrat-Italic">res/fonts/Montserrat/Montserrat-Italic.ttf</file>
+        <file alias="Montserrat-Light">res/fonts/Montserrat/Montserrat-Light.ttf</file>
+        <file alias="Montserrat-Medium">res/fonts/Montserrat/Montserrat-Medium.ttf</file>
+        <file alias="Montserrat-Regular">res/fonts/Montserrat/Montserrat-Regular.ttf</file>
+        <file alias="Montserrat-Thin">res/fonts/Montserrat/Montserrat-Thin.ttf</file>
+        <file alias="Lato-Black">res/fonts/Lato/Lato-Black.ttf</file>
+        <file alias="Lato-Bold">res/fonts/Lato/Lato-Bold.ttf</file>
+        <file alias="Lato-Hairline">res/fonts/Lato/Lato-Hairline.ttf</file>
+        <file alias="Lato-Italic">res/fonts/Lato/Lato-Italic.ttf</file>
+        <file alias="Lato-Light">res/fonts/Lato/Lato-Light.ttf</file>
+        <file alias="Lato-Regular">res/fonts/Lato/Lato-Regular.ttf</file>
     </qresource>
 </RCC>
