@@ -466,7 +466,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     changePassphraseAction->setStatusTip(tr("Change the passphrase used for wallet encryption"));
     unlockWalletAction = new QAction(QIcon(":/icons/lock_open"), tr("&Unlock Wallet..."), this);
     unlockWalletAction->setToolTip(tr("Unlock wallet"));
-    lockWalletAction = new QAction(tr("&Lock Wallet"), this);
+    lockWalletAction = new QAction(QIcon(":/icons/lock_closed"), tr("&Lock Wallet"), this);
     signMessageAction = new QAction(QIcon(":/icons/edit_black"), tr("Sign &Message..."), this);
     signMessageAction->setStatusTip(tr("Sign messages with your SWIFT addresses to prove you own them"));
     verifyMessageAction = new QAction(QIcon(":/icons/transaction_black"), tr("&Verify Message..."), this);

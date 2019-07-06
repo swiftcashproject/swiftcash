@@ -1469,6 +1469,11 @@ QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::indicator {
 	/* Coin Control Widget Checkbox */
 }
 
+QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::item:selected { /* Coin Control Item (selected) */
+        background-color: #707780;
+        color: #232323;
+}
+
 
 /**************************** RECEIVE COINS *********************************************/
 

@@ -1,4 +1,4 @@
-swiftcash (2.1.0-xenial1) xenial; urgency=medium
+v2.1.0
 
   * Added BIP65 aka OP_CHECKLOCKTIMEVERIFY Soft Fork
   * Enhanced the GUI of the QT Wallet
