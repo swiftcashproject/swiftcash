@@ -302,7 +302,7 @@ UniValue getaddressesbyaccount(const UniValue& params, bool fHelp)
     return ret;
 }
 
-void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew, bool fUseIX = false)
+void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, bool fUseIX = false)
 {
     // Check amount
     if (nValue <= 0)
@@ -324,7 +324,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
     // Create and send the transaction
     CReserveKey reservekey(pwalletMain);
     CAmount nFeeRequired;
-    if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, wtxNew, reservekey, nFeeRequired, strError, NULL, ALL_COINS, fUseIX, (CAmount)0)) {
+    if (!pwalletMain->CreateTransaction(scriptPubKey, nValue, fSubtractFeeFromAmount, wtxNew, reservekey, nFeeRequired, strError, NULL, ALL_COINS, fUseIX, (CAmount)0)) {
         if (nValue + nFeeRequired > pwalletMain->GetBalance())
             strError = strprintf("Error: This transaction requires a transaction fee of at least %s because of its amount, complexity, or use of recently received funds!", FormatMoney(nFeeRequired));
         LogPrintf("SendMoney() : %s\n", strError);
@@ -336,21 +336,23 @@ void SendMoney(const CTxDestination& address, CAmount nValue, CWalletTx& wtxNew,
 
 UniValue sendtoaddress(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2 || params.size() > 4)
+    if (fHelp || params.size() < 2 || params.size() > 5)
         throw runtime_error(
-            "sendtoaddress \"swiftaddress\" amount ( \"comment\" \"comment-to\" )\n"
+            "sendtoaddress \"swiftaddress\" amount ( \"comment\" \"comment-to\" \"subtractfeefromamount\" )\n"
             "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
-            "1. \"swiftaddress\"  (string, required) The swift address to send to.\n"
-            "2. \"amount\"      (numeric, required) The amount in btc to send. eg 0.1\n"
-            "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
-            "                             This is not part of the transaction, just kept in your wallet.\n"
-            "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
-            "                             to which you're sending the transaction. This is not part of the \n"
-            "                             transaction, just kept in your wallet.\n"
+            "1. \"swiftaddress\"           (string, required) The swift address to send to.\n"
+            "2. \"amount\"                 (numeric, required) The amount in btc to send. eg 0.1\n"
+            "3. \"comment\"                (string, optional) A comment used to store what the transaction is for. \n"
+            "                               This is not part of the transaction, just kept in your wallet.\n"
+            "4. \"comment-to\"             (string, optional) A comment to store the name of the person or organization \n"
+            "                               to which you're sending the transaction. This is not part of the \n"
+            "                               transaction, just kept in your wallet.\n"
+            "5. \"subtractfeefromamount\"  (bool, optional, default=false) The fee will be deducted from the amount being sent.\n"
+            "                               The recipient will receive less swiftcash than you enter in the amount field.\n"
             "\nResult:\n"
-            "\"transactionid\"  (string) The transaction id.\n"
+            "\"transactionid\"             (string) The transaction id.\n"
             "\nExamples:\n" +
             HelpExampleCli("sendtoaddress", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1") +
             HelpExampleCli("sendtoaddress", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1 \"donation\" \"seans outpost\"") +
@@ -372,30 +374,36 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp)
     if (params.size() > 3 && !params[3].isNull() && !params[3].get_str().empty())
         wtx.mapValue["to"] = params[3].get_str();
 
+    bool fSubtractFeeFromAmount = false;
+    if (params.size() > 4)
+        fSubtractFeeFromAmount = params[4].get_bool();
+
     EnsureWalletIsUnlocked();
 
-    SendMoney(address.Get(), nAmount, wtx);
+    SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx);
 
     return wtx.GetHash().GetHex();
 }
 
 UniValue sendtoaddressix(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() < 2 || params.size() > 4)
+    if (fHelp || params.size() < 2 || params.size() > 5)
         throw runtime_error(
-            "sendtoaddressix \"swiftaddress\" amount ( \"comment\" \"comment-to\" )\n"
+            "sendtoaddressix \"swiftaddress\" amount ( \"comment\" \"comment-to\" \"subtractfeefromamount\" )\n"
             "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
-            "1. \"swiftaddress\"  (string, required) The swift address to send to.\n"
-            "2. \"amount\"      (numeric, required) The amount in swift to send. eg 0.1\n"
-            "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
-            "                             This is not part of the transaction, just kept in your wallet.\n"
-            "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
-            "                             to which you're sending the transaction. This is not part of the \n"
-            "                             transaction, just kept in your wallet.\n"
+            "1. \"swiftaddress\"           (string, required) The swift address to send to.\n"
+            "2. \"amount\"                 (numeric, required) The amount in swift to send. eg 0.1\n"
+            "3. \"comment\"                (string, optional) A comment used to store what the transaction is for. \n"
+            "                               This is not part of the transaction, just kept in your wallet.\n"
+            "4. \"comment-to\"             (string, optional) A comment to store the name of the person or organization \n"
+            "                               to which you're sending the transaction. This is not part of the \n"
+            "                               transaction, just kept in your wallet.\n"
+            "5. \"subtractfeefromamount\"  (bool, optional, default=false) The fee will be deducted from the amount being sent.\n"
+            "                               The recipient will receive less swiftcash than you enter in the amount field.\n"
             "\nResult:\n"
-            "\"transactionid\"  (string) The transaction id.\n"
+            "\"transactionid\"             (string) The transaction id.\n"
             "\nExamples:\n" +
             HelpExampleCli("sendtoaddressix", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1") +
             HelpExampleCli("sendtoaddressix", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1 \"donation\" \"seans outpost\"") +
@@ -417,9 +425,13 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp)
     if (params.size() > 3 && !params[3].isNull() && !params[3].get_str().empty())
         wtx.mapValue["to"] = params[3].get_str();
 
+    bool fSubtractFeeFromAmount = false;
+    if (params.size() > 4)
+        fSubtractFeeFromAmount = params[4].get_bool();
+
     EnsureWalletIsUnlocked();
 
-    SendMoney(address.Get(), nAmount, wtx, true);
+    SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx, true);
 
     return wtx.GetHash().GetHex();
 }
@@ -854,7 +866,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
     if (nAmount > nBalance)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, "Account has insufficient funds");
 
-    SendMoney(address.Get(), nAmount, wtx);
+    SendMoney(address.Get(), nAmount, false, wtx);
 
     return wtx.GetHash().GetHex();
 }
@@ -930,7 +942,7 @@ UniValue sendmany(const UniValue& params, bool fHelp)
     CReserveKey keyChange(pwalletMain);
     CAmount nFeeRequired = 0;
     string strFailReason;
-    bool fCreated = pwalletMain->CreateTransaction(vecSend, wtx, keyChange, nFeeRequired, strFailReason);
+    bool fCreated = pwalletMain->CreateTransaction(vecSend, false, wtx, keyChange, nFeeRequired, strFailReason);
     if (!fCreated)
         throw JSONRPCError(RPC_WALLET_INSUFFICIENT_FUNDS, strFailReason);
     if (!pwalletMain->CommitTransaction(wtx, keyChange))
@@ -1121,8 +1133,8 @@ UniValue listreceivedbyaddress(const UniValue& params, bool fHelp)
             "listreceivedbyaddress ( minconf includeempty includeWatchonly)\n"
             "\nList balances by receiving address.\n"
             "\nArguments:\n"
-            "1. minconf       (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
-            "2. includeempty  (numeric, optional, default=false) Whether to include addresses that haven't received any payments.\n"
+            "1. minconf          (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
+            "2. includeempty     (bool, optional, default=false) Whether to include addresses that haven't received any payments.\n"
             "3. includeWatchonly (bool, optional, default=false) Whether to include watchonly addresses (see 'importaddress').\n"
 
             "\nResult:\n"
@@ -1153,8 +1165,8 @@ UniValue listreceivedbyaccount(const UniValue& params, bool fHelp)
             "listreceivedbyaccount ( minconf includeempty includeWatchonly)\n"
             "\nList balances by account.\n"
             "\nArguments:\n"
-            "1. minconf      (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
-            "2. includeempty (boolean, optional, default=false) Whether to include accounts that haven't received any payments.\n"
+            "1. minconf          (numeric, optional, default=1) The minimum number of confirmations before payments are included.\n"
+            "2. includeempty     (bool, optional, default=false) Whether to include accounts that haven't received any payments.\n"
             "3. includeWatchonly (bool, optional, default=false) Whether to include watchonly addresses (see 'importaddress').\n"
 
             "\nResult:\n"

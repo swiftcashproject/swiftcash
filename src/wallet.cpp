@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1779,7 +1779,7 @@ bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useI
     vecSend.push_back(make_pair(scriptChange, trxFee));
 
     CCoinControl* coinControl = NULL;
-    bool success = CreateTransaction(vecSend, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0);
+    bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0);
     if (!success) {
         LogPrintf("GetBudgetSystemCollateralTX: Error - %s\n", strFail);
         return false;
@@ -1804,6 +1804,7 @@ bool CWallet::ConvertList(std::vector<CTxIn> vCoins, std::vector<CAmount>& vecAm
 }
 
 bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
+    bool fSubtractFeeFromAmount,
     CWalletTx& wtxNew,
     CReserveKey& reservekey,
     CAmount& nFeeRet,
@@ -1815,6 +1816,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     if (useIX && nFeePay < CENT / 5) nFeePay = CENT / 5; // Minimum fee for ix is 0.002 SWIFT
 
     CAmount nValue = 0;
+    unsigned int nSubtractFeeFromAmount = 0;
 
     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
         if (nValue < 0) {
@@ -1822,6 +1824,10 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
             return false;
         }
         nValue += s.second;
+
+        if(fSubtractFeeFromAmount) {
+            nSubtractFeeFromAmount++;
+	}
     }
     if (vecSend.empty() || nValue < 0) {
         strFailReason = _("Transaction amounts must be positive");
@@ -1835,34 +1841,47 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     {
         LOCK2(cs_main, cs_wallet);
         {
-            nFeeRet = 0;
+            nFeeRet = payTxFee.GetFeePerK();
             if (nFeePay > 0) nFeeRet = nFeePay;
             while (true) {
                 txNew.vin.clear();
                 txNew.vout.clear();
                 wtxNew.fFromMe = true;
+                bool fFirst = true;
 
-                CAmount nTotalValue = nValue + nFeeRet;
+                CAmount nValueToSelect = nValue;
+                if (nSubtractFeeFromAmount == 0)
+                    nValueToSelect += nFeeRet;
                 double dPriority = 0;
 
                 // vouts to the payees
-                if (coinControl && !coinControl->fSplitBlock) {
+                if (!coinControl || !coinControl->fSplitBlock) {
                     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
                         CTxOut txout(s.second, s.first);
+                        if (fSubtractFeeFromAmount) {
+                            txout.nValue -= nFeeRet / nSubtractFeeFromAmount; // Subtract fee equally from each selected recipient
+
+                            if (fFirst) { // first receiver pays the remainder not divisible by output count
+                               fFirst = false;
+                               txout.nValue -= nFeeRet % nSubtractFeeFromAmount;
+                            }
+                        }
+
                         if (txout.IsDust(::minRelayTxFee)) {
-                            strFailReason = _("Transaction amount too small");
+                            if (fSubtractFeeFromAmount && nFeeRet > 0) {
+                               if (txout.nValue < 0)
+                                  strFailReason = _("The transaction amount is too small to pay the fee");
+                               else
+                                  strFailReason = _(
+                                        "The transaction amount is too small to send after the fee has been deducted");
+                            } else
+                               strFailReason = _("Transaction amount too small");
                             return false;
                         }
                         txNew.vout.push_back(txout);
                     }
-                } else //UTXO Splitter Transaction
-                {
-                    int nSplitBlock;
-
-                    if (coinControl)
-                        nSplitBlock = coinControl->nSplitBlock;
-                    else
-                        nSplitBlock = 1;
+                } else { //UTXO Splitter Transaction
+                    int nSplitBlock = coinControl->nSplitBlock;
 
                     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
                         for (int i = 0; i < nSplitBlock; i++) {
@@ -1879,7 +1898,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 set<pair<const CWalletTx*, unsigned int> > setCoins;
                 CAmount nValueIn = 0;
 
-                if (!SelectCoins(nTotalValue, setCoins, nValueIn, coinControl, coin_type, useIX)) {
+                if (!SelectCoins(nValueToSelect, setCoins, nValueIn, coinControl, coin_type, useIX)) {
                     if (coin_type == ALL_COINS) {
                         strFailReason = _("Insufficient funds.");
                     } else if (coin_type == ONLY_NOT10000IFMN) {
@@ -1906,7 +1925,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     dPriority += (double)nCredit * age;
                 }
 
-                CAmount nChange = nValueIn - nValue - nFeeRet;
+                CAmount nChange = nValueIn - nValueToSelect;
 
                 if (nChange > 0) {
                     // Fill a vout to ourself
@@ -1934,7 +1953,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
 
                     // no coin control: send change to newly generated address
                     else {
-                        // Note: We use a new key here to keep it from being obvious which side is the change.
+                        //  Note: We use a new key here to keep it from being obvious which side is the change.
                         //  The drawback is that by not reusing a previous key, the change may be lost if a
                         //  backup is restored, if the backup doesn't have the new private key for the change.
                         //  If we reused the old key, it would be possible to add code to look for and
@@ -2025,11 +2044,11 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     return true;
 }
 
-bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay)
+bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl, AvailableCoinsType coin_type, bool useIX, CAmount nFeePay)
 {
     vector<pair<CScript, CAmount> > vecSend;
     vecSend.push_back(make_pair(scriptPubKey, nValue));
-    return CreateTransaction(vecSend, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type, useIX, nFeePay);
+    return CreateTransaction(vecSend, fSubtractFeeFromAmount, wtxNew, reservekey, nFeeRet, strFailReason, coinControl, coin_type, useIX, nFeePay);
 }
 
 // swiftcash: create coin stake transaction
@@ -3035,7 +3054,7 @@ void CWallet::AutoCombineDust()
         // 10% safety margin to avoid "Insufficient funds" errors
         vecSend[0].second = nTotalRewardsValue - (nTotalRewardsValue / 10);
 
-        if (!CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_COINS, false, CAmount(0))) {
+        if (!CreateTransaction(vecSend, false, wtx, keyChange, nFeeRet, strErr, coinControl, ALL_COINS, false, CAmount(0))) {
             LogPrintf("AutoCombineDust createtransaction failed, reason: %s\n", strErr);
             continue;
         }
@@ -3126,7 +3145,7 @@ bool CWallet::MultiSend()
         //get the fee amount
         CWalletTx wtxdummy;
         string strErr;
-        CreateTransaction(vecSend, wtxdummy, keyChange, nFeeRet, strErr, &cControl, ALL_COINS, false, CAmount(0));
+        CreateTransaction(vecSend, false, wtxdummy, keyChange, nFeeRet, strErr, &cControl, ALL_COINS, false, CAmount(0));
         CAmount nLastSendAmount = vecSend[vecSend.size() - 1].second;
         if (nLastSendAmount < nFeeRet + 500) {
             LogPrintf("%s: fee of %d is too large to insert into last output\n", __func__, nFeeRet + 500);
@@ -3135,7 +3154,7 @@ bool CWallet::MultiSend()
         vecSend[vecSend.size() - 1].second = nLastSendAmount - nFeeRet - 500;
 
         // Create the transaction and commit it to the network
-        if (!CreateTransaction(vecSend, wtx, keyChange, nFeeRet, strErr, &cControl, ALL_COINS, false, CAmount(0))) {
+        if (!CreateTransaction(vecSend, false, wtx, keyChange, nFeeRet, strErr, &cControl, ALL_COINS, false, CAmount(0))) {
             LogPrintf("MultiSend createtransaction failed\n");
             return false;
         }

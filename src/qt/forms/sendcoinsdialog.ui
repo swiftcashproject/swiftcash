@@ -1003,6 +1003,29 @@
                 <number>5</number>
                </property>
                <item>
+                <layout class="QHBoxLayout" name="horizontalLayoutFee7">
+                 <item>
+                  <widget class="QCheckBox" name="checkSubtractFeeFromAmount">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>85</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="toolTip">
+                    <string>The fee will be deducted from the amount being sent.</string>
+                   </property>
+                   <property name="text">
+                    <string>Subtract Fee From Amount</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayoutFee9">
                  <item>
                   <widget class="QCheckBox" name="checkSwiftTX">

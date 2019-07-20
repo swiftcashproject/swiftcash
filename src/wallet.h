@@ -1,9 +1,8 @@
-
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -389,8 +388,8 @@ public:
     CAmount GetUnconfirmedWatchOnlyBalance() const;
     CAmount GetImmatureWatchOnlyBalance() const;
     CAmount GetLockedWatchOnlyBalance() const;
-    bool CreateTransaction(CScript scriptPubKey, int64_t nValue, CWalletTx& wtxNew, CReserveKey& reservekey, int64_t& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl);
     bool CreateTransaction(const std::vector<std::pair<CScript, CAmount> >& vecSend,
+        bool fSubtractFeeFromAmount,
         CWalletTx& wtxNew,
         CReserveKey& reservekey,
         CAmount& nFeeRet,
@@ -399,7 +398,7 @@ public:
         AvailableCoinsType coin_type = ALL_COINS,
         bool useIX = false,
         CAmount nFeePay = 0);
-    bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_COINS, bool useIX = false, CAmount nFeePay = 0);
+    bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_COINS, bool useIX = false, CAmount nFeePay = 0);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     bool AddAccountingEntry(const CAccountingEntry&, CWalletDB & pwalletdb);
     bool ConvertList(std::vector<CTxIn> vCoins, std::vector<int64_t>& vecAmounts);

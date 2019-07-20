@@ -75,6 +75,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent, Qt::WindowSy
     }
 
     connect(ui->checkSwiftTX, SIGNAL(stateChanged(int)), this, SLOT(updateSwiftTX()));
+    connect(ui->checkSubtractFeeFromAmount, SIGNAL(stateChanged(int)), this, SLOT(coinControlUpdateLabels()));
 
     // Coin Control: clipboard actions
     QAction* clipboardQuantityAction = new QAction(tr("Copy quantity"), this);
@@ -272,6 +273,11 @@ void SendCoinsDialog::on_sendButton_clicked()
         recipients[0].useSwiftTX = false;
     }
 
+    recipients[0].fSubtractFeeFromAmount = false;
+    if (ui->checkSubtractFeeFromAmount->isChecked()) {
+        recipients[0].fSubtractFeeFromAmount = true;
+    }
+
 
     // Format confirmation message
     QStringList formatted;
@@ -334,6 +340,11 @@ void SendCoinsDialog::on_sendButton_clicked()
 
 void SendCoinsDialog::send(QList<SendCoinsRecipient> recipients, QString strFee, QStringList formatted)
 {
+    recipients[0].fSubtractFeeFromAmount = false;
+    if (ui->checkSubtractFeeFromAmount->isChecked()) {
+        recipients[0].fSubtractFeeFromAmount = true;
+    }
+
     // prepare transaction for getting txFee earlier
     WalletModelTransaction currentTransaction(recipients);
     WalletModel::SendCoinsReturn prepareStatus;
@@ -360,7 +371,12 @@ void SendCoinsDialog::send(QList<SendCoinsRecipient> recipients, QString strFee,
         questionString.append("<hr /><span style='color:#E1755A;'>");
         questionString.append(BitcoinUnits::formatHtmlWithUnit(model->getOptionsModel()->getDisplayUnit(), txFee));
         questionString.append("</span> ");
-        questionString.append(tr("are added as transaction fee"));
+
+        if(!ui->checkSubtractFeeFromAmount->isChecked())
+            questionString.append(tr("are added as transaction fee"));
+        else
+            questionString.append(tr("will deduct as transaction fee"));
+
         questionString.append(" ");
         questionString.append(strFee);
 
@@ -370,7 +386,11 @@ void SendCoinsDialog::send(QList<SendCoinsRecipient> recipients, QString strFee,
 
     // add total amount in all subdivision units
     questionString.append("<hr />");
-    CAmount totalAmount = currentTransaction.getTotalTransactionAmount() + txFee;
+    CAmount totalAmount = currentTransaction.getTotalTransactionAmount();
+
+    if(!ui->checkSubtractFeeFromAmount->isChecked())
+       totalAmount += txFee;
+
     QStringList alternativeUnits;
     foreach (BitcoinUnits::Unit u, BitcoinUnits::availableUnits()) {
         if (u != model->getOptionsModel()->getDisplayUnit())
@@ -933,10 +953,17 @@ void SendCoinsDialog::coinControlUpdateLabels()
 
     // set pay amounts
     CoinControlDialog::payAmounts.clear();
-    for (int i = 0; i < ui->entries->count(); ++i) {
-        SendCoinsEntry* entry = qobject_cast<SendCoinsEntry*>(ui->entries->itemAt(i)->widget());
-        if (entry)
-            CoinControlDialog::payAmounts.append(entry->getValue().amount);
+    CoinControlDialog::fSubtractFeeFromAmount = false;
+    for(int i = 0; i < ui->entries->count(); ++i)
+    {
+        SendCoinsEntry *entry = qobject_cast<SendCoinsEntry*>(ui->entries->itemAt(i)->widget());
+        if(entry)
+        {
+            SendCoinsRecipient rcp = entry->getValue();
+            CoinControlDialog::payAmounts.append(rcp.amount);
+            if (rcp.fSubtractFeeFromAmount)
+                CoinControlDialog::fSubtractFeeFromAmount = true;
+        }
     }
 
     if (CoinControlDialog::coinControl->HasSelected()) {

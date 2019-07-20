@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 Bitcoin developers
 // Copyright (c) 2014-2016 Dash developers
 // Copyright (c) 2017-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2019 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -54,6 +54,7 @@ public:
     QString label;
     AvailableCoinsType inputType;
     bool useSwiftTX;
+    bool fSubtractFeeFromAmount;
     CAmount amount;
     // If from a payment request, this is used for storing the memo
     QString message;
