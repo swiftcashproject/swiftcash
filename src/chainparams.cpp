@@ -63,7 +63,9 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     (50000,   uint256("0xb164f28990656cd6fced3b38122dbac0beea44d526aa8484e7b1e1da152c1ce5"))
     (100000,  uint256("0x08da181c548eceedc0bdd98d601f1e10574a2d534277be5282de80ae7b10da5c"))
     (150000,  uint256("0x4278a8b4405e7a039a1c3cb56c6eb03319e3ec51090645e5666a722d9eb3717a"))
-    (200000,  uint256("0x8628a37ff23e5dc982b04855ca60d0ab509919d012d54c55354c882ab689bd24"));
+    (200000,  uint256("0x8628a37ff23e5dc982b04855ca60d0ab509919d012d54c55354c882ab689bd24"))
+    (250000,  uint256("0xe20aeeafe404dffa04da009c241b9b18e23a6ad756df7af2dcb0dbc21e46d60d"))
+    (300000,  uint256("0xe19d5a75bfd2641a3c260a0158664cb34d1c57e7c0c953c7142aeb43705ce9c8"));
 
 
 static const Checkpoints::CCheckpointData data = {
@@ -165,10 +167,9 @@ public:
         vSeeds.push_back(CDNSSeedData("seed1.swiftcash.cc", "seed1.swiftcash.cc"));
         vSeeds.push_back(CDNSSeedData("seed2.swiftcash.cc", "seed2.swiftcash.cc"));
         vSeeds.push_back(CDNSSeedData("seed3.swiftcash.cc", "seed3.swiftcash.cc"));
-
-        vSeeds.push_back(CDNSSeedData("seed1.swiftcash.space", "seed1.swiftcash.space"));
-        vSeeds.push_back(CDNSSeedData("seed2.swiftcash.space", "seed2.swiftcash.space"));
-        vSeeds.push_back(CDNSSeedData("seed3.swiftcash.space", "seed3.swiftcash.space"));
+        vSeeds.push_back(CDNSSeedData("seed4.swiftcash.cc", "seed4.swiftcash.cc"));
+        vSeeds.push_back(CDNSSeedData("seed5.swiftcash.cc", "seed5.swiftcash.cc"));
+        vSeeds.push_back(CDNSSeedData("seed6.swiftcash.cc", "seed6.swiftcash.cc"));
 
         // SwiftCash addresses start with 'S'
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 63);
@@ -247,7 +248,6 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("testnetseed.swiftcash.cc", "testnetseed.swiftcash.cc"));
-        vSeeds.push_back(CDNSSeedData("testnetseed.swiftcash.space", "testnetseed.swiftcash.space"));
 
 
         // Testnet SwiftCash addresses start with 'T'
