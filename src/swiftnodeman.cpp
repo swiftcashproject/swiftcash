@@ -470,6 +470,17 @@ CSwiftnode* CSwiftnodeMan::Find(const CPubKey& pubKeySwiftnode)
     return NULL;
 }
 
+CSwiftnode* CSwiftnodeMan::Find(const CService& addr)
+{
+    LOCK(cs);
+
+    BOOST_FOREACH (CSwiftnode& mn, vSwiftnodes) {
+        if (mn.addr.ToString() == addr.ToString())
+            return &mn;
+    }
+    return NULL;
+}
+
 //
 // Deterministically select the oldest/best swiftnode to pay on the network
 //
