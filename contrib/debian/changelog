@@ -1,4 +1,4 @@
-swiftcash (2.1.2-xenial1) xenial; urgency=medium
+swiftcash (2.2.0-xenial1) xenial; urgency=medium
 
   * Fixed nStakeMinAge local error
   * Added swiftcash-tx to debian's package
