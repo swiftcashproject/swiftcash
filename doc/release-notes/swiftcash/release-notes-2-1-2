@@ -1,0 +1,7 @@
+v2.1.2
+
+  * Fixed nStakeMinAge local error
+  * Added swiftcash-tx to debian's package
+  * Avoid duplicating IPs with SwiftNodes
+
+ -- Markus GH <msg768@hotmail.com>  Wed, 19 Feb 2020 01:08:11 +1100
