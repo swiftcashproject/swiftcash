@@ -470,15 +470,16 @@ CSwiftnode* CSwiftnodeMan::Find(const CPubKey& pubKeySwiftnode)
     return NULL;
 }
 
-CSwiftnode* CSwiftnodeMan::Find(const CService& addr)
+int CSwiftnodeMan::Count(const CService& addr)
 {
     LOCK(cs);
+    int count = 0;
 
     BOOST_FOREACH (CSwiftnode& mn, vSwiftnodes) {
         if (mn.addr.ToString() == addr.ToString())
-            return &mn;
+            count++;
     }
-    return NULL;
+    return count;
 }
 
 //

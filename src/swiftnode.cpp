@@ -338,7 +338,7 @@ bool CSwiftnode::IsValidNetAddr()
     // TODO: regtest is fine with any addresses for now,
     // should probably be a bit smarter if one day we start to implement tests for this
     return Params().NetworkID() == CBaseChainParams::REGTEST ||
-           (addr.IsIPv4() && IsReachable(addr) && addr.IsRoutable() && !mnodeman.Find(addr));
+           (addr.IsIPv4() && IsReachable(addr) && addr.IsRoutable() && mnodeman.Count(addr) == 1);
 }
 
 CSwiftnodeBroadcast::CSwiftnodeBroadcast()

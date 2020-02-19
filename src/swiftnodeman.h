@@ -116,7 +116,9 @@ public:
     CSwiftnode* Find(const CScript& payee);
     CSwiftnode* Find(const CTxIn& vin);
     CSwiftnode* Find(const CPubKey& pubKeySwiftnode);
-    CSwiftnode* Find(const CService& addr);
+
+    // Count addresses
+    int Count(const CService& addr);
 
     /// Find an entry in the swiftnode list that is next to be paid
     CSwiftnode* GetNextSwiftnodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime, int& nCount);
