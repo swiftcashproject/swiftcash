@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -65,7 +65,8 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     (150000,  uint256("0x4278a8b4405e7a039a1c3cb56c6eb03319e3ec51090645e5666a722d9eb3717a"))
     (200000,  uint256("0x8628a37ff23e5dc982b04855ca60d0ab509919d012d54c55354c882ab689bd24"))
     (250000,  uint256("0xe20aeeafe404dffa04da009c241b9b18e23a6ad756df7af2dcb0dbc21e46d60d"))
-    (300000,  uint256("0xe19d5a75bfd2641a3c260a0158664cb34d1c57e7c0c953c7142aeb43705ce9c8"));
+    (300000,  uint256("0xe19d5a75bfd2641a3c260a0158664cb34d1c57e7c0c953c7142aeb43705ce9c8"))
+    (500000,  uint256("0x2672cd0d06ad867a1d7cb0c4e301c69e78f3352426652a30429297e765ecce48"));
 
 
 static const Checkpoints::CCheckpointData data = {
