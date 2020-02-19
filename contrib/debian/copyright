@@ -5,7 +5,7 @@ Upstream-Contact: Markus GH <msg768@hotmail.com>
 Source: https://github.com/swiftcashproject/swiftcash
 
 Files: *
-Copyright: 2018, SwiftCash Developers
+Copyright: 2018-2020, SwiftCash Developers
 License: Expat
 Comment: SwiftCash Developers encompasses the current developers listed on bitcoin.org,
          as well as the numerous contributors to the project.

@@ -1,7 +1,8 @@
-swiftcash (2.1.1-xenial1) xenial; urgency=medium
+swiftcash (2.1.2-xenial1) xenial; urgency=medium
 
-  * Added "Subtract Fee From Amount" checkbox/feature to the qt wallet
-  * Added the same feature to the rpc for sendtoaddress and sendtoaddressix methods
+  * Fixed nStakeMinAge local error
+  * Added swiftcash-tx to debian's package
+  * Avoid duplicating IPs with SwiftNodes
 
- -- Markus GH <msg768@hotmail.com>  Sun, 21 Jul 2019 01:08:11 +1100
+ -- Markus GH <msg768@hotmail.com>  Wed, 19 Feb 2020 01:08:11 +1100
 
