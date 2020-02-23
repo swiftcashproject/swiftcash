@@ -200,11 +200,6 @@ void CSwiftnode::Check(bool forceCheck)
     //once spent, stop doing the checks
     if (activeState == SWIFTNODE_VIN_SPENT) return;
 
-    if (!IsValidNetAddr()) {
-        activeState = SWIFTNODE_POSE_BAN;
-        return;
-    }
-
     if (!IsPingedWithin(SWIFTNODE_REMOVAL_SECONDS)) {
         activeState = SWIFTNODE_REMOVE;
         return;
@@ -212,6 +207,11 @@ void CSwiftnode::Check(bool forceCheck)
 
     if (!IsPingedWithin(SWIFTNODE_EXPIRATION_SECONDS)) {
         activeState = SWIFTNODE_EXPIRED;
+        return;
+    }
+
+    if (!IsValidNetAddr()) {
+        activeState = SWIFTNODE_POSE_BAN;
         return;
     }
 
