@@ -231,8 +231,8 @@ public:
         nRejectBlockOutdatedMajority = 5472; // 95%
         nToCheckBlockUpgradeMajority = 5760; // 4 days
         nMinerThreads = 0;
-        nTargetTimespan = 40 * 60; // SwiftCash: 40 minutes
-        nTargetSpacing = 1 * 60; // SwiftCash: 1 minute
+        nTargetTimespan = 24 * 60 * 60; // SwiftCash: 24 hours
+        nTargetSpacing = 10 * 60; // SwiftCash: 10 minutes
         nRetargetInterval = 1; // SwiftCash: each block
         nLastPOWBlock = 200;
         nMaturity = 10;

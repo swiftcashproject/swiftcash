@@ -317,3 +317,12 @@ CScript GetScriptForMultisig(int nRequired, const std::vector<CPubKey>& keys)
     script << CScript::EncodeOP_N(keys.size()) << OP_CHECKMULTISIG;
     return script;
 }
+
+CScript GetScriptForHodldeposit(int64_t nTime, const CPubKey pubkey)
+{
+   CScript script;
+
+   script << nTime << OP_CHECKLOCKTIMEVERIFY << OP_DROP;
+   script << ToByteVector(pubkey) << OP_CHECKSIG;
+   return script;
+}

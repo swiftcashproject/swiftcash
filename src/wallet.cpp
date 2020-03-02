@@ -1766,6 +1766,31 @@ int CWallet::CountInputsWithAmount(CAmount nInputAmount)
     return nTotal;
 }
 
+bool CWallet::GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount amount, CScript redeemScript, bool useIX)
+{
+    // make our change address
+    CReserveKey reservekey(pwalletMain);
+
+    CScript scriptChange;
+    scriptChange << OP_RETURN << ToByteVector(redeemScript);
+
+    CAmount nFeeRet = 0;
+    std::string strFail = "";
+
+    vector<pair<CScript, CAmount> > vecSend;
+    vecSend.push_back(make_pair(depositScript, amount));
+    vecSend.push_back(make_pair(scriptChange, 1 * COIN));
+
+    CCoinControl* coinControl = NULL;
+    bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0, false);
+    if (!success) {
+        LogPrintf("GetHodldepositCollateralTX: Error - %s\n", strFail);
+        return false;
+    }
+
+    return true;
+}
+
 bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useIX, bool isProposal)
 {
     // make our change address
@@ -1814,7 +1839,8 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     const CCoinControl* coinControl,
     AvailableCoinsType coin_type,
     bool useIX,
-    CAmount nFeePay) {
+    CAmount nFeePay,
+    bool randChangePos) {
     if (useIX && nFeePay < CENT / 5) nFeePay = CENT / 5; // Minimum fee for ix is 0.002 SWIFT
 
     CAmount nValue = 0;
@@ -1981,8 +2007,11 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                             nChange = 0;
                             reservekey.ReturnKey();
                         } else {
-                            // Insert change txn at random position:
-                            vector<CTxOut>::iterator position = txNew.vout.begin() + GetRandInt(txNew.vout.size() + 1);
+                            // Insert change txn at random position or at the end:
+                            vector<CTxOut>::iterator position;
+                            if (randChangePos)
+                                position = txNew.vout.begin() + GetRandInt(txNew.vout.size() + 1);
+                            else position = txNew.vout.begin() + txNew.vout.size();
                             txNew.vout.insert(position, newTxOut);
                         }
                     }

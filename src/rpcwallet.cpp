@@ -334,6 +334,89 @@ void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeF
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 }
 
+double getHodldepositRate(int months, bool toleranceFlag=false)
+{
+    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+    int blockHeight = (int)chainActive.Height();
+    if (toleranceFlag) blockHeight += 144; // calculate the interest such that it would be valid for up to 144 blocks
+    int64_t blockRewards = GetBlockValue(blockHeight) * 2 * 144 * 365; // 60% of maximum inflation in 1 year
+    double bestRate = (double)blockRewards / (double)nMoneySupply;
+    return ( ((bestRate - bestRate * (12 - months) * 0.07) * months ) / 12 );
+}
+
+UniValue hodldeposit(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 3)
+        throw runtime_error(
+            "hodldeposit \"swiftaddress\" tier amount ( \"comment\" \"comment-to\" )\n"
+            "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
+            HelpRequiringPassphrase() +
+            "\nArguments:\n"
+            "1. \"swiftaddress\"           (string, required) The swift address to sign from.\n"
+            "2. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 12=12months).\n"
+            "3. \"amount\"                 (numeric, required) The amount in swift to deposit. eg 10000\n"
+            "                               transaction, just kept in your wallet.\n"
+            "\nResult:\n"
+            "\"transactionid\"             (string) The transaction id.\n"
+            "\nExamples:\n" +
+            HelpExampleCli("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1 10000") +
+            HelpExampleCli("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 2 1000000") +
+            HelpExampleRpc("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 4 10000"));
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    // swift address
+    CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SWIFT address");
+    CScript scriptPubKey = GetScriptForDestination(address.Get());
+    if (!IsMine(*pwalletMain, scriptPubKey))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown SWIFT address");
+
+    int months = params[1].get_int();
+    if (months < 1 || months > 12)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Months must be between 1 and 12");
+
+    // Amount
+    CAmount nAmount = AmountFromValue(params[2]);
+
+
+    int64_t nNow = GetAdjustedTime();
+    int64_t nTime = nNow + months*30*24*60*60 + 12*60*60;
+
+    CKeyID keyID;
+    CScript inner;
+    if(address.GetKeyID(keyID)) {
+        CPubKey vchPubKey;
+        pwalletMain->GetPubKey(keyID, vchPubKey);
+        inner = GetScriptForHodldeposit(nTime, vchPubKey);
+    }
+
+    // Construct using pay-to-script-hash:
+    CScriptID innerID(inner);
+    CBitcoinAddress depositAddress(innerID);
+    CScript depositScript = GetScriptForDestination(depositAddress.Get());
+
+    CWalletTx wtx;
+    bool useIX = false;
+    if (!pwalletMain->GetHodldepositCollateralTX(wtx, depositScript, nAmount, inner, useIX)) {
+        throw runtime_error("Error making collateral transaction for proposal. Please check your wallet balance.");
+    }
+
+    // modify the output values
+    wtx.vout[0].nValue += nAmount * getHodldepositRate(months, true);
+    wtx.vout[1].nValue = 0;
+
+    // make our change address
+    CReserveKey reservekey(pwalletMain);
+    //TODO: send the tx to the network
+    //pwalletMain->CommitTransaction(wtx, reservekey, useIX ? "ix" : "tx");
+
+    //return wtx.GetHash().ToString();
+
+    return EncodeHexTx(wtx);
+}
+
 UniValue sendtoaddress(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() < 2 || params.size() > 5)
