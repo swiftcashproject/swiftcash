@@ -2134,6 +2134,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         pos.nTxOffset += ::GetSerializeSize(tx, SER_DISK, CLIENT_VERSION);
     }
 
+    // make sure nFees is not negative
+    if (nFees < 0) {
+        return state.DoS(100, error("ConnectBlock() : nFees can't be negative (nFees=%s)",
+                                    FormatMoney(nFees)), REJECT_INVALID, "bad-cb-amount");
+    }
+
     // track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
