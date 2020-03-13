@@ -396,6 +396,10 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     int64_t nNow = GetAdjustedTime();
     int64_t nTime = nNow + months*30*24*60*60 + (nMoreHours*60*60);
 
+    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to one day on testnet
+        nTime = nNow + months*24*60*60 + (nMoreHours*60*60);
+    }
+
     CKeyID keyID;
     CScript inner;
     if(address.GetKeyID(keyID)) {

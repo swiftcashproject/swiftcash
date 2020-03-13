@@ -1076,6 +1076,11 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
     if (nBlockTime == 0) nBlockTime = GetAdjustedTime();
     if (fToMemPool) nBlockTime += 1*50*60;
     int nMonths = (nTime - nBlockTime) / (60*60*24*30);
+
+    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to one day on testnet
+        nMonths = (nTime - nBlockTime) / (60*60*24);
+    }
+
     if (nMonths < 1) return false;
     if (nMonths > 12) nMonths = 12;
 
