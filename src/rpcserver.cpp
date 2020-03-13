@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// copyright (c) 2018-2019 SwiftCash developers
+// copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -388,6 +388,8 @@ static const CRPCCommand vRPCCommands[] =
         {"wallet", "importwallet", &importwallet, true, false, true},
         {"wallet", "importaddress", &importaddress, true, false, true},
         {"wallet", "keypoolrefill", &keypoolrefill, true, false, true},
+        {"wallet", "convertoldaddress", &convertoldaddress, false, false, true},
+        {"wallet", "convertoldprivkey", &convertoldprivkey, false, false, true},
         {"wallet", "listaccounts", &listaccounts, false, false, true},
         {"wallet", "listaddressgroupings", &listaddressgroupings, false, false, true},
         {"wallet", "listlockunspent", &listlockunspent, false, false, true},

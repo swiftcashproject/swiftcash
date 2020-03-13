@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1569,6 +1569,10 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (nAmountSelected + out.tx->vout[out.i].nValue > nTargetAmount)
             continue;
 
+        //check for min value
+        if (out.tx->vout[out.i].nValue < nStakeMinValue)
+            continue;
+
         //check for min age
         int64_t nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
         if (GetAdjustedTime() - nTxTime < nStakeMinAge)
@@ -1598,10 +1602,11 @@ bool CWallet::MintableCoins()
     AvailableCoins(vCoins, true);
 
     for (const COutput& out : vCoins) {
-        //check for min age
+        //check for min age and min value
         int64_t nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
-        if (GetAdjustedTime() - nTxTime > nStakeMinAge)
-            return true;
+        if (GetAdjustedTime() - nTxTime >= nStakeMinAge &&
+            out.tx->vout[out.i].nValue >= nStakeMinValue)
+                return true;
     }
 
     return false;
@@ -1766,7 +1771,7 @@ int CWallet::CountInputsWithAmount(CAmount nInputAmount)
     return nTotal;
 }
 
-bool CWallet::GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount amount, CScript redeemScript, bool useIX)
+bool CWallet::GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount nAmount, CAmount nInterest, CScript redeemScript, bool useIX)
 {
     // make our change address
     CReserveKey reservekey(pwalletMain);
@@ -1778,11 +1783,12 @@ bool CWallet::GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, C
     std::string strFail = "";
 
     vector<pair<CScript, CAmount> > vecSend;
-    vecSend.push_back(make_pair(depositScript, amount));
+    vecSend.push_back(make_pair(depositScript, nAmount));
     vecSend.push_back(make_pair(scriptChange, 1 * COIN));
 
     CCoinControl* coinControl = NULL;
-    bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0, false);
+    set<pair<const CWalletTx*, unsigned int> > setCoins;
+    bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0, false, nInterest);
     if (!success) {
         LogPrintf("GetHodldepositCollateralTX: Error - %s\n", strFail);
         return false;
@@ -1840,11 +1846,15 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     AvailableCoinsType coin_type,
     bool useIX,
     CAmount nFeePay,
-    bool randChangePos) {
+    bool randChangePos,
+    CAmount nInterest) {
     if (useIX && nFeePay < CENT / 5) nFeePay = CENT / 5; // Minimum fee for ix is 0.002 SWIFT
 
     CAmount nValue = 0;
     unsigned int nSubtractFeeFromAmount = 0;
+
+    // Choose coins to use
+    set<pair<const CWalletTx*, unsigned int> > setCoins;
 
     BOOST_FOREACH (const PAIRTYPE(CScript, CAmount) & s, vecSend) {
         if (nValue < 0) {
@@ -1922,8 +1932,6 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                     }
                 }
 
-                // Choose coins to use
-                set<pair<const CWalletTx*, unsigned int> > setCoins;
                 CAmount nValueIn = 0;
 
                 if (!SelectCoins(nValueToSelect, setCoins, nValueIn, coinControl, coin_type, useIX)) {
@@ -2022,6 +2030,9 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                 BOOST_FOREACH (const PAIRTYPE(const CWalletTx*, unsigned int) & coin, setCoins)
                     txNew.vin.push_back(CTxIn(coin.first->GetHash(), coin.second));
 
+                // Fill interest for hodl deposits
+                txNew.vout[0].nValue += nInterest;
+
                 // Sign
                 int nIn = 0;
                 BOOST_FOREACH (const PAIRTYPE(const CWalletTx*, unsigned int) & coin, setCoins)
@@ -2072,6 +2083,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
             }
         }
     }
+
     return true;
 }
 
@@ -2199,7 +2211,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
             //presstab HyperStake - calculate the total size of our new output excluding the stake reward so that we can use it to decide whether to split the stake outputs
             const CBlockIndex* pIndex0 = chainActive.Tip();
-            uint64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue - GetBlockValue(pIndex0->nHeight);
+            int64_t nTotalSize = pcoin.first->vout[pcoin.second].nValue - GetBlockValue(pIndex0->nHeight);
 
             //presstab HyperStake - if MultiSend is set to send in coinstake we will add our outputs here (values asigned further down)
             if (nTotalSize / 2 > nStakeSplitThreshold * COIN)

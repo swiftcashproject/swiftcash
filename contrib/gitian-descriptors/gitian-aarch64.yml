@@ -1,5 +1,5 @@
 ---
-name: "swiftcash-aarch64-2.2.0"
+name: "swiftcash-aarch64-3.0.0"
 enable_cache: true
 suites:
 - "xenial"

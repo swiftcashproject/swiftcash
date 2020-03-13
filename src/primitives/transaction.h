@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -278,6 +278,17 @@ public:
     {
         // swiftcash: the coin stake transaction is marked with the first output empty
         return (vin.size() > 0 && (!vin[0].prevout.IsNull()) && vout.size() >= 2 && vout[0].IsEmpty());
+    }
+
+    bool IsHodlDeposit() const
+    {
+        // swiftcash: the hodldeposit transaction has p2sh as its first output and the second one is the redeemscript of that p2sh
+        if (vin.size() < 1 || vin[0].prevout.IsNull() ||
+            vout.size() < 2 || vout[0].IsEmpty() ||
+            !vout[0].scriptPubKey.IsPayToScriptHash() ||
+            vout[1].scriptPubKey[0] != OP_RETURN || vout[1].nValue < 1 * COIN) return false;
+
+        return true;
     }
 
     friend bool operator==(const CTransaction& a, const CTransaction& b)

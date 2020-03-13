@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -242,7 +242,7 @@ public:
     bool UpdateProposal(CBudgetVote& vote, CNode* pfrom, std::string& strError);
     bool UpdateFinalizedBudget(CFinalizedBudgetVote& vote, CNode* pfrom, std::string& strError);
     bool PropExists(uint256 nHash);
-    TrxValidationStatus IsTransactionValid(const CTransaction& txNew, int nBlockHeight);
+    TrxValidationStatus IsTransactionValid(const CTransaction& txNew, int nBlockHeight, CAmount& nBudgetPaid);
     std::string GetRequiredPaymentsString(int nBlockHeight);
     void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStake);
 
@@ -345,7 +345,7 @@ public:
     int GetBlockEnd() { return nBlockStart + (int)(vecBudgetPayments.size() - 1); }
     int GetVoteCount() { return (int)mapVotes.size(); }
     bool IsPaidAlready(uint256 nProposalHash, int nBlockHeight);
-    TrxValidationStatus IsTransactionValid(const CTransaction& txNew, int nBlockHeight);
+    TrxValidationStatus IsTransactionValid(const CTransaction& txNew, int nBlockHeight, CAmount& nBudgetPaid);
     bool GetBudgetPaymentByBlock(int64_t nBlockHeight, CTxBudgetPayment& payment)
     {
         LOCK(cs);

@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -334,36 +334,32 @@ void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeF
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 }
 
-double getHodldepositRate(int months, bool toleranceFlag=false)
-{
-    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
-    int blockHeight = (int)chainActive.Height();
-    if (toleranceFlag) blockHeight += 144; // calculate the interest such that it would be valid for up to 144 blocks
-    int64_t blockRewards = GetBlockValue(blockHeight) * 2 * 144 * 365; // 60% of maximum inflation in 1 year
-    double bestRate = (double)blockRewards / (double)nMoneySupply;
-    return ( ((bestRate - bestRate * (12 - months) * 0.07) * months ) / 12 );
-}
-
 UniValue hodldeposit(const UniValue& params, bool fHelp)
 {
-    if (fHelp || params.size() != 3)
+    if (!IsSporkActive(SPORK_13_HODLDEPOSITS)) throw runtime_error("SPORK_13_HODLDEPOSITS is currently inactive.");
+
+    if (fHelp || params.size() < 3 || params.size() > 5)
         throw runtime_error(
-            "hodldeposit \"swiftaddress\" tier amount ( \"comment\" \"comment-to\" )\n"
-            "\nSend an amount to a given address. The amount is a real and is rounded to the nearest 0.00000001\n" +
+            "hodldeposit \"swiftaddress\" amount months ( \"lesspercent\" \"morehours\" )\n"
+            "\nLock an amount for 1-12 months and get an instant reward in your HODL deposit address!\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
             "1. \"swiftaddress\"           (string, required) The swift address to sign from.\n"
-            "2. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 12=12months).\n"
-            "3. \"amount\"                 (numeric, required) The amount in swift to deposit. eg 10000\n"
+            "2. \"amount\"                 (numeric, required) The amount in swift to deposit. eg 10000\n"
+            "3. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 12=12months).\n"
+            "4. \"lesspercent\"            (numeric, 0-10, optional, default=1) To request less interest in case the transaction is mined much later.\n"
+            "5. \"morehours\"              (numeric, 1-12, optional, default=2) To request less interest in case the transaction is mined much later.\n"
             "                               transaction, just kept in your wallet.\n"
             "\nResult:\n"
             "\"transactionid\"             (string) The transaction id.\n"
             "\nExamples:\n" +
-            HelpExampleCli("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1 10000") +
-            HelpExampleCli("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 2 1000000") +
-            HelpExampleRpc("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 4 10000"));
+            HelpExampleCli("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 10000 1") +
+            HelpExampleCli("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1000000 2") +
+            HelpExampleRpc("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 10000 4"));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    if (params[0].get_str() == "bestrate") return GetHodldepositRate(12, 1);
 
     // swift address
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
@@ -373,16 +369,32 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     if (!IsMine(*pwalletMain, scriptPubKey))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown SWIFT address");
 
-    int months = params[1].get_int();
+    // Amount
+    CAmount nAmount = AmountFromValue(params[1]);
+
+    // Months
+    int months = params[2].get_int();
+
     if (months < 1 || months > 12)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Months must be between 1 and 12");
 
-    // Amount
-    CAmount nAmount = AmountFromValue(params[2]);
+    // Less Percent
+    int nLessPercent = 1;
+    if (params.size() > 3)
+        nLessPercent = params[3].get_int();
 
+    if (nLessPercent < 0 || nLessPercent > 10)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Lesspercent must be between 0 and 10");
+
+    int nMoreHours = 2;
+    if (params.size() > 4)
+        nMoreHours = params[4].get_int();
+
+    if (nMoreHours < 1 || nMoreHours > 12)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Morehours must be between 1 and 12");
 
     int64_t nNow = GetAdjustedTime();
-    int64_t nTime = nNow + months*30*24*60*60 + 12*60*60;
+    int64_t nTime = nNow + months*30*24*60*60 + (nMoreHours*60*60);
 
     CKeyID keyID;
     CScript inner;
@@ -399,22 +411,21 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
 
     CWalletTx wtx;
     bool useIX = false;
-    if (!pwalletMain->GetHodldepositCollateralTX(wtx, depositScript, nAmount, inner, useIX)) {
+    if (!pwalletMain->GetHodldepositCollateralTX(wtx, depositScript, nAmount, nAmount * GetHodldepositRate(months, nLessPercent), inner, useIX)) {
         throw runtime_error("Error making collateral transaction for proposal. Please check your wallet balance.");
     }
 
-    // modify the output values
-    wtx.vout[0].nValue += nAmount * getHodldepositRate(months, true);
-    wtx.vout[1].nValue = 0;
-
     // make our change address
     CReserveKey reservekey(pwalletMain);
-    //TODO: send the tx to the network
-    //pwalletMain->CommitTransaction(wtx, reservekey, useIX ? "ix" : "tx");
+    if(!pwalletMain->CommitTransaction(wtx, reservekey, useIX ? "ix" : "tx")) {
+        std::cout << EncodeHexTx(wtx) << std::endl;
+        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction commit failed");
+    } else {
+        pwalletMain->AddCScript(inner);
+        pwalletMain->AddWatchOnly(inner);
+    }
 
-    //return wtx.GetHash().ToString();
-
-    return EncodeHexTx(wtx);
+    return wtx.GetHash().ToString();
 }
 
 UniValue sendtoaddress(const UniValue& params, bool fHelp)
@@ -1473,6 +1484,49 @@ UniValue listtransactions(const UniValue& params, bool fHelp)
     ret.push_backV(arrTmp);
 
     return ret;
+}
+
+UniValue convertoldaddress(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "convertoldaddress oldaddress\n"
+            "\nReturns new address based on oldaddress.\n"
+            "\nArguments:\n"
+            "1. oldaddress           (string) Your old SwiftCash address\n"
+            "}\n"
+            "\nExample:\n"
+            "\nConvert an old address to a new address\n" +
+            HelpExampleCli("convertoldaddress", "SQcbaDEwmbBScu56YMFGc2c3R2bMQkZ7Ut"));
+
+    string oldAddressStr = params[0].get_str();
+    COldAddress oldAddress(oldAddressStr);
+    CTxDestination dest = oldAddress.Get();
+    string newAddress = CBitcoinAddress(dest).ToString();
+    return newAddress;
+}
+
+UniValue convertoldprivkey(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 1)
+        throw runtime_error(
+            "convertoldprivkey oldprivkey\n"
+            "\nReturns new private key based on oldprivkey.\n"
+            "\nArguments:\n"
+            "1. oldprivkey           (string) Your old SwiftCash private key\n"
+            "}\n"
+            "\nExample:\n"
+            "\nConvert an old private key to a new private key\n" +
+            HelpExampleCli("convertoldprivkey", "VQ4ALumUX1tMEJgLDfixn6RU8enuNDfvzG8ySnk3T8rzKTdcFdFK"));
+
+    string strSecret = params[0].get_str();
+    COldSecret oldSecret;
+    oldSecret.SetString(strSecret);
+    CKey key = oldSecret.GetKey();
+    CBitcoinSecret newSecret;
+    newSecret.SetKey(key);
+    string newKey = newSecret.ToString();
+    return newKey;
 }
 
 UniValue listaccounts(const UniValue& params, bool fHelp)

@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -32,10 +32,10 @@ int nSubmittedFinalBudget;
 
 int GetBudgetPaymentCycleBlocks()
 {
-    // Amount of blocks in a month period of time (using 1 minutes per) = (60*24*30)
-    if (Params().NetworkID() == CBaseChainParams::MAIN) return 43200;
+    // Amount of blocks in a month period of time (using 10 minutes per) = (6*24*30)
+    if (Params().NetworkID() == CBaseChainParams::MAIN) return 4320;
 
-    //for testing purposes - ten times per day
+    //for testing purposes - once a day
     return 144;
 }
 
@@ -145,14 +145,11 @@ void CBudgetManager::SubmitFinalBudget()
         return;
     }
 
-     // Submit final budget during the last 2 days (2880 blocks) before payment for Mainnet, about 9 minutes (9 blocks) for Testnet
+     // Submit final budget during the last 2 days (288 blocks) before payment for Mainnet
     int finalizationWindow = ((GetBudgetPaymentCycleBlocks() / 30) * 2);
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        // NOTE: 9 blocks for testnet is way to short to have any swiftnode submit an automatic vote on the finalized(!) budget,
-        //       because those votes are only submitted/relayed once every 56 blocks in CFinalizedBudget::AutoCheck()
-
-        finalizationWindow = 64; // 56 + 4 finalization confirmations + 4 minutes buffer for propagation
+        finalizationWindow = 64; // 56 + 4 finalization confirmations + 40 minutes buffer for propagation
     }
 
     int nFinalizationStart = nBlockStart - finalizationWindow;
@@ -647,7 +644,7 @@ bool CBudgetManager::IsBudgetPaymentBlock(int nBlockHeight)
     return false;
 }
 
-TrxValidationStatus CBudgetManager::IsTransactionValid(const CTransaction& txNew, int nBlockHeight)
+TrxValidationStatus CBudgetManager::IsTransactionValid(const CTransaction& txNew, int nBlockHeight, CAmount& nBudgetPaid)
 {
     LOCK(cs);
 
@@ -699,7 +696,7 @@ TrxValidationStatus CBudgetManager::IsTransactionValid(const CTransaction& txNew
             LogPrint("mnbudget","CBudgetManager::IsTransactionValid - GetVoteCount() > nCountThreshold passed\n");
             if (nBlockHeight >= pfinalizedBudget->GetBlockStart() && nBlockHeight <= pfinalizedBudget->GetBlockEnd()) {
                 LogPrint("mnbudget","CBudgetManager::IsTransactionValid - GetBlockStart() passed\n");
-                transactionStatus = pfinalizedBudget->IsTransactionValid(txNew, nBlockHeight);
+                transactionStatus = pfinalizedBudget->IsTransactionValid(txNew, nBlockHeight, nBudgetPaid);
                 if (transactionStatus == TrxValidationStatus::Valid) {
                     LogPrint("mnbudget","CBudgetManager::IsTransactionValid - pfinalizedBudget->IsTransactionValid() passed\n");
                     return TrxValidationStatus::Valid;
@@ -912,7 +909,7 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         CAmount nSubsidy = 35000 * COIN;
-        return nSubsidy * 146;
+        return nSubsidy * 144;
     }
 
     //No budget during the pow phase
@@ -922,10 +919,10 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
     //Get block value and calculate from that
     CAmount nSubsidy = 0;
 
-    if (nHeight < 10000)
+    if (nHeight < 1000)
         nSubsidy = 20 * COIN; // fair launch - give appx 1 week to users to set up their wallets and nodes
     else
-        nSubsidy = ( (double)(20*140 * 525600)/(20*525600 + nHeight - 10000) ) * COIN; // 70% 0f actual subsidy planned
+        nSubsidy = ( (double)(20*200 * 52560)/(20*52560 + nHeight - 1000) ) * COIN; // 10% 0f actual subsidy planned
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
@@ -937,7 +934,7 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
         nSubsidy = 0;
 
     // Amount of blocks in a month period of time (using 1 minute block time) = (60*24*30)
-    return nSubsidy * 1440 * 30;
+    return nSubsidy * 144 * 30;
 }
 
 void CBudgetManager::NewBlock()
@@ -957,7 +954,7 @@ void CBudgetManager::NewBlock()
     // incremental sync with our peers
     if (swiftnodeSync.IsSynced()) {
         LogPrint("mnbudget","CBudgetManager::NewBlock - incremental sync started\n");
-        if (chainActive.Height() % 1440 == rand() % 1440) {
+        if (chainActive.Height() % 144 == rand() % 144) {
             ClearSeen();
             ResetSync();
         }
@@ -2107,7 +2104,7 @@ bool CFinalizedBudget::IsPaidAlready(uint256 nProposalHash, int nBlockHeight)
     return true;
 }
 
-TrxValidationStatus CFinalizedBudget::IsTransactionValid(const CTransaction& txNew, int nBlockHeight)
+TrxValidationStatus CFinalizedBudget::IsTransactionValid(const CTransaction& txNew, int nBlockHeight, CAmount& nBudgetPaid)
 {
     TrxValidationStatus transactionStatus = TrxValidationStatus::InValid;
     int nCurrentBudgetPayment = nBlockHeight - GetBlockStart();
@@ -2141,6 +2138,7 @@ TrxValidationStatus CFinalizedBudget::IsTransactionValid(const CTransaction& txN
             }
             else {
                 transactionStatus = TrxValidationStatus::Valid;
+                nBudgetPaid = vecBudgetPayments[nCurrentBudgetPayment].nAmount;
                 LogPrint("mnbudget","CFinalizedBudget::IsTransactionValid - Found valid Budget Payment of %d for proposal %d\n",
                           vecBudgetPayments[nCurrentBudgetPayment].nAmount, vecBudgetPayments[nCurrentBudgetPayment].nProposalHash.Get32());
             }

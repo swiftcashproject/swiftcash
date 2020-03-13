@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -29,9 +30,9 @@ extern CSwiftnodePayments swiftnodePayments;
 #define MNPAYMENTS_SIGNATURES_TOTAL 10
 
 void ProcessMessageSwiftnodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
-bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight);
+bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight, CAmount& nBudgetPaid);
 std::string GetRequiredPaymentsString(int nBlockHeight);
-bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted);
+bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted, CAmount nBudgetValue);
 void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStake);
 
 void DumpSwiftnodePayments();

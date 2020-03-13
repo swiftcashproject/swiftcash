@@ -1940,7 +1940,7 @@ bool CAddrDB::Write(const CAddrMan& addr)
     CDataStream ssPeers(SER_DISK, CLIENT_VERSION);
     ssPeers << FLATDATA(Params().MessageStart());
     ssPeers << addr;
-    uint256 hash = HashKeccak(ssPeers.begin(), ssPeers.end());
+    uint256 hash = Hash(ssPeers.begin(), ssPeers.end());
     ssPeers << hash;
 
     // open output file, and associate with CAutoFile
@@ -1992,7 +1992,7 @@ bool CAddrDB::Read(CAddrMan& addr)
     CDataStream ssPeers(vchData, SER_DISK, CLIENT_VERSION);
 
     // verify stored checksum matches input data
-    uint256 hashTmp = HashKeccak(ssPeers.begin(), ssPeers.end());
+    uint256 hashTmp = Hash(ssPeers.begin(), ssPeers.end());
     if (hashIn != hashTmp)
         return error("%s : Checksum mismatch, data corrupted", __func__);
 
@@ -2150,7 +2150,7 @@ void CNode::EndMessage() UNLOCK_FUNCTION(cs_vSend)
     memcpy((char*)&ssSend[CMessageHeader::MESSAGE_SIZE_OFFSET], &nSize, sizeof(nSize));
 
     // Set the checksum
-    uint256 hash = HashKeccak(ssSend.begin() + CMessageHeader::HEADER_SIZE, ssSend.end());
+    uint256 hash = Hash(ssSend.begin() + CMessageHeader::HEADER_SIZE, ssSend.end());
     unsigned int nChecksum = 0;
     memcpy(&nChecksum, &hash, sizeof(nChecksum));
     assert(ssSend.size() >= CMessageHeader::CHECKSUM_OFFSET + sizeof(nChecksum));

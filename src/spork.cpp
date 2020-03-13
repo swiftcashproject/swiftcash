@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2016 Dash developers
 // Copyright (c) 2016-2017 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -131,6 +131,7 @@ int64_t GetSporkValue(int nSporkID)
         if (nSporkID == SPORK_10_RECONSIDER_BLOCKS) r = SPORK_10_RECONSIDER_BLOCKS_DEFAULT;
         if (nSporkID == SPORK_11_SUPERBLOCKS) r = SPORK_11_SUPERBLOCKS_DEFAULT;
         if (nSporkID == SPORK_12_NEW_PROTOCOL_ENFORCEMENT) r = SPORK_12_NEW_PROTOCOL_ENFORCEMENT_DEFAULT;
+        if (nSporkID == SPORK_13_HODLDEPOSITS) r = SPORK_13_HODLDEPOSITS_DEFAULT;
 
         if (r == -1) LogPrintf("%s : Unknown Spork %d\n", __func__, nSporkID);
     }
@@ -275,6 +276,7 @@ int CSporkManager::GetSporkIDByName(std::string strName)
     if (strName == "SPORK_10_RECONSIDER_BLOCKS") return SPORK_10_RECONSIDER_BLOCKS;
     if (strName == "SPORK_11_SUPERBLOCKS") return SPORK_11_SUPERBLOCKS;
     if (strName == "SPORK_12_NEW_PROTOCOL_ENFORCEMENT") return SPORK_12_NEW_PROTOCOL_ENFORCEMENT;
+    if (strName == "SPORK_13_HODLDEPOSITS") return SPORK_13_HODLDEPOSITS;
 
     return -1;
 }
@@ -290,6 +292,7 @@ std::string CSporkManager::GetSporkNameByID(int id)
     if (id == SPORK_10_RECONSIDER_BLOCKS) return "SPORK_10_RECONSIDER_BLOCKS";
     if (id == SPORK_11_SUPERBLOCKS) return "SPORK_11_SUPERBLOCKS";
     if (id == SPORK_12_NEW_PROTOCOL_ENFORCEMENT) return "SPORK_12_NEW_PROTOCOL_ENFORCEMENT";
+    if (id == SPORK_13_HODLDEPOSITS) return "SPORK_13_HODLDEPOSITS";
 
     return "Unknown";
 }

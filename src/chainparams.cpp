@@ -52,21 +52,7 @@ static void convertSeed6(std::vector<CAddress>& vSeedsOut, const SeedSpec6* data
 // + Contains no strange transactions
 static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of
-    (0,       uint256("0x000001211fb1c1d0cf722e8934ecc1d6dac522e0489657a8cd6b5ea288f8729b"))
-    (10,      uint256("0x68b1ddc4e1057bc4123d68e50aa6cbfefd2caa7d10d72f2bdfa017bcfe3d3a9e"))
-    (20,      uint256("0x01174ff22cce79c860d5e24c2b4936271bd2618618a7f3259c66ebd7106da4a3"))
-    (30,      uint256("0x2ff7d0fbe54c69ec3f584e8d12abb85413ccdcb1f6c73b329a3c36b9281b9eea"))
-    (40,      uint256("0x4285ae38dc37825f1863259f12d61d61fd07ee76c2d935892fd1bf1f256ab355"))
-    (50,      uint256("0x70a22f356b8a41b138c02f2b2a167de3e9093b6b02d71ac2429a82c1893cf0fd"))
-    (80,      uint256("0x1cc05d9d8d33d5cb67394c1490ccd284e37d595b5077d3fc83770991272aa955"))
-    (1000,    uint256("0x55804b4aa442d255032b8380a401f35b5d8284eb772a208f87fa26077c6e4770"))
-    (50000,   uint256("0xb164f28990656cd6fced3b38122dbac0beea44d526aa8484e7b1e1da152c1ce5"))
-    (100000,  uint256("0x08da181c548eceedc0bdd98d601f1e10574a2d534277be5282de80ae7b10da5c"))
-    (150000,  uint256("0x4278a8b4405e7a039a1c3cb56c6eb03319e3ec51090645e5666a722d9eb3717a"))
-    (200000,  uint256("0x8628a37ff23e5dc982b04855ca60d0ab509919d012d54c55354c882ab689bd24"))
-    (250000,  uint256("0xe20aeeafe404dffa04da009c241b9b18e23a6ad756df7af2dcb0dbc21e46d60d"))
-    (300000,  uint256("0xe19d5a75bfd2641a3c260a0158664cb34d1c57e7c0c953c7142aeb43705ce9c8"))
-    (500000,  uint256("0x2672cd0d06ad867a1d7cb0c4e301c69e78f3352426652a30429297e765ecce48"));
+    (0,       uint256("0x000001211fb1c1d0cf722e8934ecc1d6dac522e0489657a8cd6b5ea288f8729b"));
 
 
 static const Checkpoints::CCheckpointData data = {
@@ -113,14 +99,13 @@ public:
         vAlertPubKey = ParseHex("03001a39c631d98c9a674d1c855efd7f6cc2a893bf7e8f71f70f5ea4d06c679bc6");
         nDefaultPort = 8544;
         bnProofOfWorkLimit = ~uint256(0) >> 1;
-        nSubsidyHalvingInterval = 1050000;
         nMaxReorganizationDepth = 100;
-        nEnforceBlockUpgradeMajority = 8100; // 75%
-        nRejectBlockOutdatedMajority = 10260; // 95%
-        nToCheckBlockUpgradeMajority = 10800; // Approximate expected amount of blocks in 7 days (1440*7.5)
+        nEnforceBlockUpgradeMajority = 810; // 75%
+        nRejectBlockOutdatedMajority = 1026; // 95%
+        nToCheckBlockUpgradeMajority = 1080; // Approximate expected amount of blocks in 7 days (144*7.5)
         nMinerThreads = 0;
-        nTargetTimespan = 40 * 60; // SwiftCash: 40 minutes
-        nTargetSpacing = 1 * 60;  // SwiftCash: 1 minute
+        nTargetTimespan = 24 * 60 * 60; // SwiftCash: 24 hours
+        nTargetSpacing = 10 * 60;  // SwiftCash: 10 minutes
         nRetargetInterval = 1; // SwiftCash: each block
         nMaturity = 20;
         nSwiftnodeCountDrift = 20;
@@ -176,8 +161,8 @@ public:
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 63);
         // SwiftCash script addresses start with '8'
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 18);
-        // SwiftCash private keys start with 'V'
-        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 191);
+        // SwiftCash private keys start with 'P'
+        base58Prefixes[SECRET_KEY] = std::vector<unsigned char>(1, 152);
         // SwiftCash BIP32 pubkeys start with 'xpub' (Bitcoin defaults)
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         // SwiftCash BIP32 prvkeys start with 'xprv' (Bitcoin defaults)
@@ -185,6 +170,13 @@ public:
         // SwiftCash BIP44 coin type is '222' (0x800000de)
         // BIP44 coin type is from https://github.com/satoshilabs/slips/blob/master/slip-0044.md
         base58Prefixes[EXT_COIN_TYPE] = boost::assign::list_of(0x80)(0x00)(0x00)(0xde).convert_to_container<std::vector<unsigned char> >();
+
+        // Old SwiftCash addresses started with 'S'
+        base58Prefixes[OLD_PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 63);
+        // Old SwiftCash script addresses started with '8'
+        base58Prefixes[OLD_SCRIPT_ADDRESS] = std::vector<unsigned char>(1, 18);
+        // Old SwiftCash private keys started with 'V'
+        base58Prefixes[OLD_SECRET_KEY] = std::vector<unsigned char>(1, 191);
 
         convertSeed6(vFixedSeeds, pnSeed6_main, ARRAYLEN(pnSeed6_main));
 
@@ -199,7 +191,7 @@ public:
 
         nPoolMaxTransactions = 3;
         strSporkKey = "03ae4c8038c50e10015d436f938237d66d7c8da21ee1a989658424cfe60379da78";
-        strSwiftnodePoolDummyAddress = "Sh7nUAg9fWxqhCL2KiqWarsF6VfPBPvJz4";
+        strSwiftnodePoolDummyAddress = "Sh7nUAg9fWxqhCL2KiqWarsF6VfPAFa5Y9";
 
         nBudget_Fee_Confirmations = 6; // Number of confirmations for the finalization fee
     }
@@ -227,9 +219,9 @@ public:
         pchMessageStart[3] = 0x8a;
         vAlertPubKey = ParseHex("02c1d175e8a526d9ee25770b7b3d3a4f850f00b611130c2e07c1682aa3a74d5436");
         nDefaultPort = 28544;
-        nEnforceBlockUpgradeMajority = 4320; // 75%
-        nRejectBlockOutdatedMajority = 5472; // 95%
-        nToCheckBlockUpgradeMajority = 5760; // 4 days
+        nEnforceBlockUpgradeMajority = 432; // 75%
+        nRejectBlockOutdatedMajority = 547; // 95%
+        nToCheckBlockUpgradeMajority = 576; // 4 days
         nMinerThreads = 0;
         nTargetTimespan = 24 * 60 * 60; // SwiftCash: 24 hours
         nTargetSpacing = 10 * 60; // SwiftCash: 10 minutes
@@ -275,7 +267,7 @@ public:
 
         nPoolMaxTransactions = 2;
         strSporkKey = "02c78ca70bcaea5468843854bebae65123b0e8ad99b0cbda98504160b71179d42b";
-        strSwiftnodePoolDummyAddress = "THSwiJRv9UBw5pHVFxvzji5odtySjgyskh";
+        strSwiftnodePoolDummyAddress = "TVnzSPGj5stbL4cCNZW9Z7QpMWBGcS94bd";
         nBudget_Fee_Confirmations = 3; // Number of confirmations for the finalization fee. We have to make this very short
                                        // here because we only have a 8 block finalization window on testnet
     }
@@ -301,13 +293,12 @@ public:
         pchMessageStart[1] = 0xf2;
         pchMessageStart[2] = 0x43;
         pchMessageStart[3] = 0xff;
-        nSubsidyHalvingInterval = 150;
-        nEnforceBlockUpgradeMajority = 750;
-        nRejectBlockOutdatedMajority = 950;
-        nToCheckBlockUpgradeMajority = 1000;
+        nEnforceBlockUpgradeMajority = 75;
+        nRejectBlockOutdatedMajority = 95;
+        nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 1;
-        nTargetTimespan = 40 * 60; // SwiftCash: 40 minutes
-        nTargetSpacing = 1 * 60;  // SwiftCash: 1 minute
+        nTargetTimespan = 24 * 60 * 60; // SwiftCash: 24 hours
+        nTargetSpacing = 10 * 60;  // SwiftCash: 10 minutes
         nRetargetInterval = 1; // SwiftCash: each block
         bnProofOfWorkLimit = ~uint256(0) >> 1;
 
@@ -363,7 +354,6 @@ public:
     }
 
     //! Published setters to allow changing values in unit test cases
-    virtual void setSubsidyHalvingInterval(int anSubsidyHalvingInterval) { nSubsidyHalvingInterval = anSubsidyHalvingInterval; }
     virtual void setEnforceBlockUpgradeMajority(int anEnforceBlockUpgradeMajority) { nEnforceBlockUpgradeMajority = anEnforceBlockUpgradeMajority; }
     virtual void setRejectBlockOutdatedMajority(int anRejectBlockOutdatedMajority) { nRejectBlockOutdatedMajority = anRejectBlockOutdatedMajority; }
     virtual void setToCheckBlockUpgradeMajority(int anToCheckBlockUpgradeMajority) { nToCheckBlockUpgradeMajority = anToCheckBlockUpgradeMajority; }

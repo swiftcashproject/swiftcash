@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -83,7 +83,8 @@ bool fCheckBlockIndex = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
 
-unsigned int nStakeMinAge = 60 * 60;
+unsigned int nStakeMinAge = 24 * 60 * 60; // 24 hours
+int64_t nStakeMinValue = 10000 * COIN; // 10K SWIFT
 int64_t nReserveBalance = 0;
 
 CFeeRate minRelayTxFee = CFeeRate(10000);
@@ -1026,6 +1027,100 @@ CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowF
     return nMinFee;
 }
 
+double GetHodldepositRate(int months, int lessPercent)
+{
+    if (months < 1) return 0;
+    else if (months > 12) months = 12;
+
+    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+    int blockHeight = (int)chainActive.Height();
+
+    // 60% of maximum inflation in 12 months - GetBlockValue() returns 30%
+    int64_t blockRewards = GetBlockValue(blockHeight) * 2 * 144 * 30 * 12;
+
+    // We assume that 20% of the total supply will never turn into HODL deposits
+    double bestRate = (double)blockRewards / ((double)nMoneySupply * 0.80);
+    double rate = ( ((bestRate - bestRate * (12 - months) * 0.07) * months ) / 12 );
+
+    return rate * (100-lessPercent*0.1)/100;
+}
+
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards, int64_t nBlockTime) {
+    if (!IsSporkActive(SPORK_13_HODLDEPOSITS)) return false;
+
+    if (!tx.IsHodlDeposit()) return false;
+
+    opcodetype opcode;
+    std::vector<unsigned char> vch;
+    std::vector<unsigned char>::const_iterator pc = tx.vout[1].scriptPubKey.begin();
+
+    if (!tx.vout[0].scriptPubKey.IsPayToScriptHash()) return false;
+
+    tx.vout[1].scriptPubKey.GetOp(pc, opcode, vch);
+    if (opcode != OP_RETURN) return false;
+
+    tx.vout[1].scriptPubKey.GetOp(pc, opcode, vch);
+    if (0 > opcode && opcode > OP_PUSHDATA4) return false;
+
+    CScript script;
+    script = CScript(vch.begin(), vch.end());
+    CTxDestination dest;
+    ExtractDestination(tx.vout[0].scriptPubKey, dest);
+    CBitcoinAddress address(dest);
+
+    if (address.ToString() != CBitcoinAddress(CScriptID(script)).ToString()) return false;
+
+    pc = script.begin();
+    script.GetOp(pc, opcode, vch);
+    int64_t nTime = CScriptNum(vch, false).getint64();
+    if (nBlockTime == 0) nBlockTime = GetAdjustedTime();
+    if (fToMemPool) nBlockTime += 1*50*60;
+    int nMonths = (nTime - nBlockTime) / (60*60*24*30);
+    if (nMonths < 1) return false;
+    if (nMonths > 12) nMonths = 12;
+
+    script.GetOp(pc, opcode, vch);
+    if (opcode != OP_CHECKLOCKTIMEVERIFY) return false;
+
+    script.GetOp(pc, opcode, vch);
+    if (opcode != OP_DROP) return false;
+
+    script.GetOp(pc, opcode, vch);
+    if (vch.size() != 33) return false;
+
+    script.GetOp(pc, opcode, vch);
+    if (opcode != OP_CHECKSIG) return false;
+
+    script.GetOp(pc, opcode, vch);
+    if (opcode != OP_INVALIDOPCODE || vch.size() != 0) return false;
+
+    CAmount nValuesOut = tx.GetValueOut();
+    CAmount nValuesIn = 0;
+    BOOST_FOREACH (CTxIn txin, tx.vin) {
+       // First try finding the previous transaction in database
+       CTransaction txPrev;
+       uint256 hashBlockPrev;
+       if (!GetTransaction(txin.prevout.hash, txPrev, hashBlockPrev, true)) {
+            LogPrintf("IsValidHODLDeposit - failed to find vin transaction \n");
+            return false; // previous transaction not in the main chain
+       }
+
+       nValuesIn += txPrev.vout[txin.prevout.n].nValue;
+    }
+
+    CAmount nInterestMinted = nValuesOut - nValuesIn;
+    CAmount nDeposit = tx.vout[0].nValue - nInterestMinted;
+    CAmount nInterestExpected = nDeposit * GetHodldepositRate(nMonths, 0);
+
+    if (nInterestMinted > nInterestExpected) return false;
+
+    // Check if we reached the coin max supply.
+    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+    if (nMoneySupply + nInterestMinted > Params().MaxMoneyOut()) return false;
+
+    nHODLRewards += nInterestMinted;
+    return true;
+}
 
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee, bool ignoreFees)
 {
@@ -1148,7 +1243,14 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         CTxMemPoolEntry entry(tx, nFees, GetTime(), dPriority, chainActive.Height());
         unsigned int nSize = entry.GetTxSize();
 
-        if (!ignoreFees) {
+        bool isValidHODLDeposit = IsValidHODLDeposit(tx);
+
+        if (isValidHODLDeposit && !IsValidHODLDeposit(tx, true)) {
+             return state.DoS(0, error("AcceptToMemoryPool : not a valid HODL deposit for the mempool"),
+                 REJECT_NONSTANDARD, "bad-hodl-deposit-locktime");
+        }
+
+        if (!ignoreFees && !isValidHODLDeposit) {
             CAmount txMinFee = GetMinRelayFee(tx, nSize, true);
             if (fLimitFree && nFees < txMinFee)
                 return state.DoS(0, error("AcceptToMemoryPool : not enough fees %s, %d < %d",
@@ -1572,7 +1674,7 @@ int64_t GetBlockValue(int nHeight)
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if(nHeight < Params().LAST_POW_BLOCK()) return 100000 * COIN; // constant rewards
         else if (nHeight < 800) return ((double)nHeight/100) * 1000 * COIN; // increasing rewards
-        else return ( (double)(20*50 * 525600)/(20*525600 + nHeight - 800) ) * COIN; // decreasing rewards
+        else return ( (double)(20*50 * 52560)/(20*52560 + nHeight - 800) ) * COIN; // decreasing rewards
     }
 
     if (nHeight == 0)
@@ -1584,9 +1686,9 @@ int64_t GetBlockValue(int nHeight)
     else if(nHeight < Params().LAST_POW_BLOCK())
 	nSubsidy = 0 * COIN; // forkdrop phase - dropping about 77M SWIFT on eligible addresses (read the whitepaper)
     else if (nHeight < 10000)
-        nSubsidy = 15 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
+        nSubsidy = 10 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else
-        nSubsidy = ( (double)(20*60 * 525600)/(20*525600 + nHeight - 10000) ) * COIN; // 30% of actual subsidy planned
+        nSubsidy = ( (double)(20*60 * 52560)/(20*52560 + nHeight - 1000) ) * COIN; // 30% of actual subsidy planned
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
@@ -1608,7 +1710,7 @@ int64_t GetSwiftnodePayment(int nHeight, int64_t blockValue, int nSwiftnodeCount
     if (nHeight < Params().LAST_POW_BLOCK() || blockValue == 0)
         return 0;
 
-    ret = blockValue * 2 / 3; // swiftnodes get 2/3 of the block rewards
+    ret = blockValue / 5; // swiftnodes get 1/5 of the block rewards
     return ret;
 }
 
@@ -1816,7 +1918,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                     REJECT_INVALID, "bad-txns-inputvalues-outofrange");
         }
 
-        if (!tx.IsCoinStake()) {
+        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx)) {
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
                                           tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
@@ -2015,11 +2117,11 @@ static int64_t nTimeIndex = 0;
 static int64_t nTimeCallbacks = 0;
 static int64_t nTimeTotal = 0;
 
-bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked)
+bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck, bool fAlreadyChecked, CAmount& nBudgetPaid)
 {
     AssertLockHeld(cs_main);
     // Check it again in case a previous version let a bad block in
-    if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck, !fJustCheck))
+    if (!fAlreadyChecked && !CheckBlock(block, state, !fJustCheck, !fJustCheck, nBudgetPaid))
         return false;
 
     // verify that the view's current state corresponds to the previous block
@@ -2077,6 +2179,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;
+    CAmount nHODLRewards = 0;
     int nInputs = 0;
     unsigned int nSigOps = 0;
     CDiskTxPos pos(pindex->GetBlockPos(), GetSizeOfCompactSize(block.vtx.size()));
@@ -2108,7 +2211,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (nSigOps > nMaxBlockSigOps)
                 return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
-            if (!tx.IsCoinStake())
+            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, block.GetBlockTime()))
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
             nValueIn += view.GetValueIn(tx);
 
@@ -2150,12 +2253,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     // burn the fees during the pos phase
-    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
+    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nHODLRewards;
 
     //Check that the block does not overmint
-    if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint)) {
-        return state.DoS(100, error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s)",
-                                    FormatMoney(pindex->nMint), FormatMoney(nExpectedMint)),
+    if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint, nBudgetPaid)) {
+        return state.DoS(100, error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s | budget=%s)",
+                                    FormatMoney(pindex->nMint), FormatMoney(nExpectedMint), FormatMoney(nBudgetPaid)),
                          REJECT_INVALID, "bad-cb-amount");
     }
 
@@ -3038,7 +3141,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     return true;
 }
 
-bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig)
+bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig, CAmount& nBudgetPaid)
 {
     // These are checks that are independent of context.
 
@@ -3142,7 +3245,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         // The case also exists that the sending peer could not have enough data to see
         // that this block is invalid, so don't issue an outright ban.
         if (nHeight != 0 && !IsInitialBlockDownload()) {
-            if (!IsBlockPayeeValid(block, nHeight)) {
+            if (!IsBlockPayeeValid(block, nHeight, nBudgetPaid)) {
                 mapRejectedBlocks.insert(make_pair(block.GetHash(), GetTime()));
                 return state.DoS(0, error("CheckBlock() : Couldn't find swiftnode/budget payment"),
                         REJECT_INVALID, "bad-cb-payee");
@@ -3604,15 +3707,16 @@ bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex
     CBlockIndex indexDummy(block);
     indexDummy.pprev = pindexPrev;
     indexDummy.nHeight = pindexPrev->nHeight + 1;
+    CAmount nBudgetPaid = 0;
 
     // NOTE: CheckBlockHeader is called by CheckBlock
     if (!ContextualCheckBlockHeader(block, state, pindexPrev))
         return false;
-    if (!CheckBlock(block, state, fCheckPOW, fCheckMerkleRoot))
+    if (!CheckBlock(block, state, fCheckPOW, fCheckMerkleRoot, nBudgetPaid))
         return false;
     if (!ContextualCheckBlock(block, state, pindexPrev))
         return false;
-    if (!ConnectBlock(block, state, &indexDummy, viewNew, true))
+    if (!ConnectBlock(block, state, &indexDummy, viewNew, true, nBudgetPaid))
         return false;
     assert(state.IsValid());
 
@@ -4718,7 +4822,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                         hashSalt = GetRandHash();
                     uint64_t hashAddr = addr.GetHash();
                     uint256 hashRand = hashSalt ^ (hashAddr << 32) ^ ((GetTime() + hashAddr) / (24 * 60 * 60));
-                    hashRand = HashKeccak(BEGIN(hashRand), END(hashRand));
+                    hashRand = Hash(BEGIN(hashRand), END(hashRand));
                     multimap<uint256, CNode*> mapMix;
                     BOOST_FOREACH (CNode* pnode, vNodes) {
                         if (pnode->nVersion < CADDR_TIME_VERSION)
@@ -4726,7 +4830,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
                         unsigned int nPointer;
                         memcpy(&nPointer, &pnode, sizeof(nPointer));
                         uint256 hashKey = hashRand ^ nPointer;
-                        hashKey = HashKeccak(BEGIN(hashKey), END(hashKey));
+                        hashKey = Hash(BEGIN(hashKey), END(hashKey));
                         mapMix.insert(make_pair(hashKey, pnode));
                     }
                     int nRelayNodes = fReachable ? 2 : 1; // limited relaying of addresses outside our network(s)
@@ -5398,7 +5502,7 @@ bool ProcessMessages(CNode* pfrom)
 
         // Checksum
         CDataStream& vRecv = msg.vRecv;
-        uint256 hash = HashKeccak(vRecv.begin(), vRecv.begin() + nMessageSize);
+        uint256 hash = Hash(vRecv.begin(), vRecv.begin() + nMessageSize);
         unsigned int nChecksum = 0;
         memcpy(&nChecksum, &hash, sizeof(nChecksum));
         if (nChecksum != hdr.nChecksum) {
@@ -5585,7 +5689,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
                     if (hashSalt == 0)
                         hashSalt = GetRandHash();
                     uint256 hashRand = inv.hash ^ hashSalt;
-                    hashRand = HashKeccak(BEGIN(hashRand), END(hashRand));
+                    hashRand = Hash(BEGIN(hashRand), END(hashRand));
                     bool fTrickleWait = ((hashRand & 3) != 0);
 
                     if (fTrickleWait) {

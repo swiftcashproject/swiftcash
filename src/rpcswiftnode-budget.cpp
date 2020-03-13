@@ -197,7 +197,7 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
 
-    const int nStartThreshold = 12 * 1440;
+    const int nStartThreshold = 12 * 144;
     int nBlockStart = params[3].get_int();
     int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
     if (CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {
@@ -295,7 +295,7 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
 
-    const int nStartThreshold = 12 * 1440;
+    const int nStartThreshold = 12 * 144;
     int nBlockStart = params[3].get_int();
     int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
     if (CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {

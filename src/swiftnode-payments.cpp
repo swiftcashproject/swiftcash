@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -176,7 +176,7 @@ void DumpSwiftnodePayments()
     LogPrint("swiftnode","Budget dump finished  %dms\n", GetTimeMillis() - nStart);
 }
 
-bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted)
+bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted, CAmount nBudgetValue)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (pindexPrev == NULL) return true;
@@ -210,8 +210,7 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
         }
 
         if (budget.IsBudgetPaymentBlock(nHeight)) {
-            //the value of the block is evaluated in CheckBlock
-            return true;
+            return nMinted <= nExpectedValue + nBudgetValue;
         } else {
             if (nMinted > nExpectedValue) {
                 return false;
@@ -222,7 +221,7 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
     return true;
 }
 
-bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
+bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight, CAmount& nBudgetPaid)
 {
     TrxValidationStatus transactionStatus = TrxValidationStatus::InValid;
 
@@ -236,7 +235,7 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight)
     //check if it's a budget block
     if (IsSporkActive(SPORK_11_SUPERBLOCKS)) {
         if (budget.IsBudgetPaymentBlock(nBlockHeight)) {
-            transactionStatus = budget.IsTransactionValid(txNew, nBlockHeight);
+            transactionStatus = budget.IsTransactionValid(txNew, nBlockHeight, nBudgetPaid);
             if (transactionStatus == TrxValidationStatus::Valid)
                 return true;
 

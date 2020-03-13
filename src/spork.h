@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2016 Dash developers
 // Copyright (c) 2016-2017 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -25,7 +25,7 @@ using namespace boost;
     - This would result in old clients getting confused about which spork is for what
 */
 #define SPORK_START 10001
-#define SPORK_END 10012
+#define SPORK_END 10013
 
 #define SPORK_1_SWIFTTX 10001
 #define SPORK_2_SWIFTTX_BLOCK_FILTERING 10002
@@ -36,6 +36,7 @@ using namespace boost;
 #define SPORK_10_RECONSIDER_BLOCKS 10010
 #define SPORK_11_SUPERBLOCKS 10011
 #define SPORK_12_NEW_PROTOCOL_ENFORCEMENT 10012
+#define SPORK_13_HODLDEPOSITS 10013
 
 
 #define SPORK_1_SWIFTTX_DEFAULT 978307200				//ON
@@ -47,6 +48,7 @@ using namespace boost;
 #define SPORK_10_RECONSIDER_BLOCKS_DEFAULT 0				//OFF
 #define SPORK_11_SUPERBLOCKS_DEFAULT 8580808800				//OFF
 #define SPORK_12_NEW_PROTOCOL_ENFORCEMENT_DEFAULT 8580808800		//OFF
+#define SPORK_13_HODLDEPOSITS_DEFAULT 8580808800			//OFF
 
 class CSporkMessage;
 class CSporkManager;
@@ -77,7 +79,7 @@ public:
 
     uint256 GetHash()
     {
-        uint256 n = HashKeccak(BEGIN(nSporkID), END(nTimeSigned));
+        uint256 n = Hash(BEGIN(nSporkID), END(nTimeSigned));
         return n;
     }
 

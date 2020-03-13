@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -398,7 +398,8 @@ public:
         AvailableCoinsType coin_type = ALL_COINS,
         bool useIX = false,
         CAmount nFeePay = 0,
-        bool randChangePos = true);
+        bool randChangePos = true,
+        CAmount nInterest = 0);
     bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_COINS, bool useIX = false, CAmount nFeePay = 0);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     bool AddAccountingEntry(const CAccountingEntry&, CWalletDB & pwalletdb);
@@ -424,7 +425,7 @@ public:
 
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 
-    bool GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount amount, CScript redeemScript, bool useIX);
+    bool GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount nAmount, CAmount nInterest, CScript redeemScript, bool useIX);
     bool GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useIX, bool isProposal);
 
     isminetype IsMine(const CTxIn& txin) const;

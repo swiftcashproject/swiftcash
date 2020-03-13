@@ -1,6 +1,6 @@
 // Copyright (c) 2012-2013 The PPCoin developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -286,6 +286,9 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     //assign new variables to make it easier to read
     int64_t nValueIn = txPrev.vout[prevout.n].nValue;
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
+
+    if (nValueIn < nStakeMinValue) // Min value requirement
+        return error("CheckStakeKernelHash() : min value violation - nValueIn=%d nStakeMinValue=%d", nValueIn, nStakeMinValue);
 
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
