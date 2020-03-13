@@ -25,12 +25,14 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 |                                  |                       |
 |----------------------------------|-----------------------|
 | Block Time                       | ~10 minutes           |
+| Maximum Block Size               | ~10 MB                |
 | Mining Algorithm                 | Keccak256             |
 | Difficulty Adjustment (Timespan) | 24 hours              |
 | Difficulty Adjustment (Interval) | Every block           |
 | v3.0 HF Reset (PoW Phase)        | ~141,000,000 SWIFT    |
 | v3.0 HF Reset (PoS Phase)        | ~4,859,000,000 SWIFT  |
 | Maximum Supply (Total)           | 5,000,000,000 SWIFT   |
+| HODL Deposit Fee                 | 1 SWIFT               |
 | Proposal Fee                     | 100 SWIFT             |
 | Budget Fee                       | 10 SWIFT              |
 
