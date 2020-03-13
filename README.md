@@ -12,7 +12,7 @@ The revolutionary Proof-of-Stake algorithm offers a solution to the problem pose
 SwiftCash has a unique initial distribution and inflation. Initial distribution was less than 2% of the maximum supply which was airdrops on most SmartCash addresses - the community that gave birth to SwiftCash - details about the initial airdrops can be found in the whitepaper. SwiftCash also has a very unique and smooth inflation with radically slow reduction of block rewards. It takes 20 years for block rewards to halve for the first time and second halving will take an additional 40 years; third halving will take an additional 80 years and so on. Unlike traditional cryptocurrencies such as Bitcoin and Litecoin, this halving takes place gradually and slowly at every block rather than suddenly, stripping the markets from pump and dump opportunities, and therefore providing the holders with a consistent and stable growth model.
 
 ### HODL Deposits - Immitating Term Deposits in Traditional Banking Systems
-HODL deposits are designed to imitate term deposits in traditional banking systems. The idea is that users can lock their coins in the blockchain for a set period of time and be rewarded for doing so. HODL rewards come from future inflation, are paid instantly to the locked deposit and they cannot be spent until the deposit matures. The best rate is paid to 12-month deposits which is calculated by 60% of the maximum block rewards during 12 months divided by 80% of the total supply at the time the HODL deposit is made. For deposits less than 12 months, the annual rate is 7% less than the best rate. For example, if the best annual rate is 50% for a 12-month deposit, it will be 46.5% for an 11-month deposit and 43% for a 10-month deposit, etc.
+HODL deposits are designed to imitate term deposits in traditional banking systems. The idea is that users can lock their coins in the blockchain for a set period of time and be rewarded for doing so. HODL rewards come from future inflation, are paid instantly to the locked deposit and they cannot be spent until the deposit matures. The best rate is paid to 12-month deposits which is calculated by 60% of the maximum block rewards during 12 months divided by 80% of the total supply at the time the HODL deposit is made. For deposits less than 12 months, the annual rate is 7% less than the best rate. For example, if the best annual rate is 50% for a 12-month deposit, it will be 46.5% for an 11-month deposit and 43% for a 10-month deposit, etc. There is no minimum requirement for creating a HODL deposit; however, HODL deposit transactions cost 1 SWIFT.
 
 - Fast transactions featuring instant locks on zero confirmation transactions, we call it _SwiftTX_.
 - Decentralized blockchain voting enabling consensus-based advancement of the current SwiftNode
@@ -25,12 +25,10 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 |                                  |                       |
 |----------------------------------|-----------------------|
 | Block Time                       | ~10 minutes           |
-| Blockhash Algorithm              | Keccak                |
+| Mining Algorithm                 | Keccak256             |
 | Difficulty Adjustment (Timespan) | 24 hours              |
 | Difficulty Adjustment (Interval) | Every block           |
-| ForkDrops Phase (PoW Phase)      | ~78,000,000 SWIFT     |
 | v3.0 HF Reset (PoW Phase)        | ~141,000,000 SWIFT    |
-| Max Coin Supply (PoS Phase)      | ~4,922,000,000 SWIFT  |
 | v3.0 HF Reset (PoS Phase)        | ~4,859,000,000 SWIFT  |
 | Maximum Supply (Total)           | 5,000,000,000 SWIFT   |
 | Proposal Fee                     | 100 SWIFT             |
@@ -40,20 +38,14 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 
 | **Block Height** | **SwiftNodes**     | **PoS Miners**     |
 |------------------|--------------------|--------------------|
-|-----------BEFORE v3.0 HF/RESET 1-Minute Blocks-------------|
-| 201-1000         | 20% (~10 SWIFT)	| 10% (~5 SWIFT)     |
-| 10001-600,000    | 20% (~40-0 SWIFT)	| 10% (~20-0 SWIFT)  |
-|-----------AFTER v3.0 HF/RESET 10-Minute Blocks-------------|
-| 201-1000         | 6% (~2 SWIFT)      | 24% (~8 SWIFT)     | 
-| 1001-Infinite    | 6% (~114-0 SWIFT)  | 24% (~455-0 SWIFT) |
-|------------------------------------------------------------|
+| 201-1000         | 20% (~2 SWIFT)     | 80% (~8 SWIFT)     | 
+| 1001-Infinite    | 20% (~114-0 SWIFT) | 80% (~455-0 SWIFT) |
 
 ### Minimum & Maximum Block Rewards
 
-Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. 30% goes to Miners and SwiftNodes/Masternodes based of the Proof-of-Stake algorithm. The rest which is up to 60% can go to HODL deposits.
+Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. 30% goes to PoS Miners and SwiftNodes/Masternodes. The rest which is up to 60% can go to HODL deposits.
 
 Maximum Block Rewards = (20 * 2000 * 52560) / (20 * 52560 + nHeight)
-
 Minimum Block Rewards = (20 * 600 * 52560) / (20 * 52560 + nHeight)
 
 ### License
