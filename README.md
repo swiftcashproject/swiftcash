@@ -5,7 +5,7 @@ SWIFTCASH
 ### Introduction
 SwiftCash is an open-source, self-funded system of decentralized governance and economy born out of a desire to create a digital store of value with a consistent and stable growth model, as well as a peer-to-peer cryptocurrency for daily transactional use. SwiftCash uses the revolutionary Proof-of-Stake algorithm to reach consensus and allows up to 10% of future block rewards to be spent on proposals that are embraced by the community — stakeholders. Therefore, 90% of maximum monthly inflation goes directly to stakeholders who help secure the network, and whether the rest is mined or how it’s spent will also be decided by the stakeholders.
 
-### PoS vs. PoW
+### Proof-of-Stake vs. Proof-of-Work
 The revolutionary Proof-of-Stake algorithm offers a solution to the problem posed by the exponential increase in energy consumed by Bitcoin, and other Proof-of-Work cryptocurrencies. Proof-of-Work mining is environmentally unsustainable due to the electricity used by high-powered mining hardware and anyone can attack the network and double spend by acquiring 51% of the network’s hash power. SwiftCash utilizes the green protocol, an energy-efficient Proof-of-Stake algorithm, which can be mined on any computer, and will never require specialized mining equipment. The green protocol offers a simple solution to sustainability issues posed by Bitcoin and other Proof-of-Work cryptocurrencies, and provides a faster, and more scalable blockchain that is better suited for daily transactional use.
 
 ### Initial Distribution & Inflation
