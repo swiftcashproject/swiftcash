@@ -48,6 +48,7 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. 30% goes to PoS Miners and SwiftNodes/Masternodes. The rest which is up to 60% can go to HODL deposits.
 
 Maximum Block Rewards = (20 * 2000 * 52560) / (20 * 52560 + nHeight)
+
 Minimum Block Rewards = (20 * 600 * 52560) / (20 * 52560 + nHeight)
 
 ### License
