@@ -191,8 +191,8 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
         throw runtime_error("Invalid url, limit of 64 characters.");
 
     int nPaymentCount = params[2].get_int();
-    if (nPaymentCount < 1 || nPaymentCount > 3)
-        throw runtime_error("Invalid payment count, must be between 1-3.");
+    if (nPaymentCount < 1 || nPaymentCount > 12)
+        throw runtime_error("Invalid payment count, must be between 1-12.");
 
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();

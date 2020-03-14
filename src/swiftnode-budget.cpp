@@ -912,7 +912,7 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
         return nSubsidy * 144;
     }
 
-    // Add 60K to nHeight for v3.0 RESET
+    // Add 60K to nHeight for v3.0 HF/RESET
     nHeight += 60000;
 
     //No budget during the pow phase
@@ -940,7 +940,7 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
     if (nMoneySupply >= Params().MaxMoneyOut())
         nSubsidy = 0;
 
-    // Amount of blocks in a month period of time (using 1 minute block time) = (60*24*30)
+    // Amount of blocks in a month period of time (using 10 minutes block time) = (6*24*30)
     return nSubsidy * 144 * 30;
 }
 
@@ -1491,7 +1491,7 @@ bool CBudgetProposal::IsValid(std::string& strError, bool fCheckCollateral)
         return false;
     }
 
-    if (nAmount < 10 * COIN) {
+    if (nAmount < 100 * COIN) {
         strError = "Proposal " + strProposalName + ": Invalid nAmount";
         return false;
     }
@@ -1509,25 +1509,15 @@ bool CBudgetProposal::IsValid(std::string& strError, bool fCheckCollateral)
         }
     }
 
-    //if proposal doesn't gain traction within 2 weeks, remove it
-    // nTime not being saved correctly
-    // -- TODO: We should keep track of the last time the proposal was valid, if it's invalid for 2 weeks, erase it
-    // if(nTime + (60*60*24*2) < GetAdjustedTime()) {
-    //     if(GetYeas()-GetNays() < (mnodeman.CountEnabled(ActiveProtocol())/10)) {
-    //         strError = "Not enough support";
-    //         return false;
-    //     }
-    // }
-
-    //can only pay out 20% of the total budget to each proposal
-    CAmount nTenthOfTotal = budget.GetTotalBudget(nBlockStart) / 5;
+    //can only pay out 50% of the total budget to each proposal
+    CAmount nTenthOfTotal = budget.GetTotalBudget(nBlockStart) / 2;
     if (nAmount > nTenthOfTotal) {
-        strError = strprintf("Proposal %s: Payment more than max - can only pay out 20%% of the total budget(=%d SWIFT) to each proposal", strProposalName, nTenthOfTotal/COIN);
+        strError = strprintf("Proposal %s: Payment more than max - can only pay out 50%% of the total budget(=%d SWIFT) to each proposal", strProposalName, nTenthOfTotal/COIN);
         return false;
     }
 
     int nTotalPaymentCount = GetTotalPaymentCount();
-    if (nTotalPaymentCount < 1 || nTotalPaymentCount > 3) {
+    if (nTotalPaymentCount < 1 || nTotalPaymentCount > 12) {
         strError = "Proposal " + strProposalName + ": Invalid nTotalPaymentCount";
         return false;
     }

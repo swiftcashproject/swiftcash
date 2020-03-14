@@ -1685,7 +1685,7 @@ int64_t GetBlockValue(int nHeight)
     if (nHeight == 0)
 	nSubsidy = 0;
     else if (nHeight < 39)
-        nSubsidy = 2000000 * COIN; // mining forkdrops - appx. 77M SWIFT needed
+        nSubsidy = 3500000 * COIN; // mining forkdrops - appx. 133M SWIFT needed
     else if (nHeight == 39)
 	nSubsidy = 1270162 * COIN; // exact amount of forkdrops = 77,270,162 SWIFT
     else if(nHeight < Params().LAST_POW_BLOCK())
@@ -1693,7 +1693,7 @@ int64_t GetBlockValue(int nHeight)
     else if (nHeight < 1000)
         nSubsidy = 10 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else {
-        // Add 60K to nHeight for v3.0 RESET
+        // Add 60K to nHeight for v3.0 HF/RESET
         nHeight += 60000;
 
         nSubsidy = ( (double)(4*600 * 52560)/(4*52560 + nHeight - 1000) ) * COIN; // 30% of actual subsidy planned

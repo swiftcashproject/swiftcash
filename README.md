@@ -3,7 +3,7 @@ SWIFTCASH
 ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) [![Build Status](https://travis-ci.org/swiftcashproject/swiftcash.svg?branch=master)](https://travis-ci.org/swiftcashproject/swiftcash) [![Discord](https://img.shields.io/discord/488436992032636929.svg)](https://discord.me/swiftcash)
 
 ### Introduction
-SwiftCash is an open-source, self-funded system of decentralized governance and economy born out of a desire to create a digital store of value with a consistent and stable growth model, as well as a peer-to-peer cryptocurrency for daily transactional use. SwiftCash uses the revolutionary Proof-of-Stake algorithm to reach consensus and allows up to 10% of future block rewards to be spent on proposals that are embraced by the community — stakeholders. Therefore, 90% of maximum monthly inflation goes directly to stakeholders who help secure the network, and whether the rest is mined or how it’s spent will also be decided by the stakeholders.
+SwiftCash is an open-source, self-funded system of decentralized governance and economy, born out of a desire to create a digital store of value with a consistent and stable growth model, as well as a peer-to-peer cryptocurrency for daily transactional use. SwiftCash uses the revolutionary Proof-of-Stake algorithm to reach consensus and allows up to 10% of future block rewards to be spent on proposals that are embraced by enough stakeholders. 30% of maximum inflation goes directly to stakeholders who help secure the network, up to another 60% can go to HODL deposits aka stakeholders who lock their coins in the blockchain between 1-12 months and the remaining 10% can be mined on demand if enough stakeholders vote yes to proposed budgets.
 
 ### Proof-of-Stake vs. Proof-of-Work
 The revolutionary Proof-of-Stake algorithm offers a solution to the problem posed by the exponential increase in energy consumed by Bitcoin, and other Proof-of-Work cryptocurrencies. Proof-of-Work mining is environmentally unsustainable due to the electricity used by high-powered mining hardware and anyone can attack the network and double spend by acquiring 51% of the network’s hash power. SwiftCash utilizes the green protocol, an energy-efficient Proof-of-Stake algorithm, which can be mined on any computer, and will never require specialized mining equipment. The green protocol offers a simple solution to sustainability issues posed by Bitcoin and other Proof-of-Work cryptocurrencies, and provides a faster, and more scalable blockchain that is better suited for daily transactional use.
@@ -29,19 +29,19 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 | Mining Algorithm                 | Keccak256             |
 | Difficulty Adjustment (Timespan) | 24 hours              |
 | Difficulty Adjustment (Interval) | Every block           |
-| v3.0 HF Reset (PoW Phase)        | ~141,000,000 SWIFT    |
-| v3.0 HF Reset (PoS Phase)        | ~4,859,000,000 SWIFT  |
+| v3.0 HF Reset (PoW Phase)        | ~140,000,000 SWIFT    |
+| v3.0 HF Reset (PoS Phase)        | ~4,860,000,000 SWIFT  |
 | Maximum Supply (Total)           | 5,000,000,000 SWIFT   |
 | HODL Deposit Fee                 | 1 SWIFT               |
 | Proposal Fee                     | 100 SWIFT             |
 | Budget Fee                       | 10 SWIFT              |
 
-### Block Rewards Distribution
+### Block Rewards Distribution (after v3.0 HF/Reset)
 
-| **Block Height** | **SwiftNodes**     | **PoS Miners**     |
-|------------------|--------------------|--------------------|
-| 201-1000         | 20% (~2 SWIFT)     | 80% (~8 SWIFT)     | 
-| 1001-Infinite    | 20% (~114-0 SWIFT) | 80% (~455-0 SWIFT) |
+| **Block Height** | **SwiftNodes**    | **PoS Miners**     |
+|------------------|-------------------|--------------------|
+| 201-1000         | 20% (~2 SWIFT)    | 80% (~8 SWIFT)     | 
+| 1001-Infinite    | 20% (~95-1 SWIFT) | 80% (~380-4 SWIFT) |
 
 ### Minimum & Maximum Block Rewards
 
