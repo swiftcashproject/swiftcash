@@ -11,7 +11,7 @@ v3.0.0
   * Reduced the maximum budget allowance via proposals from 70% to 10% of the maximum inflation
   * Will no longer have SwiftRewards but instead automated HODL deposits/rewards
   * Changed the hashing algorithm for everything except blocks from Keccak256 to SHA256
+  * Changed the inflation curve and so now first halving happens in 4 years instead of 20 years
   * Fixed various of minor bugs and issues as well
 
  -- Markus GH <msg768@hotmail.com>  Wed, 11 Mar 2020 02:18:01 +1100
-

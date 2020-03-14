@@ -912,6 +912,9 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
         return nSubsidy * 144;
     }
 
+    // Add 60K to nHeight for v3.0 RESET
+    nHeight += 60000;
+
     //No budget during the pow phase
     if (nHeight <= Params().LAST_POW_BLOCK())
         return 0;
@@ -920,9 +923,13 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
     CAmount nSubsidy = 0;
 
     if (nHeight < 1000)
-        nSubsidy = 20 * COIN; // fair launch - give appx 1 week to users to set up their wallets and nodes
+        nSubsidy = 5 * COIN; // fair launch - give appx 1 week to users to set up their wallets and nodes
     else
-        nSubsidy = ( (double)(20*200 * 52560)/(20*52560 + nHeight - 1000) ) * COIN; // 10% 0f actual subsidy planned
+        nSubsidy = ( (double)(4*200 * 52560)/(4*52560 + nHeight - 1000) ) * COIN; // 10% 0f actual subsidy planned
+
+    // This part is planning ahead for 200+ years
+    if (nHeight >= 200*52560 && nSubsidy < 3 * COIN)
+        nSubsidy = 3; // At one point we should burn enough fees to leave about 3 SWIFT per block for proposals
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;

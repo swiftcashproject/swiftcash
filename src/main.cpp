@@ -1690,10 +1690,18 @@ int64_t GetBlockValue(int nHeight)
 	nSubsidy = 1270162 * COIN; // exact amount of forkdrops = 77,270,162 SWIFT
     else if(nHeight < Params().LAST_POW_BLOCK())
 	nSubsidy = 0 * COIN; // forkdrop phase - dropping about 77M SWIFT on eligible addresses (read the whitepaper)
-    else if (nHeight < 10000)
+    else if (nHeight < 1000)
         nSubsidy = 10 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
-    else
-        nSubsidy = ( (double)(20*60 * 52560)/(20*52560 + nHeight - 1000) ) * COIN; // 30% of actual subsidy planned
+    else {
+        // Add 60K to nHeight for v3.0 RESET
+        nHeight += 60000;
+
+        nSubsidy = ( (double)(4*600 * 52560)/(4*52560 + nHeight - 1000) ) * COIN; // 30% of actual subsidy planned
+    }
+
+    // This part is planning ahead for 200+ years
+    if (nHeight >= 200*52560 && nSubsidy < 10 * COIN)
+        nSubsidy = 10; // At one point we should burn enough fees to leave about 10 SWIFT per block for miners
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;

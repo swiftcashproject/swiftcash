@@ -8,10 +8,10 @@ swiftcash (3.0.0-xenial1) xenial; urgency=medium
   * Increased the minimum age requirement for staking from 1 hour to 24 hours
   * Introduced a minimum collateral requirement of 10,000 SWIFT for staking
   * Now giving Masternodes/SwiftNodes 1/5th of the minimum inflation, instead of 2/3rd
-  * Reduced the maximum budget allowance via proposals from 70% to 10% of the maximum inflation         
+  * Reduced the maximum budget allowance via proposals from 70% to 10% of the maximum inflation
   * Will no longer have SwiftRewards but instead automated HODL deposits/rewards
-  * Changed the hashing algorithm for everything except blocks from Keccak256 to SHA256               
+  * Changed the hashing algorithm for everything except blocks from Keccak256 to SHA256
+  * Changed the inflation curve and so now first halving happens in 4 years instead of 20 years
   * Fixed various of minor bugs and issues as well
 
  -- Markus GH <msg768@hotmail.com>  Wed, 11 Feb 2020 02:18:01 +1100
-
