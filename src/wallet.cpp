@@ -1575,7 +1575,7 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
 
         //check for min age
         int64_t nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
-        if (GetAdjustedTime() - nTxTime < nStakeMinAge)
+        if (chainActive.Height() > 1000 && GetAdjustedTime() - nTxTime < nStakeMinAge)
             continue;
 
         //check that it is matured
@@ -1597,6 +1597,9 @@ bool CWallet::MintableCoins()
         return error("MintableCoins() : invalid reserve balance amount");
     if (nBalance <= nReserveBalance)
         return false;
+
+    if (chainActive.Height() <= 1000)
+        return true;
 
     vector<COutput> vCoins;
     AvailableCoins(vCoins, true);
