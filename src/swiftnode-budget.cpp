@@ -908,8 +908,9 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
     if (chainActive.Tip() == NULL) return 0;
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        CAmount nSubsidy = 35000 * COIN;
-        return nSubsidy * 144;
+        if(nHeight < Params().LAST_POW_BLOCK()) return 144 * 35000 * COIN; // constant rewards
+        else if (nHeight < 800) return 144 * ((double)nHeight/100) * 1000 * COIN; // increasing rewards
+        else return 144 * ( (double)(4*200 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
     }
 
     // Add 60K to nHeight for v3.0 HF/RESET
