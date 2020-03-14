@@ -3,7 +3,7 @@ swiftcash (3.0.0-xenial1) xenial; urgency=medium
   * Reset the blockchain back to genesis
   * Airdropped everyone based on their balance in the previous chain at block 600,000
   * Increased the block time from 1 minute to 10 minutes
-  * Increased the maximum block size from 1MB to 10MB
+  * Increased the maximum block size from 2MB to 10MB
   * Increased the difficulty adjustment timespan from 40 minutes to 24 hours
   * Increased the minimum age requirement for staking from 1 hour to 24 hours
   * Introduced a minimum collateral requirement of 10,000 SWIFT for staking
