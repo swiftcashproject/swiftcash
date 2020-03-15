@@ -1573,9 +1573,9 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
         if (out.tx->vout[out.i].nValue < nStakeMinValue)
             continue;
 
-        //check for min age
+        //check for min age/depth
         int64_t nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
-        if (chainActive.Height() > 1000 && GetAdjustedTime() - nTxTime < nStakeMinAge)
+        if (chainActive.Height() > 1000 && (GetAdjustedTime() - nTxTime < nStakeMinAge && out.nDepth < (int)nStakeMinDepth))
             continue;
 
         //check that it is matured
@@ -1605,10 +1605,10 @@ bool CWallet::MintableCoins()
     AvailableCoins(vCoins, true);
 
     for (const COutput& out : vCoins) {
-        //check for min age and min value
+        //check for min age/depth and min value
         int64_t nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
-        if (GetAdjustedTime() - nTxTime >= nStakeMinAge &&
-            out.tx->vout[out.i].nValue >= nStakeMinValue)
+        if (out.tx->vout[out.i].nValue >= nStakeMinValue &&
+            (GetAdjustedTime() - nTxTime >= nStakeMinAge || out.nDepth >= (int)nStakeMinDepth))
                 return true;
     }
 

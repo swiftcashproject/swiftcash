@@ -286,6 +286,8 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     //assign new variables to make it easier to read
     int64_t nValueIn = txPrev.vout[prevout.n].nValue;
     unsigned int nTimeBlockFrom = blockFrom.GetBlockTime();
+    unsigned int nHeightBlockFrom = mapBlockIndex[blockFrom.GetHash()]->nHeight;
+    unsigned int nHeightTx = (unsigned int)chainActive.Height() + 1;
 
     if (nValueIn < nStakeMinValue) // Min value requirement
         return error("CheckStakeKernelHash() : min value violation - nValueIn=%d nStakeMinValue=%d", nValueIn, nStakeMinValue);
@@ -293,8 +295,9 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     if (nTimeTx < nTimeBlockFrom) // Transaction timestamp violation
         return error("CheckStakeKernelHash() : nTime violation");
 
-    if (chainActive.Height() > 1000 && nTimeBlockFrom + nStakeMinAge > nTimeTx) // Min age requirement
-        return error("CheckStakeKernelHash() : min age violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d", nTimeBlockFrom, nStakeMinAge, nTimeTx);
+    if (chainActive.Height() > 1000 &&
+         (nTimeBlockFrom + nStakeMinAge > nTimeTx && nHeightBlockFrom + nStakeMinDepth > nHeightTx)) // Min age/depth requirement
+        return error("CheckStakeKernelHash() : min age/depth violation - nTimeBlockFrom=%d nStakeMinAge=%d nTimeTx=%d nHeightBlockFrom=% nStakeMinDepth=%d nHeight=%d", nTimeBlockFrom, nStakeMinAge, nTimeTx, nHeightBlockFrom, nStakeMinDepth, chainActive.Height() + 1);
 
     //grab difficulty
     uint256 bnTargetPerCoinDay;
@@ -344,7 +347,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
             LogPrintf("CheckStakeKernelHash() : using modifier %s at height=%d timestamp=%s for block from height=%d timestamp=%s\n",
                 boost::lexical_cast<std::string>(nStakeModifier).c_str(), nStakeModifierHeight,
                 DateTimeStrFormat("%Y-%m-%d %H:%M:%S", nStakeModifierTime).c_str(),
-                mapBlockIndex[blockFrom.GetHash()]->nHeight,
+                nHeightBlockFrom,
                 DateTimeStrFormat("%Y-%m-%d %H:%M:%S", blockFrom.GetBlockTime()).c_str());
             LogPrintf("CheckStakeKernelHash() : pass protocol=%s modifier=%s nTimeBlockFrom=%u prevoutHash=%s nTimeTxPrev=%u nPrevout=%u nTimeTx=%u hashProof=%s\n",
                 "0.3",

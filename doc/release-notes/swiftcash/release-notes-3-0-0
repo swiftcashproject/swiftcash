@@ -5,7 +5,7 @@ v3.0.0
   * Increased the block time from 1 minute to 10 minutes
   * Increased the maximum block size from 2MB to 10MB
   * Increased the difficulty adjustment timespan from 40 minutes to 24 hours
-  * Increased the minimum age requirement for staking from 1 hour to 12 hours
+  * Increased the minimum age requirement for staking from 1 hour to 24 hours
   * Introduced a minimum collateral requirement of 10,000 SWIFT for staking
   * Now giving Masternodes/SwiftNodes 1/5th of the minimum inflation, instead of 2/3rd
   * Reduced the maximum budget allowance via proposals from 70% to 10% of the maximum inflation

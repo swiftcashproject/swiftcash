@@ -83,7 +83,8 @@ bool fCheckBlockIndex = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
 
-unsigned int nStakeMinAge = 12 * 60 * 60; // 12 hours
+unsigned int nStakeMinAge = 24 * 60 * 60; // 24 hours
+unsigned int nStakeMinDepth = 144; // 144 blocks or appx. 24 hours
 int64_t nStakeMinValue = 10000 * COIN; // 10K SWIFT
 int64_t nReserveBalance = 0;
 
