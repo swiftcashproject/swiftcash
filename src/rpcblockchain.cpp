@@ -150,7 +150,7 @@ UniValue getinflation(const UniValue& params, bool fHelp)
     int64_t blockRewards = 0;
     int blockHeight = (int)chainActive.Height();
 
-    for(int i=blockHeight; i<blockHeight+525600; i++) {
+    for(int i=blockHeight; i<blockHeight+52560; i++) {
        blockRewards += GetBlockValue(i);
     }
 

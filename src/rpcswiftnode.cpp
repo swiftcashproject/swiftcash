@@ -356,7 +356,7 @@ UniValue getroi(const UniValue& params, bool fHelp)
     int64_t blockRewards = 0;
     int blockHeight = (int)chainActive.Height();
 
-    for(int i=blockHeight; i<blockHeight+525600; i++) {
+    for(int i=blockHeight; i<blockHeight+52560; i++) {
        blockRewards += GetBlockValue(i);
     }
 
@@ -364,10 +364,10 @@ UniValue getroi(const UniValue& params, bool fHelp)
     if(swiftnodes == 0) {
        swiftnode = 0;
     } else {
-       swiftnode = ((double)blockRewards*2/3/COIN)/(swiftnodes*SWIFTNODE_COLLATERAL)*100;
+       swiftnode = ((double)blockRewards*1/5/COIN)/(swiftnodes*SWIFTNODE_COLLATERAL)*100;
     }
 
-    staking = ((double)blockRewards*1/3/COIN)/((double)GetDifficulty()*100)*100;
+    staking = ((double)blockRewards*4/5/COIN)/((double)GetDifficulty()*10)*100;
 
     UniValue result(UniValue::VOBJ);
     result.push_back(Pair("swiftnode", swiftnode));
