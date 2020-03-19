@@ -14,7 +14,7 @@ swiftcash (3.0.0-xenial1) xenial; urgency=medium
   * Changed the hashing algorithm for everything except blocks from Keccak256 to SHA256
   * Made the wallet backward compatible so users can import their old private keys                
   * Changed the inflation curve and so now first halving happens in 4 years instead of 20 years
-  * Added Blockchain-Based and Cheat-Proof Lotteries drawing every 5,000 block
+  * Added blockchain-based and cheat-proof lotteries drawing at every 5,000 block
   * Fixed various of minor bugs and issues as well
 
  -- Markus GH <msg768@hotmail.com>  Thu, 19 Mar 2020 15:30:02 +1100
