@@ -39,8 +39,8 @@ enum class TrxValidationStatus {
     VoteThreshold    /** If not enough swiftnodes have voted on a finalized budget */
 };
 
-static const CAmount PROPOSAL_FEE_TX = (100 * COIN); // fee for preparing budgets
-static const CAmount BUDGET_FEE_TX = (10 * COIN); // fee for finalizing budgets
+static const CAmount PROPOSAL_FEE_TX = (10 * COIN); // fee for preparing budgets
+static const CAmount BUDGET_FEE_TX = (1 * COIN); // fee for finalizing budgets
 static const int64_t BUDGET_VOTE_UPDATE_MIN = 60 * 60; // minimum seconds required for swiftnodes to update their votes
 static map<uint256, int> mapPayment_History;
 

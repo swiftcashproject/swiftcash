@@ -334,6 +334,69 @@ void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeF
         throw JSONRPCError(RPC_WALLET_ERROR, "Error: The transaction was rejected! This might happen if some of the coins in your wallet were already spent, such as if you used a copy of wallet.dat and coins were spent in the copy but not marked as spent here.");
 }
 
+UniValue lottery(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() != 2)
+        throw runtime_error(
+            "lottery amount)\n"
+            "\nBurn an amount of your coins to enter the blockchain lottery!\n" +
+            HelpRequiringPassphrase() +
+            "\nArguments:\n"
+            "1. \"swiftaddress\"           (string, required) The swift address to receive the jackpot if you win.\n"
+            "2. \"amount\"                 (numeric, required) The amount in swift to burn. eg 10\n" +
+            HelpRequiringPassphrase() +
+            "\nResult:\n"
+            "\"transactionid\"             (string) The transaction id.\n"
+            "\nExamples:\n" +
+            HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1") +
+            HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 10") +
+            HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 100"));
+
+    if (params[0].get_str() == "jackpot")
+        return ValueFromAmount(chainActive.Tip()->nLotteryJackpot);
+
+    if (params[0].get_str() == "players")
+        return chainActive.Tip()->vLotteryPlayers.size();
+
+    int drawWithin = chainActive.Height() % nDrawBlocks;
+    if (drawWithin <= (nDrawDrift+5) || drawWithin >= (nDrawBlocks-nDrawDrift-5))
+        throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift));
+
+    // swift address
+    CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SWIFT address");
+    CScript scriptPubKey = GetScriptForDestination(address.Get());
+    if (!IsMine(*pwalletMain, scriptPubKey))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown SWIFT address");
+
+    // Amount
+    CAmount nAmount = AmountFromValue(params[1]);
+    if (nAmount < CENT) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Minimum ticket value is 0.01 SWIFT");
+    }
+
+    CWalletTx wtx;
+    bool useIX = false;
+    if (!pwalletMain->GetLotteryTicketCollateralTX(wtx, scriptPubKey, nAmount, useIX)) {
+        throw runtime_error("Error making collateral transaction for lottery. Please check your wallet balance.");
+    }
+
+    // sanity check
+    if (!wtx.IsLotteryTicket()) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Invalid Lottery Ticket");
+    }
+
+    // make our change address
+    CReserveKey reservekey(pwalletMain);
+    if(!pwalletMain->CommitTransaction(wtx, reservekey, useIX ? "ix" : "tx")) {
+        LogPrintf("Lottery(): %s", EncodeHexTx(wtx));
+        throw JSONRPCError(RPC_WALLET_ERROR, "Transaction commit failed");
+    }
+
+    return wtx.GetHash().ToString();
+}
+
 UniValue hodldeposit(const UniValue& params, bool fHelp)
 {
     if (!IsSporkActive(SPORK_13_HODLDEPOSITS)) throw runtime_error("SPORK_13_HODLDEPOSITS is currently inactive.");
@@ -346,7 +409,7 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
             "\nArguments:\n"
             "1. \"swiftaddress\"           (string, required) The swift address to sign from.\n"
             "2. \"amount\"                 (numeric, required) The amount in swift to deposit. eg 10000\n"
-            "3. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 12=12months).\n"
+            "3. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 144=144months).\n"
             "4. \"lesspercent\"            (numeric, 0-10, optional, default=1) To request less interest in case the transaction is mined much later.\n"
             "5. \"morehours\"              (numeric, 1-12, optional, default=2) To request less interest in case the transaction is mined much later.\n"
             "                               transaction, just kept in your wallet.\n"
@@ -359,7 +422,7 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
-    if (params[0].get_str() == "bestrate") return GetHodldepositRate(12, 1);
+    if (params[0].get_str() == "bestrate") return GetHodlDepositRate(12, 1);
 
     // swift address
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
@@ -375,8 +438,8 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     // Months
     int months = params[2].get_int();
 
-    if (months < 1 || months > 12)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Months must be between 1 and 12");
+    if (months < 1 || months > 144)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Months must be between 1 and 144");
 
     // Less Percent
     int nLessPercent = 1;
@@ -396,8 +459,8 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     int64_t nNow = GetAdjustedTime();
     int64_t nTime = nNow + months*30*24*60*60 + (nMoreHours*60*60);
 
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to one day on testnet
-        nTime = nNow + months*24*60*60 + (nMoreHours*60*60);
+    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to two hours on testnet
+        nTime = nNow + months*2*60*60 + (nMoreHours*60*60);
     }
 
     CKeyID keyID;
@@ -415,14 +478,14 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
 
     CWalletTx wtx;
     bool useIX = false;
-    if (!pwalletMain->GetHodldepositCollateralTX(wtx, depositScript, nAmount, nAmount * GetHodldepositRate(months, nLessPercent), inner, useIX)) {
-        throw runtime_error("Error making collateral transaction for proposal. Please check your wallet balance.");
+    if (!pwalletMain->GetHodlDepositCollateralTX(wtx, depositScript, nAmount, nAmount * GetHodlDepositRate(months, nLessPercent), inner, useIX)) {
+        throw runtime_error("Error making collateral transaction for hodl deposit. Please check your wallet balance.");
     }
 
     // make our change address
     CReserveKey reservekey(pwalletMain);
     if(!pwalletMain->CommitTransaction(wtx, reservekey, useIX ? "ix" : "tx")) {
-        std::cout << EncodeHexTx(wtx) << std::endl;
+        LogPrintf("HODLDeposit(): %s", EncodeHexTx(wtx));
         throw JSONRPCError(RPC_WALLET_ERROR, "Transaction commit failed");
     } else {
         pwalletMain->AddCScript(inner);
@@ -991,9 +1054,9 @@ UniValue sendmany(const UniValue& params, bool fHelp)
                                         "                                    the number of addresses.\n"
                                         "\nExamples:\n"
                                         "\nSend two amounts to two different addresses:\n" +
-            HelpExampleCli("sendmany", "\"tabby\" \"{\\\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\":0.01,\\\"XuQQkwA4FYkq2XERzMY2CiAZhJTEDAbtcg\\\":0.02}\"") +
-            "\nSend two amounts to two different addresses setting the confirmation and comment:\n" + HelpExampleCli("sendmany", "\"tabby\" \"{\\\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\":0.01,\\\"XuQQkwA4FYkq2XERzMY2CiAZhJTEDAbtcg\\\":0.02}\" 6 \"testing\"") +
-            "\nAs a json rpc call\n" + HelpExampleRpc("sendmany", "\"tabby\", \"{\\\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\":0.01,\\\"XuQQkwA4FYkq2XERzMY2CiAZhJTEDAbtcg\\\":0.02}\", 6, \"testing\""));
+            HelpExampleCli("sendmany", "\"tabby\" \"{\\\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\":0.01,\\\"SZaskYheTU4KeTzsYBACQoRNwjuWzgBuQ5\\\":0.02}\"") +
+            "\nSend two amounts to two different addresses setting the confirmation and comment:\n" + HelpExampleCli("sendmany", "\"tabby\" \"{\\\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\":0.01,\\\"SZaskYheTU4KeTzsYBACQoRNwjuWzgBuQ5\\\":0.02}\" 6 \"testing\"") +
+            "\nAs a json rpc call\n" + HelpExampleRpc("sendmany", "\"tabby\", \"{\\\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\\\":0.01,\\\"SZaskYheTU4KeTzsYBACQoRNwjuWzgBuQ5\\\":0.02}\", 6, \"testing\""));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
@@ -1075,8 +1138,8 @@ UniValue addmultisigaddress(const UniValue& params, bool fHelp)
 
             "\nExamples:\n"
             "\nAdd a multisig address from 2 addresses\n" +
-            HelpExampleCli("addmultisigaddress", "2 \"[\\\"Xt4qk9uKvQYAonVGSZNXqxeDmtjaEWgfrs\\\",\\\"XoSoWQkpgLpppPoyyzbUFh1fq2RBvW6UK1\\\"]\"") +
-            "\nAs json rpc call\n" + HelpExampleRpc("addmultisigaddress", "2, \"[\\\"Xt4qk9uKvQYAonVGSZNXqxeDmtjaEWgfrs\\\",\\\"XoSoWQkpgLpppPoyyzbUFh1fq2RBvW6UK1\\\"]\""));
+            HelpExampleCli("addmultisigaddress", "2 \"[\\\"St4qk9uKvQYAonVGSZNXqxeDmtjaEWgfrs\\\",\\\"SoSoWQkpgLpppPoyyzbUFh1fq2RBvW6UK1\\\"]\"") +
+            "\nAs json rpc call\n" + HelpExampleRpc("addmultisigaddress", "2, \"[\\\"St4qk9uKvQYAonVGSZNXqxeDmtjaEWgfrs\\\",\\\"SoSoWQkpgLpppPoyyzbUFh1fq2RBvW6UK1\\\"]\""));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
 

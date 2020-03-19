@@ -286,7 +286,21 @@ public:
         if (vin.size() < 1 || vin[0].prevout.IsNull() ||
             vout.size() < 2 || vout[0].IsEmpty() ||
             !vout[0].scriptPubKey.IsPayToScriptHash() ||
-            vout[1].scriptPubKey[0] != OP_RETURN || vout[1].nValue < 1 * COIN) return false;
+            vout[1].scriptPubKey[0] != OP_RETURN || vout[1].nValue < 0.1 * COIN) return false;
+
+        return true;
+    }
+
+    bool IsLotteryTicket() const
+    {
+        // swiftcash: the lottery ticket transaction has OP_RETURN as its first output with Lottery as the output data
+        if (vin.size() < 1 || vin[0].prevout.IsNull() ||
+            vout.size() < 2 || vout[0].IsEmpty() ||
+            vout[0].scriptPubKey[0] != OP_RETURN || vout[0].nValue < CENT) return false;
+
+        CScript script = vout[0].scriptPubKey;
+        if (script[1] != 0x07 && script[2] != 0x4c && script[3] != 0x6f && script[4] != 0x74 && script[5] != 0x74 &&
+            script[6] != 0x65 && script[7] != 0x72 && script[8] != 0x79) return false;
 
         return true;
     }

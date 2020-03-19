@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2016-2017 PIVX developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -248,6 +249,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 //Proof Of Stake
                 pindexNew->nMint = diskindex.nMint;
                 pindexNew->nMoneySupply = diskindex.nMoneySupply;
+                pindexNew->nLotteryJackpot = diskindex.nLotteryJackpot;
+                pindexNew->vLotteryPlayers = diskindex.vLotteryPlayers;
+                pindexNew->vLotteryWeights = diskindex.vLotteryWeights;
                 pindexNew->nFlags = diskindex.nFlags;
                 pindexNew->nStakeModifier = diskindex.nStakeModifier;
                 pindexNew->prevoutStake = diskindex.prevoutStake;

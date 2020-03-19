@@ -88,6 +88,9 @@ unsigned int nStakeMinDepth = 144; // 144 blocks or appx. 24 hours
 int64_t nStakeMinValue = 10000 * COIN; // 10K SWIFT
 int64_t nReserveBalance = 0;
 
+int nDrawBlocks = 5000; // Draw every 5000 blocks
+int nDrawDrift = 5; // Do not accept tickets within 20 blocks of each draw
+
 CFeeRate minRelayTxFee = CFeeRate(10000);
 
 CTxMemPool mempool(::minRelayTxFee);
@@ -977,20 +980,26 @@ CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowF
     return nMinFee;
 }
 
-double GetHodldepositRate(int months, int lessPercent)
+double GetHodlDepositRate(int months, int lessPercent)
 {
-    if (months < 1) return 0;
-    else if (months > 12) months = 12;
+    if (months < 1 || months > 144) return 0;
 
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     int blockHeight = (int)chainActive.Height();
 
-    // 60% of maximum inflation in 12 months - GetBlockValue() returns 30%
-    int64_t blockRewards = GetBlockValue(blockHeight) * 2 * 144 * 30 * 12;
+    // 60% of maximum inflation in 144 months - GetBlockValue() returns 30%
+    int64_t blockRewards = GetBlockValue(blockHeight) * 2 * 144 * 30 * 12 * 12;
 
     // We assume that 20% of the total supply will never turn into HODL deposits
     double bestRate = (double)blockRewards / ((double)nMoneySupply * 0.80);
-    double rate = ( ((bestRate - bestRate * (12 - months) * 0.07) * months ) / 12 );
+    double rate = 0;
+
+    if (months >= 12) {
+        rate = bestRate*months/144;
+    } else {
+        bestRate /= 12;
+        rate = ( ((bestRate - bestRate * (12 - months) * 0.07) * months ) / 12 );
+    }
 
     return rate * (100-lessPercent*0.1)/100;
 }
@@ -1022,17 +1031,16 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
 
     pc = script.begin();
     script.GetOp(pc, opcode, vch);
-    int64_t nTime = CScriptNum(vch, false).getint64();
+    int64_t nTime = CScriptNum(vch, false).getint();
     if (nBlockTime == 0) nBlockTime = GetAdjustedTime();
     if (fToMemPool) nBlockTime += 1*50*60;
     int nMonths = (nTime - nBlockTime) / (60*60*24*30);
 
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to one day on testnet
-        nMonths = (nTime - nBlockTime) / (60*60*24);
+    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to two hours on testnet
+        nMonths = (nTime - nBlockTime) / (60*60*2);
     }
 
-    if (nMonths < 1) return false;
-    if (nMonths > 12) nMonths = 12;
+    if (nMonths < 1 || nMonths > 144) return false;
 
     script.GetOp(pc, opcode, vch);
     if (opcode != OP_CHECKLOCKTIMEVERIFY) return false;
@@ -1056,7 +1064,7 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
        CTransaction txPrev;
        uint256 hashBlockPrev;
        if (!GetTransaction(txin.prevout.hash, txPrev, hashBlockPrev, true)) {
-            LogPrintf("IsValidHODLDeposit - failed to find vin transaction \n");
+            LogPrintf("IsValidHODLDeposit(): failed to find vin transaction \n");
             return false; // previous transaction not in the main chain
        }
 
@@ -1065,15 +1073,61 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
 
     CAmount nInterestMinted = nValuesOut - nValuesIn;
     CAmount nDeposit = tx.vout[0].nValue - nInterestMinted;
-    CAmount nInterestExpected = nDeposit * GetHodldepositRate(nMonths, 0);
+    CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, 0);
 
-    if (nInterestMinted > nInterestExpected) return false;
+    if (nInterestMinted > nInterestExpected) {
+        LogPrintf("IsValidHODLDeposit(): too much interest! nInterestMinted=%d, nInterestExpected=%d\n, nMonths=%d",
+                   nInterestMinted, nInterestExpected, nMonths);
+        return false;
+    }
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     if (nMoneySupply + nInterestMinted > Params().MaxMoneyOut()) return false;
 
     nHODLRewards += nInterestMinted;
+    return true;
+}
+
+bool AreLotteryPayeesValid(CBlockIndex* pindexPrev, const CBlock& block, const vector<string>& winners) {
+
+     int nHeight = pindexPrev->nHeight + 1;
+     const CTransaction& txNew = (nHeight > Params().LAST_POW_BLOCK() ? block.vtx[1] : block.vtx[0]);
+
+     int found = 0;
+     CScript scriptPubKey1 = GetScriptForDestination(CBitcoinAddress(winners[0]).Get());
+     CScript scriptPubKey2 = GetScriptForDestination(CBitcoinAddress(winners[1]).Get());
+     CScript scriptPubKey3 = GetScriptForDestination(CBitcoinAddress(winners[2]).Get());
+
+     BOOST_FOREACH (CTxOut out, txNew.vout) {
+         if (out.scriptPubKey == scriptPubKey1 && out.nValue >= pindexPrev->nLotteryJackpot*0.6) found++;
+         else if (out.scriptPubKey == scriptPubKey2 && out.nValue >= pindexPrev->nLotteryJackpot*0.3) found++;
+         else if (out.scriptPubKey == scriptPubKey3 && out.nValue >= pindexPrev->nLotteryJackpot*0.1) found++;
+     }
+
+     if (found == 3) return true;
+
+     return false;
+}
+
+bool HaveLotteryWinners(CBlockIndex* pindexPrev, vector<string>& winners) {
+    int nPlayers = pindexPrev->vLotteryPlayers.size();
+    if (nPlayers == 0) return false;
+
+    vector<int> vIndex = {};
+    for (int i=0; i<nPlayers+1; i++) vIndex.push_back(i);
+
+    uint64_t nSeed = pindexPrev->phashBlock->Get32();
+    mt19937 gen(nSeed);
+
+    LogPrintf("LotteryWinners(): nSeed=%d, blockHash=%s, nPlayers=%d", nSeed, pindexPrev->phashBlock->GetHex(), nPlayers);
+
+    piecewise_constant_distribution<> dist(vIndex.begin(), vIndex.end(), pindexPrev->vLotteryWeights.begin());
+
+    winners.push_back(pindexPrev->vLotteryPlayers[(int)dist(gen)]);
+    winners.push_back(pindexPrev->vLotteryPlayers[(int)dist(gen)]);
+    winners.push_back(pindexPrev->vLotteryPlayers[(int)dist(gen)]);
+
     return true;
 }
 
@@ -1627,9 +1681,12 @@ int64_t GetBlockValue(int nHeight)
     int64_t nSubsidy = 0;
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if(nHeight < Params().LAST_POW_BLOCK()) return 100000 * COIN; // constant rewards
-        else if (nHeight < 800) return ((double)nHeight/100) * 1000 * COIN; // increasing rewards
-        else return ( (double)(4*600 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
+        if(nHeight < Params().LAST_POW_BLOCK()) nSubsidy = 100000 * COIN; // constant rewards
+        else if (nHeight < 800) nSubsidy = ((double)nHeight/100) * 1000 * COIN; // increasing rewards
+        else nSubsidy = ( (double)(4*600 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
+
+        if ( (nHeight % nDrawBlocks) == 0 ) nSubsidy += chainActive.Tip()->nLotteryJackpot*0.2;
+        return nSubsidy;
     }
 
     if (nHeight == 0)
@@ -1661,6 +1718,9 @@ int64_t GetBlockValue(int nHeight)
 
     if (nMoneySupply >= Params().MaxMoneyOut())
         nSubsidy = 0;
+
+    // Add the lottery fees
+    if ( (nHeight % nDrawBlocks) == 0 ) nSubsidy += chainActive.Tip()->nLotteryJackpot*0.2;
 
     return nSubsidy;
 }
@@ -1844,7 +1904,7 @@ bool CScriptCheck::operator()()
     return true;
 }
 
-bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks)
+bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks, int64_t blocktime)
 {
     if (!tx.IsCoinBase()) {
         if (pvChecks)
@@ -1881,7 +1941,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                     REJECT_INVALID, "bad-txns-inputvalues-outofrange");
         }
 
-        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx)) {
+        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, blocktime)) {
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
                                           tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
@@ -2140,6 +2200,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
 
+    int drawWithin = pindex->nHeight % nDrawBlocks;
     int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;
     CAmount nHODLRewards = 0;
@@ -2153,6 +2214,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nValueOut = 0;
     CAmount nValueIn = 0;
     unsigned int nMaxBlockSigOps = MAX_BLOCK_SIGOPS;
+
+    // Lottery fields
+    pindex->nLotteryJackpot = pindex->pprev ? pindex->pprev->nLotteryJackpot : 0;
+    pindex->vLotteryPlayers = pindex->pprev ? pindex->pprev->vLotteryPlayers : vector<string>();
+    pindex->vLotteryWeights = pindex->pprev ? pindex->pprev->vLotteryWeights : vector<unsigned int>();
+
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
 
@@ -2178,12 +2245,29 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
             nValueIn += view.GetValueIn(tx);
 
+            CTxDestination txDest;
+            if (drawWithin > nDrawDrift && drawWithin < (nDrawBlocks - nDrawDrift) &&
+                tx.IsLotteryTicket() && ExtractDestination(tx.vout[1].scriptPubKey, txDest)) {
+
+                pindex->nLotteryJackpot += tx.vout[0].nValue * 0.8;
+                string player = CBitcoinAddress(txDest).ToString();
+                int weight = tx.vout[0].nValue/CENT;
+
+                vector<string>::iterator vIT = find(pindex->vLotteryPlayers.begin(), pindex->vLotteryPlayers.end(), player);
+                if (vIT != pindex->vLotteryPlayers.end()) {
+                    pindex->vLotteryWeights[pindex->vLotteryPlayers.begin()-vIT] += weight;
+                } else {
+                    pindex->vLotteryPlayers.push_back(player);
+                    pindex->vLotteryWeights.push_back(weight);
+                }
+            }
+
             std::vector<CScriptCheck> vChecks;
             unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_DERSIG;
             if (fCLTVHasMajority)
                 flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
 
-            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL))
+            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL, block.GetBlockTime()))
                 if (!Checkpoints::CheckBlock(pindex->nHeight, *pindex->phashBlock))
                     return false;
             control.Add(vChecks);
@@ -2215,8 +2299,23 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     nTimeConnect += nTime1 - nTimeStart;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
+    CAmount nLotteryRewards = 0;
+    if (drawWithin == 1) { // one block after the draw block
+        vector<string> winners;
+        nLotteryRewards = pindex->pprev->nLotteryJackpot;
+        if(HaveLotteryWinners(pindex->pprev, winners) && !AreLotteryPayeesValid(pindex->pprev, block, winners)) {
+            return state.DoS(100, error("ConnectBlock() : bad lottery payees"),
+                   REJECT_INVALID, "bad-lottery-payees");
+        }
+
+        // Reset the lottery data
+        pindex->nLotteryJackpot = 0;
+        pindex->vLotteryPlayers = {};
+        pindex->vLotteryWeights = {};
+    }
+
     // burn the fees during the pos phase
-    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nHODLRewards;
+    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nHODLRewards + nLotteryRewards;
 
     //Check that the block does not overmint
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint, nBudgetPaid)) {

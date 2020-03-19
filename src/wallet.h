@@ -399,7 +399,8 @@ public:
         bool useIX = false,
         CAmount nFeePay = 0,
         bool randChangePos = true,
-        CAmount nInterest = 0);
+        CAmount nInterest = 0,
+        bool checkDust = true);
     bool CreateTransaction(CScript scriptPubKey, const CAmount& nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, CReserveKey& reservekey, CAmount& nFeeRet, std::string& strFailReason, const CCoinControl* coinControl = NULL, AvailableCoinsType coin_type = ALL_COINS, bool useIX = false, CAmount nFeePay = 0);
     bool CommitTransaction(CWalletTx& wtxNew, CReserveKey& reservekey, std::string strCommand = "tx");
     bool AddAccountingEntry(const CAccountingEntry&, CWalletDB & pwalletdb);
@@ -425,7 +426,8 @@ public:
 
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 
-    bool GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount nAmount, CAmount nInterest, CScript redeemScript, bool useIX);
+    bool GetLotteryTicketCollateralTX(CWalletTx& tx, CScript scriptPubKey, CAmount nAmount, bool useIX);
+    bool GetHodlDepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount nAmount, CAmount nInterest, CScript redeemScript, bool useIX);
     bool GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useIX, bool isProposal);
 
     isminetype IsMine(const CTxIn& txin) const;

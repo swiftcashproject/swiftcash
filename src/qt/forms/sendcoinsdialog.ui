@@ -1039,7 +1039,7 @@
                     </size>
                    </property>
                    <property name="toolTip">
-                    <string>SwiftTX technology allows for instant locks - A flat fee of 0.002 SWIFT applies</string>
+                    <string>SwiftTX technology allows for instant locks - A flat fee of 0.01 SWIFT applies</string>
                    </property>
                    <property name="text">
                     <string>SwiftTX</string>

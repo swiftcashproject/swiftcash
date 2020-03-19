@@ -1,6 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2015-2018 PIVX developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -166,6 +167,11 @@ public:
     int64_t nMint;
     int64_t nMoneySupply;
 
+    // lottery specific fields
+    int64_t nLotteryJackpot; // Track 80% of the lottery fees
+    vector<string> vLotteryPlayers;
+    vector<unsigned int> vLotteryWeights;
+
     //! block header
     int nVersion;
     uint256 hashMerkleRoot;
@@ -193,6 +199,9 @@ public:
 
         nMint = 0;
         nMoneySupply = 0;
+        nLotteryJackpot = 0;
+        vLotteryPlayers = {};
+        vLotteryWeights = {};
         nFlags = 0;
         nStakeModifier = 0;
         nStakeModifierChecksum = 0;
@@ -428,6 +437,9 @@ public:
 
         READWRITE(nMint);
         READWRITE(nMoneySupply);
+        READWRITE(nLotteryJackpot);
+        READWRITE(vLotteryPlayers);
+        READWRITE(vLotteryWeights);
         READWRITE(nFlags);
         READWRITE(nStakeModifier);
         if (IsProofOfStake()) {

@@ -290,11 +290,6 @@ public:
         return m_value;
     }
 
-    int getint64() const
-    {
-        return m_value;
-    }
-
     std::vector<unsigned char> getvch() const
     {
         return serialize(m_value);

@@ -1774,7 +1774,36 @@ int CWallet::CountInputsWithAmount(CAmount nInputAmount)
     return nTotal;
 }
 
-bool CWallet::GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount nAmount, CAmount nInterest, CScript redeemScript, bool useIX)
+bool CWallet::GetLotteryTicketCollateralTX(CWalletTx& tx, CScript scriptPubKey, CAmount nAmount, bool useIX)
+{
+    // nAmount must be greater than or equal to 0.01 SWIFT
+    if (nAmount < CENT) return false;
+
+    // make our change address
+    CReserveKey reservekey(pwalletMain);
+
+    CScript scriptChange;
+    scriptChange << OP_RETURN << ToByteVector(string("Lottery"));
+
+    CAmount nFeeRet = 0;
+    std::string strFail = "";
+
+    vector<pair<CScript, CAmount> > vecSend;
+    vecSend.push_back(make_pair(scriptChange, nAmount));
+    vecSend.push_back(make_pair(scriptPubKey, 0));
+
+    CCoinControl* coinControl = NULL;
+    set<pair<const CWalletTx*, unsigned int> > setCoins;
+    bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0, false, (CAmount)0, false);
+    if (!success) {
+        LogPrintf("GetLotteryTicketCollateralTX: Error - %s\n", strFail);
+        return false;
+    }
+
+    return true;
+}
+
+bool CWallet::GetHodlDepositCollateralTX(CWalletTx& tx, CScript depositScript, CAmount nAmount, CAmount nInterest, CScript redeemScript, bool useIX)
 {
     // make our change address
     CReserveKey reservekey(pwalletMain);
@@ -1787,13 +1816,13 @@ bool CWallet::GetHodldepositCollateralTX(CWalletTx& tx, CScript depositScript, C
 
     vector<pair<CScript, CAmount> > vecSend;
     vecSend.push_back(make_pair(depositScript, nAmount));
-    vecSend.push_back(make_pair(scriptChange, 1 * COIN));
+    vecSend.push_back(make_pair(scriptChange, 0.1 * COIN));
 
     CCoinControl* coinControl = NULL;
     set<pair<const CWalletTx*, unsigned int> > setCoins;
     bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0, false, nInterest);
     if (!success) {
-        LogPrintf("GetHodldepositCollateralTX: Error - %s\n", strFail);
+        LogPrintf("GetHodlDepositCollateralTX: Error - %s\n", strFail);
         return false;
     }
 
@@ -1850,8 +1879,9 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     bool useIX,
     CAmount nFeePay,
     bool randChangePos,
-    CAmount nInterest) {
-    if (useIX && nFeePay < CENT / 5) nFeePay = CENT / 5; // Minimum fee for ix is 0.002 SWIFT
+    CAmount nInterest,
+    bool checkDust) {
+    if (useIX && nFeePay < CENT) nFeePay = CENT; // Minimum fee for ix is 0.01 SWIFT
 
     CAmount nValue = 0;
     unsigned int nSubtractFeeFromAmount = 0;
@@ -1908,7 +1938,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                             }
                         }
 
-                        if (txout.IsDust(::minRelayTxFee)) {
+                        if (checkDust && txout.IsDust(::minRelayTxFee)) {
                             if (fSubtractFeeFromAmount && nFeeRet > 0) {
                                if (txout.nValue < 0)
                                   strFailReason = _("The transaction amount is too small to pay the fee");

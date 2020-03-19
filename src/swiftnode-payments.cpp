@@ -266,6 +266,32 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight, CAmount& nBudgetPa
     return true;
 }
 
+void FillLotteryPayees(CBlockIndex* pindexPrev, CMutableTransaction& txNew)
+{
+    if ((pindexPrev->nHeight % nDrawBlocks) == 0) {
+        vector<string> winners = {};
+        if (HaveLotteryWinners(pindexPrev, winners)) {
+            CScript scriptPubKey1 = GetScriptForDestination(CBitcoinAddress(winners[0]).Get());
+            CScript scriptPubKey2 = GetScriptForDestination(CBitcoinAddress(winners[1]).Get());
+            CScript scriptPubKey3 = GetScriptForDestination(CBitcoinAddress(winners[2]).Get());
+
+            int i = txNew.vout.size();
+            txNew.vout.resize(i+3);
+
+            txNew.vout[i].scriptPubKey = scriptPubKey1;
+            txNew.vout[i].nValue = pindexPrev->nLotteryJackpot*0.6;
+            LogPrintf("FillLotteryPayees(): winner1=%s, nAmount=%d\n", winners[0], txNew.vout[i].nValue);
+
+            txNew.vout[i+1].scriptPubKey = scriptPubKey2;
+            txNew.vout[i+1].nValue = pindexPrev->nLotteryJackpot*0.3;
+            LogPrintf("FillLotteryPayees(): winner2=%s, nAmount=%d\n", winners[1], txNew.vout[i+1].nValue);
+
+            txNew.vout[i+2].scriptPubKey = scriptPubKey3;
+            txNew.vout[i+2].nValue = pindexPrev->nLotteryJackpot*0.1;
+            LogPrintf("FillLotteryPayees(): winner3=%s, nAmount=%d\n", winners[2], txNew.vout[i+2].nValue);
+        }
+    }
+}
 
 void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStake)
 {
@@ -277,6 +303,8 @@ void FillBlockPayee(CMutableTransaction& txNew, CAmount nFees, bool fProofOfStak
     } else {
         swiftnodePayments.FillBlockPayee(txNew, nFees, fProofOfStake);
     }
+
+    FillLotteryPayees(pindexPrev, txNew);
 }
 
 std::string GetRequiredPaymentsString(int nBlockHeight)

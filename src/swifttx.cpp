@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2016 Dash developers
 // Copyright (c) 2016-2017 PIVX developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -204,7 +205,7 @@ bool IsIXTXValid(const CTransaction& txCollateral)
         return true;
     }
 
-    if (nValueIn - nValueOut < COIN * 0.002) {
+    if (nValueIn - nValueOut < COIN * 0.01) {
         LogPrint("swifttx", "IsIXTXValid - did not include enough fees in transaction %d\n%s\n", nValueOut - nValueIn, txCollateral.ToString().c_str());
         return false;
     }
