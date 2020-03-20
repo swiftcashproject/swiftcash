@@ -399,7 +399,8 @@ UniValue lottery(const UniValue& params, bool fHelp)
 
 UniValue hodldeposit(const UniValue& params, bool fHelp)
 {
-    if (!IsSporkActive(SPORK_13_HODLDEPOSITS)) throw runtime_error("SPORK_13_HODLDEPOSITS is currently inactive.");
+    bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
+    if (!fCLTVHasMajority) throw runtime_error("BIP65 is currently inactive.");
 
     if (fHelp || params.size() < 3 || params.size() > 5)
         throw runtime_error(

@@ -88,8 +88,8 @@ unsigned int nStakeMinDepth = 144; // 144 blocks or appx. 24 hours
 int64_t nStakeMinValue = 10000 * COIN; // 10K SWIFT
 int64_t nReserveBalance = 0;
 
-int nDrawBlocks = 5000; // Draw every 5000 blocks
-int nDrawDrift = 10; // Do not accept tickets within 10 blocks of each draw
+int nDrawBlocks = 50; // Draw every 5000 blocks
+int nDrawDrift = 5; // Do not accept tickets within 10 blocks of each draw
 
 CFeeRate minRelayTxFee = CFeeRate(10000);
 
@@ -1004,8 +1004,10 @@ double GetHodlDepositRate(int months, int lessPercent)
     return rate * (100-lessPercent*0.1)/100;
 }
 
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards, int64_t nBlockTime) {
-    if (!IsSporkActive(SPORK_13_HODLDEPOSITS)) return false;
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards, int64_t nBlockTime)
+{
+    bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
+    if (!fCLTVHasMajority) return false;
 
     if (!tx.IsHodlDeposit()) return false;
 
@@ -1686,7 +1688,11 @@ int64_t GetBlockValue(int nHeight)
         else if (nHeight < 800) nSubsidy = ((double)nHeight/100) * 1000 * COIN; // increasing rewards
         else nSubsidy = ( (double)(4*600 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
 
-        if ( (nHeight % nDrawBlocks) == 0 ) nSubsidy += chainActive.Tip()->nLotteryJackpot*0.2;
+        // Add the lottery fees
+        int nDrawWithin = nHeight % nDrawBlocks;
+        if (nDrawWithin > (nDrawBlocks - nDrawDrift) || nDrawWithin == 0)
+            nSubsidy += chainActive.Tip()->nLotteryJackpot*(0.2/nDrawDrift);
+
         return nSubsidy;
     }
 
@@ -2321,6 +2327,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nHODLRewards + nLotteryRewards;
 
     //Check that the block does not overmint
+	LogPrintf("MSG : nHeight=%d, nMinted=%s, nExpectedMint=%s\n", pindex->pprev->nHeight, FormatMoney(pindex->nMint), FormatMoney(nExpectedMint));
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint, nBudgetPaid)) {
         return state.DoS(100, error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s | budget=%s)",
                                     FormatMoney(pindex->nMint), FormatMoney(nExpectedMint), FormatMoney(nBudgetPaid)),

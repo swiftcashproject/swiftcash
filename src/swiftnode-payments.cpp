@@ -195,8 +195,8 @@ bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMin
     }
 
     if (!swiftnodeSync.IsSynced()) { //there is no budget data to use to check anything
-        //super blocks will always be on these blocks, max 100 per budgeting
-        if (nHeight % GetBudgetPaymentCycleBlocks() < 100) {
+        //super blocks will always be on these blocks, max 10 per budgeting
+        if (nHeight % GetBudgetPaymentCycleBlocks() < 10) {
             return true;
         } else {
             if (nMinted > nExpectedValue) {

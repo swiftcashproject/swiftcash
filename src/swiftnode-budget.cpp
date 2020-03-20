@@ -1510,10 +1510,11 @@ bool CBudgetProposal::IsValid(std::string& strError, bool fCheckCollateral)
         }
     }
 
-    //can only pay out 50% of the total budget to each proposal
-    CAmount nTenthOfTotal = budget.GetTotalBudget(nBlockStart) / 2;
-    if (nAmount > nTenthOfTotal) {
-        strError = strprintf("Proposal %s: Payment more than max - can only pay out 50%% of the total budget(=%d SWIFT) to each proposal", strProposalName, nTenthOfTotal/COIN);
+    //can only pay out 10-50% of the total budget to each proposal
+    CAmount nHalfOfTotal = budget.GetTotalBudget(nBlockStart) / 2;
+    CAmount nTenthOfTotal = nHalfOfTotal / 5;
+    if (nAmount > nHalfOfTotal || nAmount < nTenthOfTotal) {
+        strError = strprintf("Proposal %s: Payment not within min-max - can only pay out 10-50%% of the total budget(=%d-%d SWIFT) to each proposal", strProposalName, nTenthOfTotal/COIN, nHalfOfTotal/COIN);
         return false;
     }
 
