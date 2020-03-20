@@ -89,7 +89,7 @@ int64_t nStakeMinValue = 10000 * COIN; // 10K SWIFT
 int64_t nReserveBalance = 0;
 
 int nDrawBlocks = 5000; // Draw every 5000 blocks
-int nDrawDrift = 5; // Do not accept tickets within 20 blocks of each draw
+int nDrawDrift = 10; // Do not accept tickets within 10 blocks of each draw
 
 CFeeRate minRelayTxFee = CFeeRate(10000);
 
@@ -1076,7 +1076,7 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
     CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, 0);
 
     if (nInterestMinted > nInterestExpected) {
-        LogPrintf("IsValidHODLDeposit(): too much interest! nInterestMinted=%d, nInterestExpected=%d\n, nMonths=%d",
+        LogPrintf("IsValidHODLDeposit(): too much interest! nInterestMinted=%d, nInterestExpected=%d\n, nMonths=%d\n",
                    nInterestMinted, nInterestExpected, nMonths);
         return false;
     }
@@ -1117,10 +1117,11 @@ bool HaveLotteryWinners(CBlockIndex* pindexPrev, vector<string>& winners) {
     vector<int> vIndex = {};
     for (int i=0; i<nPlayers+1; i++) vIndex.push_back(i);
 
-    uint64_t nSeed = pindexPrev->phashBlock->Get32();
+    // seed will be an unsigned int from the first 32 bits of the blockhash
+    uint32_t nSeed = pindexPrev->phashBlock->Get32();
     mt19937 gen(nSeed);
 
-    LogPrintf("LotteryWinners(): nSeed=%d, blockHash=%s, nPlayers=%d", nSeed, pindexPrev->phashBlock->GetHex(), nPlayers);
+    LogPrintf("LotteryWinners(): nSeed=%d, blockHash=%s, nPlayers=%d\n", nSeed, pindexPrev->phashBlock->GetHex(), nPlayers);
 
     piecewise_constant_distribution<> dist(vIndex.begin(), vIndex.end(), pindexPrev->vLotteryWeights.begin());
 
@@ -1720,7 +1721,9 @@ int64_t GetBlockValue(int nHeight)
         nSubsidy = 0;
 
     // Add the lottery fees
-    if ( (nHeight % nDrawBlocks) == 0 ) nSubsidy += chainActive.Tip()->nLotteryJackpot*0.2;
+    int nDrawWithin = nHeight % nDrawBlocks;
+    if (nDrawWithin > (nDrawBlocks - nDrawDrift) || nDrawWithin == 0)
+        nSubsidy += chainActive.Tip()->nLotteryJackpot*(0.2/nDrawDrift);
 
     return nSubsidy;
 }

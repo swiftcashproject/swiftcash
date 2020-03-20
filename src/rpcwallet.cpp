@@ -359,8 +359,8 @@ UniValue lottery(const UniValue& params, bool fHelp)
         return chainActive.Tip()->vLotteryPlayers.size();
 
     int drawWithin = chainActive.Height() % nDrawBlocks;
-    if (drawWithin <= (nDrawDrift+5) || drawWithin >= (nDrawBlocks-nDrawDrift-5))
-        throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift));
+    if (drawWithin <= (nDrawDrift*2) || drawWithin >= (nDrawBlocks-nDrawDrift*2))
+        throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift*2));
 
     // swift address
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
