@@ -42,6 +42,8 @@
 #include <boost/filesystem/fstream.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/discrete_distribution.hpp>
 
 using namespace boost;
 using namespace std;
@@ -1116,16 +1118,13 @@ bool HaveLotteryWinners(CBlockIndex* pindexPrev, vector<string>& winners) {
     int nPlayers = pindexPrev->vLotteryPlayers.size();
     if (nPlayers == 0) return false;
 
-    vector<int> vIndex = {};
-    for (int i=0; i<nPlayers+1; i++) vIndex.push_back(i);
-
     // seed will be an unsigned int from the first 32 bits of the blockhash
     uint32_t nSeed = pindexPrev->phashBlock->Get32();
-    mt19937 gen(nSeed);
+    boost::random::mt19937 gen(nSeed);
 
     LogPrintf("LotteryWinners(): nSeed=%d, blockHash=%s, nPlayers=%d\n", nSeed, pindexPrev->phashBlock->GetHex(), nPlayers);
 
-    piecewise_constant_distribution<> dist(vIndex.begin(), vIndex.end(), pindexPrev->vLotteryWeights.begin());
+    boost::random::discrete_distribution<> dist(pindexPrev->vLotteryWeights);
 
     winners.push_back(pindexPrev->vLotteryPlayers[(int)dist(gen)]);
     winners.push_back(pindexPrev->vLotteryPlayers[(int)dist(gen)]);
