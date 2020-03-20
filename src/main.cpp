@@ -2327,7 +2327,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nHODLRewards + nLotteryRewards;
 
     //Check that the block does not overmint
-	LogPrintf("MSG : nHeight=%d, nMinted=%s, nExpectedMint=%s\n", pindex->pprev->nHeight, FormatMoney(pindex->nMint), FormatMoney(nExpectedMint));
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint, nBudgetPaid)) {
         return state.DoS(100, error("ConnectBlock() : reward pays too much (actual=%s vs limit=%s | budget=%s)",
                                     FormatMoney(pindex->nMint), FormatMoney(nExpectedMint), FormatMoney(nBudgetPaid)),
