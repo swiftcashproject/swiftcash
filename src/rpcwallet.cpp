@@ -336,9 +336,29 @@ void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeF
 
 UniValue lottery(const UniValue& params, bool fHelp)
 {
+    if (params.size() == 1 && params[0].get_str() == "jackpot")
+        return ValueFromAmount(chainActive.Tip()->nLotteryJackpot);
+
+    if (params.size() == 1 && params[0].get_str() == "players")
+        return (int)chainActive.Tip()->vLotteryPlayers.size();
+
+    if (params.size() == 1 && params[0].get_str() == "listplayers") {
+        UniValue ret(UniValue::VARR);
+
+        for (unsigned int i=0; i < chainActive.Tip()->vLotteryPlayers.size(); i++) {
+             UniValue player(UniValue::VOBJ);
+             player.push_back(Pair("address", chainActive.Tip()->vLotteryPlayers[i]));
+             player.push_back(Pair("weight", (uint64_t)chainActive.Tip()->vLotteryWeights[i]));
+             ret.push_back(player);
+        }
+
+        return ret;
+    }
+
     if (fHelp || params.size() != 2)
         throw runtime_error(
-            "lottery amount)\n"
+            "lottery jackpot | players | listplayers\n"
+            "lottery swiftaddress amount\n"
             "\nBurn an amount of your coins to enter the blockchain lottery!\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
@@ -351,9 +371,6 @@ UniValue lottery(const UniValue& params, bool fHelp)
             HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1") +
             HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 10") +
             HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 100"));
-
-    if (params[0].get_str() == "jackpot")
-        return ValueFromAmount(chainActive.Tip()->nLotteryJackpot);
 
     int drawWithin = chainActive.Height() % nDrawBlocks;
     if (drawWithin <= (nDrawDrift*2) || drawWithin >= (nDrawBlocks-nDrawDrift*2))
@@ -399,8 +416,16 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
     if (!fCLTVHasMajority) throw runtime_error("BIP65 is currently inactive.");
 
+    if (params.size() == 1 && params[0].get_str() == "bestrate") return GetHodlDepositRate(12, 1);
+
+    if (params.size() == 2 && params[0].get_str() == "rate") {
+        int nMonths = params[1].get_int();
+        return GetHodlDepositRate(nMonths, 1);
+    }
+
     if (fHelp || params.size() < 3 || params.size() > 5)
         throw runtime_error(
+            "hodldeposit bestrate | rate months\n"
             "hodldeposit \"swiftaddress\" amount months ( \"lesspercent\" \"morehours\" )\n"
             "\nLock an amount for 1-12 months and get an instant reward in your HODL deposit address!\n" +
             HelpRequiringPassphrase() +
@@ -419,8 +444,6 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
             HelpExampleRpc("hodldeposit", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 10000 4"));
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
-
-    if (params[0].get_str() == "bestrate") return GetHodlDepositRate(12, 1);
 
     // swift address
     CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
