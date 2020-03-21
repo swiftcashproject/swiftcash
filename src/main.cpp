@@ -90,9 +90,6 @@ unsigned int nStakeMinDepth = 144; // 144 blocks or appx. 24 hours
 int64_t nStakeMinValue = 10000 * COIN; // 10K SWIFT
 int64_t nReserveBalance = 0;
 
-int nDrawBlocks = 50; // Draw every 5000 blocks
-int nDrawDrift = 5; // Do not accept tickets within 10 blocks of each draw
-
 CFeeRate minRelayTxFee = CFeeRate(10000);
 
 CTxMemPool mempool(::minRelayTxFee);
@@ -1676,6 +1673,8 @@ double ConvertBitsToDouble(unsigned int nBits)
 int64_t GetBlockValue(int nHeight)
 {
     int64_t nSubsidy = 0;
+    int nDrawBlocks = Params().DrawBlocks();
+    int nDrawDrift = Params().DrawDrift();
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if(nHeight < Params().LAST_POW_BLOCK()) nSubsidy = 100000 * COIN; // constant rewards
@@ -2199,6 +2198,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     CCheckQueueControl<CScriptCheck> control(fScriptChecks && nScriptCheckThreads ? &scriptcheckqueue : NULL);
 
+    int nDrawBlocks = Params().DrawBlocks();
+    int nDrawDrift = Params().DrawDrift();
     int drawWithin = pindex->nHeight % nDrawBlocks;
     int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;

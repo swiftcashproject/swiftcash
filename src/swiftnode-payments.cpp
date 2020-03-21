@@ -268,6 +268,7 @@ bool IsBlockPayeeValid(const CBlock& block, int nBlockHeight, CAmount& nBudgetPa
 
 void FillLotteryPayees(CBlockIndex* pindexPrev, CMutableTransaction& txNew)
 {
+    int nDrawBlocks = Params().DrawBlocks();
     if ((pindexPrev->nHeight % nDrawBlocks) == 0) {
         vector<string> winners = {};
         if (HaveLotteryWinners(pindexPrev, winners)) {

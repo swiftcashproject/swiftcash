@@ -189,6 +189,9 @@ public:
         fTestnetToBeDeprecatedFieldRPC = false;
         fHeadersFirstSyncingActive = false;
 
+        nDrawBlocks = 5000;
+        nDrawDrift = 10;
+
         nPoolMaxTransactions = 3;
         strSporkKey = "03ae4c8038c50e10015d436f938237d66d7c8da21ee1a989658424cfe60379da78";
         strSwiftnodePoolDummyAddress = "Sh7nUAg9fWxqhCL2KiqWarsF6VfPAFa5Y9";
@@ -264,6 +267,9 @@ public:
         fRequireStandard = false;
         fMineBlocksOnDemand = false;
         fTestnetToBeDeprecatedFieldRPC = true;
+
+        nDrawBlocks = 50;
+        nDrawDrift = 5;
 
         nPoolMaxTransactions = 2;
         strSporkKey = "02c78ca70bcaea5468843854bebae65123b0e8ad99b0cbda98504160b71179d42b";

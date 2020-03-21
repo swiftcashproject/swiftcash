@@ -99,6 +99,8 @@ public:
     std::string SwiftnodePoolDummyAddress() const { return strSwiftnodePoolDummyAddress; }
     int64_t Budget_Fee_Confirmations() const { return nBudget_Fee_Confirmations; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
+    int DrawBlocks() const { return nDrawBlocks; }
+    int DrawDrift() const { return nDrawDrift; }
 
 protected:
     CChainParams() {}
@@ -140,6 +142,8 @@ protected:
     std::string strSporkKey;
     std::string strSwiftnodePoolDummyAddress;
     int64_t nBudget_Fee_Confirmations;
+    int nDrawBlocks;
+    int nDrawDrift;
 };
 
 /**
