@@ -1680,7 +1680,7 @@ int64_t GetBlockValue(int nHeight)
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if(nHeight < Params().LAST_POW_BLOCK()) nSubsidy = 100000 * COIN; // constant rewards
         else if (nHeight < 800) nSubsidy = ((double)nHeight/100) * 1000 * COIN; // increasing rewards
-        else nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
+        else nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight + 58300 - 800) ) * COIN; // decreasing rewards
 
         // Add the lottery fees
         int nDrawWithin = nHeight % nDrawBlocks;
@@ -1692,23 +1692,19 @@ int64_t GetBlockValue(int nHeight)
 
     if (nHeight == 0)
 	nSubsidy = 0;
-    else if (nHeight < 39)
-        nSubsidy = 3500000 * COIN; // mining forkdrops - appx. 133M SWIFT needed
-    else if (nHeight == 39)
-	nSubsidy = 1270162 * COIN; // exact amount of forkdrops = 77,270,162 SWIFT
-    else if(nHeight < Params().LAST_POW_BLOCK())
-	nSubsidy = 0 * COIN; // forkdrop phase - dropping about 77M SWIFT on eligible addresses (read the whitepaper)
-    else if (nHeight < 1000)
+    else if (nHeight < 14)
+        nSubsidy = 10000000 * COIN; // mining forkdrops - appx. 130M SWIFT needed
+    else if (nHeight == 14)
+	nSubsidy = 481000 * COIN; // exact amount of forkdrops = 130,481,000 SWIFT
+    else if (nHeight < 2000)
         nSubsidy = 10 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else {
         // Add 58.3K to nHeight for v3.0 HF/RESET which happened at block 583,000 in the previous chain
-        nHeight += 58300;
-
-        nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight - 1000) ) * COIN; // 20% of actual subsidy planned
+        nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight + 58300 - 2000) ) * COIN; // 20% of actual subsidy planned
     }
 
-    // This part is planning ahead for 200+ years
-    if (nHeight >= 200*52560 && nSubsidy < 10 * COIN)
+    // This part is planning ahead for 150+ years
+    if (nSubsidy < 10 * COIN)
         nSubsidy = 10; // At one point we should burn enough fees to leave about 10 SWIFT per block for Miners and MNs
 
     // Check if we reached the coin max supply.

@@ -100,9 +100,9 @@ public:
         nDefaultPort = 8544;
         bnProofOfWorkLimit = ~uint256(0) >> 1;
         nMaxReorganizationDepth = 100;
-        nEnforceBlockUpgradeMajority = 810; // 75%
-        nRejectBlockOutdatedMajority = 1026; // 95%
-        nToCheckBlockUpgradeMajority = 1080; // Approximate expected amount of blocks in 7 days (144*7.5)
+        nEnforceBlockUpgradeMajority = 1620; // 75%
+        nRejectBlockOutdatedMajority = 2052; // 95%
+        nToCheckBlockUpgradeMajority = 2160; // Approximate expected amount of blocks in 15 days (144*15)
         nMinerThreads = 0;
         nTargetTimespan = 24 * 60 * 60; // SwiftCash: 24 hours
         nTargetSpacing = 10 * 60;  // SwiftCash: 10 minutes
