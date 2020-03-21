@@ -1706,15 +1706,15 @@ int64_t GetBlockValue(int nHeight)
     else if (nHeight < 1000)
         nSubsidy = 10 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else {
-        // Add 60K to nHeight for v3.0 HF/RESET
-        nHeight += 60000;
+        // Add 58.3K to nHeight for v3.0 HF/RESET which happened at block 583,000 in the previous chain
+        nHeight += 58300;
 
         nSubsidy = ( (double)(4*600 * 52560)/(4*52560 + nHeight - 1000) ) * COIN; // 30% of actual subsidy planned
     }
 
     // This part is planning ahead for 200+ years
     if (nHeight >= 200*52560 && nSubsidy < 10 * COIN)
-        nSubsidy = 10; // At one point we should burn enough fees to leave about 10 SWIFT per block for miners
+        nSubsidy = 10; // At one point we should burn enough fees to leave about 10 SWIFT per block for Miners and MNs
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;

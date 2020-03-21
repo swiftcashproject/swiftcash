@@ -25,36 +25,36 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 - For enquiries, please reach out to info@swiftcash.cc
 
 ### Coin Specs
-|                                  |                       |
-|----------------------------------|-----------------------|
-| Block Time                       | ~10 minutes           |
-| Maximum Block Size               | ~10 MB                |
-| Mining Algorithm                 | Keccak256             |
-| Difficulty Adjustment (Timespan) | 24 hours              |
-| Difficulty Adjustment (Interval) | Every block           |
-| v3.0 HF Reset (PoW Phase)        | ~140,000,000 SWIFT    |
-| v3.0 HF Reset (PoS Phase)        | ~4,860,000,000 SWIFT  |
-| Maximum Supply (Total)           | 5,000,000,000 SWIFT   |
-| Minimum Transaction Fee          | 0.001 SWIFT           |
-| Minimum Lottery Ticket           | 0.01 SWIFT            |
-| HODL Deposit Fee                 | 0.1 SWIFT             |
-| Proposal Fee                     | 10 SWIFT              |
-| Budget Fee                       | 1 SWIFT               |
+|                                                      |                       |
+|------------------------------------------------------|-----------------------|
+| Block Time                                           | ~10 minutes           |
+| Maximum Block Size                                   | ~10 MB                |
+| Mining Algorithm                                     | Keccak256             |
+| Difficulty Adjustment (Timespan)                     | 24 hours              |
+| Difficulty Adjustment (Interval)                     | Every block           |
+| v3.0 HF Reset (PoW Phase)                            | ~130,000,000 SWIFT    |
+| v3.0 HF Reset (PoS Phase)                            | ~4,840,000,000 SWIFT  |
+| Maximum Supply (Total)                               | 5,000,000,000 SWIFT   |
+| Minimum Transaction Fee [100% Deflationary]          | 0.001 SWIFT           |
+| Minimum Lottery Ticket [4% Deflationary]             | 0.01 SWIFT            |
+| HODL Deposit Fee [100% Deflationary]                 | 0.1 SWIFT             |
+| Proposal Fee [100% Deflationary]                     | 10 SWIFT              |
+| Budget Fee [100% Deflationary]                       | 1 SWIFT               |
 
-### Block Rewards Distribution (after v3.0 HF/Reset)
+### Theoretical Block Rewards Distribution (after v3.0 HF/Reset)
 
 | **Block Height** | **SwiftNodes**    | **PoS Miners**     |
 |------------------|-------------------|--------------------|
 | 201-1000         | 20% (~2 SWIFT)    | 80% (~8 SWIFT)     | 
-| 1001-Infinite    | 20% (~95-1 SWIFT) | 80% (~380-4 SWIFT) |
+| 1001-Infinite    | 20% (~95-2 SWIFT) | 80% (~375-8 SWIFT) |
 
 ### Minimum & Maximum Block Rewards
 
 Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. 30% goes to PoS Miners and SwiftNodes/Masternodes. The rest which is up to 60% can go to HODL deposits.
 
-Maximum Block Rewards = (4 * 2000 * 52560) / (4 * 52560 + nHeight)
+Maximum Block Rewards = (4 * 2000 * 52560) / (4 * 52560 + nHeight + 58300 - 1000)
 
-Minimum Block Rewards = (4 * 600 * 52560) / (4 * 52560 + nHeight)
+Minimum Block Rewards = (4 * 600 * 52560) / (4 * 52560 + nHeight + 58300 - 1000)
 
 ### License
 Copyright (C) 2018-2020 SwiftCash Developers <br />

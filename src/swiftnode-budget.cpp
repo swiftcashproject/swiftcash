@@ -913,8 +913,8 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
         else return 144 * ( (double)(4*200 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
     }
 
-    // Add 60K to nHeight for v3.0 HF/RESET
-    nHeight += 60000;
+    // Add 53.8K to nHeight for v3.0 HF/RESET
+    nHeight += 53800;
 
     //No budget during the pow phase
     if (nHeight <= Params().LAST_POW_BLOCK())
