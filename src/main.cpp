@@ -984,24 +984,19 @@ CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowF
 
 double GetHodlDepositRate(int months, int lessPercent)
 {
-    if (months < 1 || months > 144) return 0;
+    if (months < 1 || months > 12) return 0;
 
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     int blockHeight = (int)chainActive.Height();
 
-    // 60% of maximum inflation in 144 months - GetBlockValue() returns 30%
-    int64_t blockRewards = GetBlockValue(blockHeight) * 2 * 144 * 30 * 12 * 12;
+    // 70% of maximum inflation in 12 months - GetBlockValue() returns 20%
+    int64_t blockRewards = GetBlockValue(blockHeight) * 3.5 * 144 * 30 * 12;
 
     // We assume that 20% of the total supply will never turn into HODL deposits
     double bestRate = (double)blockRewards / ((double)nMoneySupply * 0.80);
-    double rate = 0;
 
-    if (months >= 12) {
-        rate = bestRate*months/144;
-    } else {
-        bestRate /= 12;
-        rate = ( ((bestRate - bestRate * (12 - months) * 0.07) * months ) / 12 );
-    }
+    double rate = bestRate*months/12;
+    rate -= rate * (12-months) * 0.07; // 7% penalty for each extra month
 
     return rate * (100-lessPercent*0.1)/100;
 }
@@ -1044,7 +1039,7 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
         nMonths = (nTime - nBlockTime) / (60*60*2);
     }
 
-    if (nMonths < 1 || nMonths > 144) return false;
+    if (nMonths < 1 || nMonths > 12) return false;
 
     script.GetOp(pc, opcode, vch);
     if (opcode != OP_CHECKLOCKTIMEVERIFY) return false;
@@ -1685,7 +1680,7 @@ int64_t GetBlockValue(int nHeight)
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if(nHeight < Params().LAST_POW_BLOCK()) nSubsidy = 100000 * COIN; // constant rewards
         else if (nHeight < 800) nSubsidy = ((double)nHeight/100) * 1000 * COIN; // increasing rewards
-        else nSubsidy = ( (double)(4*600 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
+        else nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight - 800) ) * COIN; // decreasing rewards
 
         // Add the lottery fees
         int nDrawWithin = nHeight % nDrawBlocks;
@@ -1709,7 +1704,7 @@ int64_t GetBlockValue(int nHeight)
         // Add 58.3K to nHeight for v3.0 HF/RESET which happened at block 583,000 in the previous chain
         nHeight += 58300;
 
-        nSubsidy = ( (double)(4*600 * 52560)/(4*52560 + nHeight - 1000) ) * COIN; // 30% of actual subsidy planned
+        nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight - 1000) ) * COIN; // 20% of actual subsidy planned
     }
 
     // This part is planning ahead for 200+ years
@@ -1741,7 +1736,7 @@ int64_t GetSwiftnodePayment(int nHeight, int64_t blockValue, int nSwiftnodeCount
     if (nHeight < Params().LAST_POW_BLOCK() || blockValue == 0)
         return 0;
 
-    ret = blockValue / 5; // swiftnodes get 1/5 of the block rewards
+    ret = blockValue / 4; // swiftnodes get 1/4th of the block rewards
     return ret;
 }
 

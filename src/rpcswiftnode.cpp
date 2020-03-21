@@ -364,10 +364,10 @@ UniValue getroi(const UniValue& params, bool fHelp)
     if(swiftnodes == 0) {
        swiftnode = 0;
     } else {
-       swiftnode = ((double)blockRewards*1/5/COIN)/(swiftnodes*SWIFTNODE_COLLATERAL)*100;
+       swiftnode = ((double)blockRewards*1/4/COIN)/(swiftnodes*SWIFTNODE_COLLATERAL)*100;
     }
 
-    staking = ((double)blockRewards*4/5/COIN)/((double)GetDifficulty()*10)*100;
+    staking = ((double)blockRewards*3/4/COIN)/((double)GetDifficulty()*10)*100;
 
     UniValue result(UniValue::VOBJ);
     result.push_back(Pair("swiftnode", swiftnode));

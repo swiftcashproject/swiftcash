@@ -432,7 +432,7 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
             "\nArguments:\n"
             "1. \"swiftaddress\"           (string, required) The swift address to sign from.\n"
             "2. \"amount\"                 (numeric, required) The amount in swift to deposit. eg 10000\n"
-            "3. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 144=144months).\n"
+            "3. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 12=12months).\n"
             "4. \"lesspercent\"            (numeric, 0-10, optional, default=1) To request less interest in case the transaction is mined much later.\n"
             "5. \"morehours\"              (numeric, 1-12, optional, default=2) To request less interest in case the transaction is mined much later.\n"
             "                               transaction, just kept in your wallet.\n"
@@ -459,8 +459,8 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     // Months
     int months = params[2].get_int();
 
-    if (months < 1 || months > 144)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Months must be between 1 and 144");
+    if (months < 1 || months > 12)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Months must be between 1 and 12");
 
     // Less Percent
     int nLessPercent = 1;
