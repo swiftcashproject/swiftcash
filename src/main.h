@@ -58,7 +58,7 @@ struct CNodeStateStats;
 /** Default variable for nBudgetPaid passed by reference **/
 static CAmount ZERO_AMOUNT = 0;
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
-static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 524288; // 500KB
+static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 1048576; // 1MB
 static const unsigned int DEFAULT_BLOCK_MIN_SIZE = 0;
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 51200; // 50KB
