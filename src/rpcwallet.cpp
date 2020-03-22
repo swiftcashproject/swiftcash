@@ -378,7 +378,7 @@ UniValue lottery(const UniValue& params, bool fHelp)
 
     int nDrawWithin = chainActive.Height() % nDrawBlocks;
 
-    if (nDrawWithin <= (nDrawDrift) || nDrawWithin >= (nDrawBlocks-nDrawDrift))
+    if (nDrawWithin <= nDrawDrift || nDrawWithin >= (nDrawBlocks-nDrawDrift))
         throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift));
 
     // Amount
