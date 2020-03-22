@@ -1138,7 +1138,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     int nDrawDrift = Params().DrawDrift(true);
     int nDrawWithin = chainActive.Height() % nDrawBlocks;
 
-    if (tx.IsLotteryTicket() && (nDrawWithin <= (nDrawDrift) || nDrawWithin >= (nDrawBlocks-nDrawDrift)))
+    if (tx.IsLotteryTicket() && (nDrawWithin <= nDrawDrift || nDrawWithin >= (nDrawBlocks-nDrawDrift)))
         return state.DoS(100, error("AcceptToMemoryPool: : bad lottery time tx"),
             REJECT_INVALID, "bad-lottery-time");
 
