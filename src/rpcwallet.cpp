@@ -355,21 +355,23 @@ UniValue lottery(const UniValue& params, bool fHelp)
         return ret;
     }
 
-    if (fHelp || params.size() != 1)
+    if (fHelp || params.size() != 2 || params[0].get_str() != "play")
         throw runtime_error(
             "lottery jackpot | players | listplayers\n"
-            "lottery amount\n"
+            "lottery play amount\n"
             "\nBurn an amount of your coins to enter the blockchain lottery!\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
-            "1. \"amount\"                 (numeric, required - min=0.01) The amount in swift to spend on lottery. eg 10\n" +
+            "1. \"command\"                (string, required) jackpot | players | listplayers | play\n" +
+            "2. \"amount\"                 (numeric, required with play - min=0.01) The amount in swift to spend on lottery. eg 10\n" +
             HelpRequiringPassphrase() +
             "\nResult:\n"
             "\"transactionid\"             (string) The transaction id.\n"
             "\nExamples:\n" +
-            HelpExampleCli("lottery", "1") +
-            HelpExampleCli("lottery", "10") +
-            HelpExampleCli("lottery", "100"));
+            HelpExampleCli("lottery", "jackpot") +
+            HelpExampleCli("lottery", "listplayers") +
+            HelpExampleCli("lottery", "play 10") +
+            HelpExampleCli("lottery", "play 100"));
 
     int nDrawBlocks = Params().DrawBlocks();
     int nDrawDrift = Params().DrawDrift();
@@ -380,7 +382,7 @@ UniValue lottery(const UniValue& params, bool fHelp)
         throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift*2));
 
     // Amount
-    CAmount nAmount = AmountFromValue(params[0]);
+    CAmount nAmount = AmountFromValue(params[1]);
     if (nAmount < CENT) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Minimum ticket value is 0.01 SWIFT");
     }
