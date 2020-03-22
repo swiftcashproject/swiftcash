@@ -168,7 +168,8 @@ public:
     int64_t nMoneySupply;
 
     // lottery specific fields
-    int64_t nLotteryJackpot; // Track 80% of the lottery fees
+    int64_t nLotteryJackpot; // 80% of the lottery tickets
+    int64_t nLotteryFees; // 15% of the lottery tickets
     vector<string> vLotteryPlayers;
     vector<unsigned int> vLotteryWeights;
 
@@ -200,6 +201,7 @@ public:
         nMint = 0;
         nMoneySupply = 0;
         nLotteryJackpot = 0;
+        nLotteryFees = 0;
         vLotteryPlayers = {};
         vLotteryWeights = {};
         nFlags = 0;
@@ -438,6 +440,7 @@ public:
         READWRITE(nMint);
         READWRITE(nMoneySupply);
         READWRITE(nLotteryJackpot);
+        READWRITE(nLotteryFees);
         READWRITE(vLotteryPlayers);
         READWRITE(vLotteryWeights);
         READWRITE(nFlags);

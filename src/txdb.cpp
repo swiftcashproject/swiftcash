@@ -250,6 +250,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts()
                 pindexNew->nMint = diskindex.nMint;
                 pindexNew->nMoneySupply = diskindex.nMoneySupply;
                 pindexNew->nLotteryJackpot = diskindex.nLotteryJackpot;
+                pindexNew->nLotteryFees = diskindex.nLotteryFees;
                 pindexNew->vLotteryPlayers = diskindex.vLotteryPlayers;
                 pindexNew->vLotteryWeights = diskindex.vLotteryWeights;
                 pindexNew->nFlags = diskindex.nFlags;

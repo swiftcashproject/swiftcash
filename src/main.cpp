@@ -987,7 +987,7 @@ double GetHodlDepositRate(int months, int lessPercent)
     int blockHeight = (int)chainActive.Height();
 
     // 70% of maximum inflation in 12 months - GetBlockValue() returns 20%
-    int64_t blockRewards = GetBlockValue(blockHeight) * 3.5 * 144 * 30 * 12;
+    int64_t blockRewards = GetBlockValue(blockHeight, false) * 3.5 * 144 * 30 * 12;
 
     // We assume that 20% of the total supply will never turn into HODL deposits
     double bestRate = (double)blockRewards / ((double)nMoneySupply * 0.80);
@@ -1134,6 +1134,14 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     if (!CheckTransaction(tx, state))
         return error("AcceptToMemoryPool: : CheckTransaction failed");
 
+    int nDrawBlocks = Params().DrawBlocks();
+    int nDrawDrift = Params().DrawDrift(true);
+    int nDrawWithin = chainActive.Height() % nDrawBlocks;
+
+    if (tx.IsLotteryTicket() && (nDrawWithin <= (nDrawDrift) || nDrawWithin >= (nDrawBlocks-nDrawDrift)))
+        return state.DoS(100, error("AcceptToMemoryPool: : bad lottery time tx"),
+            REJECT_INVALID, "bad-lottery-time");
+
     // Coinbase is only valid in a block, not as a loose transaction
     if (tx.IsCoinBase())
         return state.DoS(100, error("AcceptToMemoryPool: : coinbase as individual tx"),
@@ -1247,7 +1255,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         unsigned int nSize = entry.GetTxSize();
 
         bool isValidHODLDeposit = IsValidHODLDeposit(tx);
-
         if (isValidHODLDeposit && !IsValidHODLDeposit(tx, true)) {
              return state.DoS(0, error("AcceptToMemoryPool : not a valid HODL deposit for the mempool"),
                  REJECT_NONSTANDARD, "bad-hodl-deposit-locktime");
@@ -1670,11 +1677,11 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-int64_t GetBlockValue(int nHeight)
+int64_t GetBlockValue(int nHeight, bool fLottoFees)
 {
     int64_t nSubsidy = 0;
+    int64_t nLotteryFees = chainActive.Tip()->nLotteryFees;
     int nDrawBlocks = Params().DrawBlocks();
-    int nDrawDrift = Params().DrawDrift();
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if(nHeight < Params().LAST_POW_BLOCK()) nSubsidy = 100000 * COIN; // constant rewards
@@ -1682,9 +1689,8 @@ int64_t GetBlockValue(int nHeight)
         else nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight + 58300 - 800) ) * COIN; // decreasing rewards
 
         // Add the lottery fees
-        int nDrawWithin = nHeight % nDrawBlocks;
-        if (nDrawWithin > (nDrawBlocks - nDrawDrift) || nDrawWithin == 0)
-            nSubsidy += chainActive.Tip()->nLotteryJackpot*(0.2/nDrawDrift);
+        if (fLottoFees && nLotteryFees > 0)
+            nSubsidy += chainActive.Tip()->nLotteryFees/nDrawBlocks;
 
         return nSubsidy;
     }
@@ -1716,9 +1722,8 @@ int64_t GetBlockValue(int nHeight)
         nSubsidy = 0;
 
     // Add the lottery fees
-    int nDrawWithin = nHeight % nDrawBlocks;
-    if (nDrawWithin > (nDrawBlocks - nDrawDrift) || nDrawWithin == 0)
-        nSubsidy += chainActive.Tip()->nLotteryJackpot*(0.2/nDrawDrift);
+    if (fLottoFees && nLotteryFees > 0)
+        nSubsidy += nLotteryFees/nDrawBlocks;
 
     return nSubsidy;
 }
@@ -2200,7 +2205,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     int nDrawBlocks = Params().DrawBlocks();
     int nDrawDrift = Params().DrawDrift();
-    int drawWithin = pindex->nHeight % nDrawBlocks;
+    int nDrawWithin = pindex->nHeight % nDrawBlocks;
     int64_t nTimeStart = GetTimeMicros();
     CAmount nFees = 0;
     CAmount nHODLRewards = 0;
@@ -2217,6 +2222,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     // Lottery fields
     pindex->nLotteryJackpot = pindex->pprev ? pindex->pprev->nLotteryJackpot : 0;
+    pindex->nLotteryFees = pindex->pprev ? pindex->pprev->nLotteryFees : 0;
     pindex->vLotteryPlayers = pindex->pprev ? pindex->pprev->vLotteryPlayers : vector<string>();
     pindex->vLotteryWeights = pindex->pprev ? pindex->pprev->vLotteryWeights : vector<unsigned int>();
 
@@ -2246,7 +2252,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             nValueIn += view.GetValueIn(tx);
 
             CTxDestination txDest;
-            if (drawWithin > nDrawDrift && drawWithin < (nDrawBlocks - nDrawDrift) && tx.IsLotteryTicket()) {
+            if (nDrawWithin > nDrawDrift && nDrawWithin < (nDrawBlocks - nDrawDrift) && tx.IsLotteryTicket()) {
                 CTransaction txPrev;
                 uint256 hashBlockPrev;
                 if (!GetTransaction(tx.vin[0].prevout.hash, txPrev, hashBlockPrev, true)) {
@@ -2306,7 +2312,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime1 - nTimeStart), 0.001 * (nTime1 - nTimeStart) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime1 - nTimeStart) / (nInputs - 1), nTimeConnect * 0.000001);
 
     CAmount nLotteryRewards = 0;
-    if (drawWithin == 1) { // one block after the draw block
+    if (nDrawWithin == 1) { // one block after the draw block
         vector<string> winners;
         nLotteryRewards = pindex->pprev->nLotteryJackpot;
         if(HaveLotteryWinners(pindex->pprev, winners) && !AreLotteryPayeesValid(pindex->pprev, block, winners)) {
@@ -2315,6 +2321,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         }
 
         // Reset the lottery data
+        pindex->nLotteryFees = pindex->nLotteryJackpot*0.1875;
         pindex->nLotteryJackpot = 0;
         pindex->vLotteryPlayers = {};
         pindex->vLotteryWeights = {};

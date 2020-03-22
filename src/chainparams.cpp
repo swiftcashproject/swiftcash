@@ -190,7 +190,7 @@ public:
         fHeadersFirstSyncingActive = false;
 
         nDrawBlocks = 5000;
-        nDrawDrift = 10;
+        nDrawDrift = 20;
 
         nPoolMaxTransactions = 3;
         strSporkKey = "03ae4c8038c50e10015d436f938237d66d7c8da21ee1a989658424cfe60379da78";

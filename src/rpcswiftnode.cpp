@@ -357,7 +357,7 @@ UniValue getroi(const UniValue& params, bool fHelp)
     int blockHeight = (int)chainActive.Height();
 
     for(int i=blockHeight; i<blockHeight+52560; i++) {
-       blockRewards += GetBlockValue(i);
+       blockRewards += GetBlockValue(i, false);
     }
 
     int swiftnodes = mnodeman.size();

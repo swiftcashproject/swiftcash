@@ -374,12 +374,12 @@ UniValue lottery(const UniValue& params, bool fHelp)
             HelpExampleCli("lottery", "play 100"));
 
     int nDrawBlocks = Params().DrawBlocks();
-    int nDrawDrift = Params().DrawDrift();
+    int nDrawDrift = Params().DrawDrift(true);
 
     int nDrawWithin = chainActive.Height() % nDrawBlocks;
 
-    if (nDrawWithin <= (nDrawDrift*2) || nDrawWithin >= (nDrawBlocks-nDrawDrift*2))
-        throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift*2));
+    if (nDrawWithin <= (nDrawDrift) || nDrawWithin >= (nDrawBlocks-nDrawDrift))
+        throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift));
 
     // Amount
     CAmount nAmount = AmountFromValue(params[1]);
