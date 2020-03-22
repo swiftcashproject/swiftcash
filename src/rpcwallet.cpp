@@ -355,46 +355,39 @@ UniValue lottery(const UniValue& params, bool fHelp)
         return ret;
     }
 
-    if (fHelp || params.size() != 2)
+    if (fHelp || params.size() != 1)
         throw runtime_error(
             "lottery jackpot | players | listplayers\n"
-            "lottery swiftaddress amount\n"
+            "lottery amount\n"
             "\nBurn an amount of your coins to enter the blockchain lottery!\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
-            "1. \"swiftaddress\"           (string, required) The swift address to receive the jackpot if you win.\n"
-            "2. \"amount\"                 (numeric, required) The amount in swift to burn. eg 10\n" +
+            "1. \"amount\"                 (numeric, required - min=0.01) The amount in swift to spend on lottery. eg 10\n" +
             HelpRequiringPassphrase() +
             "\nResult:\n"
             "\"transactionid\"             (string) The transaction id.\n"
             "\nExamples:\n" +
-            HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 1") +
-            HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 10") +
-            HelpExampleCli("lottery", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 100"));
+            HelpExampleCli("lottery", "1") +
+            HelpExampleCli("lottery", "10") +
+            HelpExampleCli("lottery", "100"));
 
     int nDrawBlocks = Params().DrawBlocks();
     int nDrawDrift = Params().DrawDrift();
-    int drawWithin = chainActive.Height() % nDrawBlocks;
-    if (drawWithin <= (nDrawDrift*2) || drawWithin >= (nDrawBlocks-nDrawDrift*2))
+
+    int nDrawWithin = chainActive.Height() % nDrawBlocks;
+
+    if (nDrawWithin <= (nDrawDrift*2) || nDrawWithin >= (nDrawBlocks-nDrawDrift*2))
         throw runtime_error(strprintf("Not allowed to buy tickets within %d blocks of each draw. Please try again later.", nDrawDrift*2));
 
-    // swift address
-    CBitcoinAddress address = CBitcoinAddress(params[0].get_str());
-    if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SWIFT address");
-    CScript scriptPubKey = GetScriptForDestination(address.Get());
-    if (!IsMine(*pwalletMain, scriptPubKey))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Unknown SWIFT address");
-
     // Amount
-    CAmount nAmount = AmountFromValue(params[1]);
+    CAmount nAmount = AmountFromValue(params[0]);
     if (nAmount < CENT) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Minimum ticket value is 0.01 SWIFT");
     }
 
     CWalletTx wtx;
     bool useIX = false;
-    if (!pwalletMain->GetLotteryTicketCollateralTX(wtx, scriptPubKey, nAmount, useIX)) {
+    if (!pwalletMain->GetLotteryTicketCollateralTX(wtx, nAmount, useIX)) {
         throw runtime_error("Error making collateral transaction for lottery. Please check your wallet balance.");
     }
 

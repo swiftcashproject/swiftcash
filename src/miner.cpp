@@ -488,7 +488,7 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
             if (vNodes.empty() || pwallet->IsLocked() || !fMintableCoins ||
                 (pwallet->GetBalance() > 0 && nReserveBalance >= pwallet->GetBalance()) ||
-                (chainActive.Tip()->nHeight > 1000 && !swiftnodeSync.IsSynced())) {
+                (chainActive.Tip()->nHeight > 2000 && !swiftnodeSync.IsSynced())) {
                 nLastCoinStakeSearchInterval = 0;
                 MilliSleep(5000);
                 continue;

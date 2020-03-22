@@ -2246,19 +2246,25 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             nValueIn += view.GetValueIn(tx);
 
             CTxDestination txDest;
-            if (drawWithin > nDrawDrift && drawWithin < (nDrawBlocks - nDrawDrift) &&
-                tx.IsLotteryTicket() && ExtractDestination(tx.vout[1].scriptPubKey, txDest)) {
+            if (drawWithin > nDrawDrift && drawWithin < (nDrawBlocks - nDrawDrift) && tx.IsLotteryTicket()) {
+                CTransaction txPrev;
+                uint256 hashBlockPrev;
+                if (!GetTransaction(tx.vin[0].prevout.hash, txPrev, hashBlockPrev, true)) {
+                     LogPrintf("ConnectBlock() - Lottery : failed to find vin transaction \n");
+                } else if (ExtractDestination(txPrev.vout[tx.vin[0].prevout.n].scriptPubKey, txDest)) {
+                    pindex->nLotteryJackpot += tx.vout[0].nValue * 0.8;
+                    string player = CBitcoinAddress(txDest).ToString();
+                    int weight = tx.vout[0].nValue/CENT;
 
-                pindex->nLotteryJackpot += tx.vout[0].nValue * 0.8;
-                string player = CBitcoinAddress(txDest).ToString();
-                int weight = tx.vout[0].nValue/CENT;
-
-                vector<string>::iterator vIT = find(pindex->vLotteryPlayers.begin(), pindex->vLotteryPlayers.end(), player);
-                if (vIT != pindex->vLotteryPlayers.end()) {
-                    pindex->vLotteryWeights[pindex->vLotteryPlayers.begin()-vIT] += weight;
+                    vector<string>::iterator vIT = find(pindex->vLotteryPlayers.begin(), pindex->vLotteryPlayers.end(), player);
+                    if (vIT != pindex->vLotteryPlayers.end()) {
+                        pindex->vLotteryWeights[pindex->vLotteryPlayers.begin()-vIT] += weight;
+                    } else {
+                        pindex->vLotteryPlayers.push_back(player);
+                        pindex->vLotteryWeights.push_back(weight);
+                    }
                 } else {
-                    pindex->vLotteryPlayers.push_back(player);
-                    pindex->vLotteryWeights.push_back(weight);
+                    LogPrintf("ConnectBlock() - Lottery : failed to extract destination from txPrev \n");
                 }
             }
 

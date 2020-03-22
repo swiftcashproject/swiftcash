@@ -1774,7 +1774,7 @@ int CWallet::CountInputsWithAmount(CAmount nInputAmount)
     return nTotal;
 }
 
-bool CWallet::GetLotteryTicketCollateralTX(CWalletTx& tx, CScript scriptPubKey, CAmount nAmount, bool useIX)
+bool CWallet::GetLotteryTicketCollateralTX(CWalletTx& tx, CAmount nAmount, bool useIX)
 {
     // nAmount must be greater than or equal to 0.01 SWIFT
     if (nAmount < CENT) return false;
@@ -1790,11 +1790,10 @@ bool CWallet::GetLotteryTicketCollateralTX(CWalletTx& tx, CScript scriptPubKey, 
 
     vector<pair<CScript, CAmount> > vecSend;
     vecSend.push_back(make_pair(scriptChange, nAmount));
-    vecSend.push_back(make_pair(scriptPubKey, 0));
 
     CCoinControl* coinControl = NULL;
     set<pair<const CWalletTx*, unsigned int> > setCoins;
-    bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0, false, (CAmount)0, false);
+    bool success = CreateTransaction(vecSend, false, tx, reservekey, nFeeRet, strFail, coinControl, ALL_COINS, useIX, (CAmount)0, false, (CAmount)0);
     if (!success) {
         LogPrintf("GetLotteryTicketCollateralTX: Error - %s\n", strFail);
         return false;
@@ -1879,8 +1878,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
     bool useIX,
     CAmount nFeePay,
     bool randChangePos,
-    CAmount nInterest,
-    bool checkDust) {
+    CAmount nInterest) {
     if (useIX && nFeePay < CENT) nFeePay = CENT; // Minimum fee for ix is 0.01 SWIFT
 
     CAmount nValue = 0;
@@ -1938,7 +1936,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
                             }
                         }
 
-                        if (checkDust && txout.IsDust(::minRelayTxFee)) {
+                        if (txout.IsDust(::minRelayTxFee)) {
                             if (fSubtractFeeFromAmount && nFeeRet > 0) {
                                if (txout.nValue < 0)
                                   strFailReason = _("The transaction amount is too small to pay the fee");

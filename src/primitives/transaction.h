@@ -294,8 +294,7 @@ public:
     bool IsLotteryTicket() const
     {
         // swiftcash: the lottery ticket transaction has OP_RETURN as its first output with Lottery as the output data
-        if (vin.size() < 1 || vin[0].prevout.IsNull() ||
-            vout.size() < 2 || vout[0].IsEmpty() ||
+        if (vin.size() < 1 || vin[0].prevout.IsNull() || vout.size() < 1 || vout[0].IsEmpty() ||
             vout[0].scriptPubKey[0] != OP_RETURN || vout[0].nValue < CENT) return false;
 
         CScript script = vout[0].scriptPubKey;
