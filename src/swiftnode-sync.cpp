@@ -52,7 +52,7 @@ bool CSwiftnodeSync::IsBlockchainSynced()
     if (pindex == NULL) return false;
 
 
-    if (pindex->nTime + 60 * 60 < GetTime())
+    if (pindex->nTime + 5 * 60 * 60 < GetTime())
         return false;
 
     fBlockchainSynced = true;
