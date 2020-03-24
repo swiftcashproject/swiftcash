@@ -2,7 +2,7 @@
 // Copyright (c) 2009-2014 Bitcoin developers
 // Copyright (c) 2014-2015 Dash developers
 // Copyright (c) 2015-2018 PIVX developers
-// Copyright (c) 2018-2019 SwiftCash developers
+// Copyright (c) 2018-2020 SwiftCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1360,7 +1360,7 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 
                 uiInterface.InitMessage(_("Verifying blocks..."));
 
-                if (!CVerifyDB().VerifyDB(pcoinsdbview, GetArg("-checklevel", 3), GetArg("-checkblocks", 500))) {
+                if (!CVerifyDB().VerifyDB(pcoinsdbview, GetArg("-checklevel", 4), GetArg("-checkblocks", 100))) {
                     strLoadError = _("Corrupted block database detected");
                     break;
                 }

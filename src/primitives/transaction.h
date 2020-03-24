@@ -298,7 +298,7 @@ public:
             vout[0].scriptPubKey[0] != OP_RETURN || vout[0].nValue < CENT) return false;
 
         CScript script = vout[0].scriptPubKey;
-        if (script[1] != 0x07 && script[2] != 0x4c && script[3] != 0x6f && script[4] != 0x74 && script[5] != 0x74 &&
+        if (script.size() != 9 && script[1] != 0x07 && script[2] != 0x4c && script[3] != 0x6f && script[4] != 0x74 && script[5] != 0x74 &&
             script[6] != 0x65 && script[7] != 0x72 && script[8] != 0x79) return false;
 
         return true;
