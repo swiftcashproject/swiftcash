@@ -62,9 +62,9 @@ This software is provided as is and with no warranty under the MIT license.
 
 ### Donation Addresses
 * SWIFT: `SXucSXaV5HURNyJUWnPrVFHTdRzoVff6gU`
-* BTC: `13atMuQvjApUEuV5voxRVFMV6HHA5FjMFT`
-* LTC: `LMoqd7ikoq4XViBF6wwimGRFJVeSB6JmDh`
-* DOGE: `D7iyuAMa2aikmufgfPwz31X5yR1TMt698E`
+* BTC: `1E9xPAPifPFHmVTX1pDdPLcsgub71zdpDY`
+* LTC: `LYNueNhYk3VM2J9gBxCvfMgdu7xP9WdLVL`
+* DOGE: `DJJ3vRLMxo9aJVe7kQDBw6nUa3KQL8zzfv`
 
 ### Support
 For support, join http://discord.swiftcash.cc
