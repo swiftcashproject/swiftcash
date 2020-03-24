@@ -2264,7 +2264,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
                     vector<string>::iterator vIT = find(pindex->vLotteryPlayers.begin(), pindex->vLotteryPlayers.end(), player);
                     if (vIT != pindex->vLotteryPlayers.end()) {
-                        pindex->vLotteryWeights[pindex->vLotteryPlayers.begin()-vIT] += weight;
+                        pindex->vLotteryWeights[std::distance(pindex->vLotteryPlayers.begin(), vIT)] += weight;
                     } else {
                         pindex->vLotteryPlayers.push_back(player);
                         pindex->vLotteryWeights.push_back(weight);
