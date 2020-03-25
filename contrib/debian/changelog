@@ -2,22 +2,22 @@ swiftcash (3.0.0-xenial1) xenial; urgency=medium
 
   * Reset the blockchain back to genesis
   * Airdropped everyone based on their balance in the previous chain as of block 583,000
-  * Manually paid the remains of the passed proposals which would get paid at block 604,800 otherwise
+  * Manually paid the remains of the passed proposals appx. 5.6M paying at block 604,800 otherwise
   * Increased the block time from 1 minute to 10 minutes
   * Increased the maximum block size from 2MB to 10MB
   * Increased the difficulty adjustment timespan from 40 minutes to 24 hours
   * Increased the minimum age requirement for staking from 1 hour to 24 hours or 144 confirmations
   * Introduced a minimum collateral requirement of 10,000 SWIFT for mining/staking
-  * Now giving Masternodes/SwiftNodes 1/4th of the minimum inflation, instead of 2/3rd
+  * Now giving Masternodes/SwiftNodes 1/5th of the minimum inflation, instead of 2/3rd
   * Reduced the maximum budget allowance via proposals from 70% to 10% of the maximum inflation
-  * Reduced the minimum inflation from 30% of the maximum inflation to 20%
+  * Reduced the minimum inflation from 30% to 10% of the maximum inflation
   * Reduced the proposal/budget fees from 100/10 to 10/1 SWIFT
   * Will no longer have SwiftRewards but instead on-chain HODL deposits/rewards
-  * HODL deposits can lock between 1-12 months and receive instant rewards
+  * HODL deposits can lock between 1-12 months and receive their rewards instantly
   * Changed the hashing algorithm for everything except blocks from Keccak256 to SHA256
   * Made the wallet backward compatible so users can import their old private keys                
   * Changed the inflation curve and so now first halving happens in 4 years instead of 20 years
   * Added blockchain-based and cheat-proof lotteries drawing at every 5,000 block
   * Fixed various of minor bugs and issues as well
 
- -- Markus GH <msg768@hotmail.com>  Thu, 20 Mar 2020 18:58:02 +1100
+ -- Markus GH <msg768@hotmail.com>  Thu, 25 Mar 2020 18:58:02 +1100

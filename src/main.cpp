@@ -986,8 +986,8 @@ double GetHodlDepositRate(int months, int lessPercent)
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     int blockHeight = (int)chainActive.Height();
 
-    // 70% of maximum inflation in 12 months - GetBlockValue() returns 20%
-    int64_t blockRewards = GetBlockValue(blockHeight, false) * 3.5 * 144 * 30 * 12;
+    // 80% of maximum inflation in 12 months - GetBlockValue() returns 10%
+    int64_t blockRewards = GetBlockValue(blockHeight, false) * 8 * 144 * 30 * 12;
 
     // We assume that 20% of the total supply will never turn into HODL deposits
     double bestRate = (double)blockRewards / ((double)nMoneySupply * 0.80);
@@ -1686,7 +1686,7 @@ int64_t GetBlockValue(int nHeight, bool fLottoFees)
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
         if(nHeight < Params().LAST_POW_BLOCK()) nSubsidy = 100000 * COIN; // constant rewards
         else if (nHeight < 800) nSubsidy = ((double)nHeight/100) * 1000 * COIN; // increasing rewards
-        else nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight + 58300 - 800) ) * COIN; // decreasing rewards
+        else nSubsidy = ( (double)(4*200 * 52560)/(4*52560 + nHeight + 58300 - 800) ) * COIN; // decreasing rewards
 
         // Add the lottery fees
         if (fLottoFees && nLotteryFees > 0)
@@ -1705,7 +1705,7 @@ int64_t GetBlockValue(int nHeight, bool fLottoFees)
         nSubsidy = 10 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
     else {
         // Add 58.3K to nHeight for v3.0 HF/RESET which happened at block 583,000 in the previous chain
-        nSubsidy = ( (double)(4*400 * 52560)/(4*52560 + nHeight + 58300 - 2000) ) * COIN; // 20% of actual subsidy planned
+        nSubsidy = ( (double)(4*200 * 52560)/(4*52560 + nHeight + 58300 - 2000) ) * COIN; // 10% of actual subsidy planned
     }
 
     // This part is planning ahead for 150+ years
@@ -1736,7 +1736,7 @@ int64_t GetSwiftnodePayment(int nHeight, int64_t blockValue, int nSwiftnodeCount
     if (nHeight < Params().LAST_POW_BLOCK() || blockValue == 0)
         return 0;
 
-    ret = blockValue / 4; // swiftnodes get 1/4th of the block rewards
+    ret = blockValue / 5; // swiftnodes get 1/5th of the block rewards
     return ret;
 }
 

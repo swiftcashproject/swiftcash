@@ -3,7 +3,7 @@ SWIFTCASH
 ![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg) [![Build Status](https://travis-ci.org/swiftcashproject/swiftcash.svg?branch=master)](https://travis-ci.org/swiftcashproject/swiftcash) [![Discord](https://img.shields.io/discord/488436992032636929.svg)](https://discord.me/swiftcash)
 
 ### Introduction - Peer-To-Peer Cryptocurrency
-SwiftCash is an open-source, self-funded system of decentralized governance and economy, born out of a desire to create a digital store of value and a peer-to-peer cryptocurrency for daily transactional use along with cheat-proof lotteries that can be played by anyone in the blockchain without any custodian or third-party service getting involved, as well as on-chain HODL/Term deposits. SwiftCash uses the Proof-of-Stake algorithm to reach consensus and allows up to 10% of maximum inflation to be spent on proposals that are embraced by enough stakeholders. 20% of maximum inflation goes directly to stakeholders who help secure the network aka Miners and Masternodes, and the rest of maximum inflation which is 70% can go to HODL/Term deposits; coins that are time locked in the blockchain between 1-12 months.
+SwiftCash is an open-source, self-funded system of decentralized governance and economy, born out of a desire to create a digital store of value and a peer-to-peer cryptocurrency for daily transactional use along with cheat-proof lotteries that can be played by anyone in the blockchain without any custodian or third-party service getting involved, as well as on-chain HODL/Term deposits. SwiftCash uses the Proof-of-Stake algorithm to reach consensus and allows up to 10% of maximum inflation to be spent on proposals that are embraced by enough stakeholders. Another 10% of maximum inflation goes directly to stakeholders who help secure the network aka Miners and Masternodes, and the rest of maximum inflation which is 80% can go to HODL/Term deposits; coins that are time locked in the blockchain between 1-12 months.
 
 ### Proof-of-Stake vs. Proof-of-Work
 The revolutionary Proof-of-Stake algorithm offers a solution to the problem posed by the exponential increase in energy consumed by Bitcoin, and other Proof-of-Work cryptocurrencies. Proof-of-Work mining is environmentally unsustainable due to the electricity used by high-powered mining hardware and anyone can attack the network and double spend by acquiring 51% of the network’s hash power. SwiftCash utilizes the green protocol, an energy-efficient Proof-of-Stake algorithm, which can be mined on any computer, and will never require specialized mining equipment. The green protocol offers a simple solution to sustainability issues posed by Bitcoin and other Proof-of-Work cryptocurrencies, and provides a faster, and more scalable blockchain that is better suited for daily transactional use.
@@ -46,15 +46,15 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 | **Block Height** | **SwiftNodes**    | **PoS Miners**     |
 |------------------|-------------------|--------------------|
 | 201-1000         | 20% (~2 SWIFT)    | 80% (~8 SWIFT)     | 
-| 1001-Infinite    | 20% (~80-2 SWIFT) | 80% (~235-8 SWIFT) |
+| 1001-Infinite    | 20% (~31-2 SWIFT) | 80% (~125-8 SWIFT) |
 
 ### Minimum & Maximum Block Rewards
 
-Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. 20% goes to PoS Miners and SwiftNodes/Masternodes. The rest which is up to 70% can go to HODL deposits.
+Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. 20% goes to PoS Miners and SwiftNodes/Masternodes. The rest which is up to 80% can go to HODL deposits.
 
 Maximum Block Rewards = (4 * 2000 * 52560) / (4 * 52560 + nHeight + 58300 - 1000)
 
-Minimum Block Rewards = (4 * 400 * 52560) / (4 * 52560 + nHeight + 58300 - 1000)
+Minimum Block Rewards = (4 * 200 * 52560) / (4 * 52560 + nHeight + 58300 - 1000)
 
 ### License
 Copyright (C) 2018-2020 SwiftCash Developers <br />
