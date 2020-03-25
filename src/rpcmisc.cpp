@@ -70,7 +70,7 @@ UniValue getinfo(const UniValue& params, bool fHelp)
             "  \"unlocked_until\": ttt,         (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
             "  \"paytxfee\": x.xxxx,            (numeric) the transaction fee set in swift/kb\n"
             "  \"relayfee\": x.xxxx,            (numeric) minimum relay fee for non-free transactions in swift/kb\n"
-            "  \"staking status\": true|false,  (boolean) if the wallet is staking or not\n"
+            "  \"staking_status\": true|false,  (boolean) if the wallet is staking or not\n"
             "  \"errors\": \"...\"              (string) any error messages\n"
             "}\n"
             "\nExamples:\n" +
@@ -103,6 +103,7 @@ UniValue getinfo(const UniValue& params, bool fHelp)
     obj.push_back(Pair("testnet", Params().TestnetToBeDeprecatedFieldRPC()));
     obj.push_back(Pair("moneysupply", ValueFromAmount(chainActive.Tip()->nMoneySupply)));
     obj.push_back(Pair("lotteryjackpot", ValueFromAmount(chainActive.Tip()->nLotteryJackpot)));
+    obj.push_back(Pair("hodlbestrate", GetHodlDepositRate(12, 1)));
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
         obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
@@ -118,7 +119,7 @@ UniValue getinfo(const UniValue& params, bool fHelp)
         nStaking = true;
     else if (mapHashedBlocks.count(chainActive.Tip()->nHeight - 1) && nLastCoinStakeSearchInterval)
         nStaking = true;
-    obj.push_back(Pair("staking status", (nStaking ? "Staking Active" : "Staking Not Active")));
+    obj.push_back(Pair("staking_status", (nStaking ? "Staking Active" : "Staking Not Active")));
     obj.push_back(Pair("errors", GetWarnings("statusbar")));
     return obj;
 }
