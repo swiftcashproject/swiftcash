@@ -155,7 +155,7 @@ UniValue getinflation(const UniValue& params, bool fHelp)
     }
 
     minimumInflation = (double)blockRewards/nMoneySupply;
-    maximumInflation = ((double)blockRewards/20)*100/nMoneySupply;
+    maximumInflation = ((double)blockRewards/10)*100/nMoneySupply;
 
     UniValue result(UniValue::VOBJ);
     result.push_back(Pair("min", minimumInflation));
