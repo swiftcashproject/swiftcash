@@ -286,7 +286,7 @@ public:
         if (vin.size() < 1 || vin[0].prevout.IsNull() ||
             vout.size() < 2 || vout[0].IsEmpty() ||
             !vout[0].scriptPubKey.IsPayToScriptHash() ||
-            vout[1].scriptPubKey[0] != OP_RETURN || vout[1].nValue < 0.1 * COIN) return false;
+            vout[1].scriptPubKey[0] != OP_RETURN || vout[1].nValue < 10 * CENT) return false;
 
         return true;
     }
