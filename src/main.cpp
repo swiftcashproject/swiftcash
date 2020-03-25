@@ -1709,8 +1709,8 @@ int64_t GetBlockValue(int nHeight, bool fLottoFees)
     }
 
     // This part is planning ahead for 150+ years
-    if (nSubsidy < 10 * COIN)
-        nSubsidy = 10; // At one point we should burn enough fees to leave about 10 SWIFT per block for Miners and MNs
+    if (nSubsidy < 5 * COIN)
+        nSubsidy = 5; // At one point we should burn enough fees to leave about 5 SWIFT per block for Miners and MNs
 
     // Check if we reached the coin max supply.
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;

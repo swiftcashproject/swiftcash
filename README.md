@@ -46,11 +46,11 @@ HODL deposits are designed to imitate term deposits in traditional banking syste
 | **Block Height** | **SwiftNodes**    | **PoS Miners**     |
 |------------------|-------------------|--------------------|
 | 201-2000         | 20% (~2 SWIFT)    | 80% (~8 SWIFT)     | 
-| 1001-Infinite    | 20% (~31-2 SWIFT) | 80% (~125-8 SWIFT) |
+| 1001-Infinite    | 20% (~31-1 SWIFT) | 80% (~125-4 SWIFT) |
 
 ### Minimum & Maximum Block Rewards
 
-Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. 20% goes to PoS Miners and SwiftNodes/Masternodes. The rest which is up to 80% can go to HODL deposits.
+Community proposals will be allowed to use 10% of maximum block rewards for budgetting as calculated with the following formula. Another 10% goes to PoS Miners and SwiftNodes/Masternodes. The rest which is up to 80% can go to HODL deposits.
 
 Maximum Block Rewards = (4 * 2000 * 52560) / (4 * 52560 + nHeight + 58300 - 2000)
 
