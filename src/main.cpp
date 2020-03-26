@@ -1037,10 +1037,6 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsR
     if (nBlockHeightTo < nBlockHeight || nBlockHeightTo >= (int)LOCKTIME_THRESHOLD) return false;
 
     int nMonths = (nBlockHeightTo - nBlockHeight) / (30*144);
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to two hours on testnet
-        nMonths = (nBlockHeightTo - nBlockHeight) / (2*6);
-    }
-
     if (nMonths < 1 || nMonths > 12) return false;
 
     script.GetOp(pc, opcode, vch);

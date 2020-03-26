@@ -477,10 +477,6 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     int64_t nHeight = chainActive.Height();
     int64_t nLockTime = nHeight + months*30*144 + (nMoreHours*6);
 
-    if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to two hours on testnet
-        nLockTime = nHeight + months*2*6 + (nMoreHours*6);
-    }
-
     CKeyID keyID;
     CScript inner;
     if(address.GetKeyID(keyID)) {
