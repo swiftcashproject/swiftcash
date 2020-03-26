@@ -374,7 +374,7 @@ UniValue lottery(const UniValue& params, bool fHelp)
             HelpExampleCli("lottery", "play 100"));
 
     int nDrawBlocks = Params().DrawBlocks();
-    int nDrawDrift = Params().DrawDrift(true);
+    int nDrawDrift = Params().DrawDrift(true) + 10;
 
     int nDrawWithin = chainActive.Height() % nDrawBlocks;
 
@@ -430,7 +430,7 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
             "1. \"swiftaddress\"           (string, required) The swift address to sign from.\n"
             "2. \"amount\"                 (numeric, required) The amount in swift to deposit. eg 10000\n"
             "3. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 12=12months).\n"
-            "4. \"lesspercent\"            (numeric, 0-10, optional, default=1) To request less interest in case the transaction is mined much later.\n"
+            "4. \"lesspercent\"            (numeric, 1-10, optional, default=2) To request less interest in case the transaction is mined much later.\n"
             "5. \"morehours\"              (numeric, 1-12, optional, default=2) To request less interest in case the transaction is mined much later.\n"
             "                               transaction, just kept in your wallet.\n"
             "\nResult:\n"
@@ -460,12 +460,12 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Months must be between 1 and 12");
 
     // Less Percent
-    int nLessPercent = 1;
+    int nLessPercent = 2;
     if (params.size() > 3)
         nLessPercent = params[3].get_int();
 
-    if (nLessPercent < 0 || nLessPercent > 10)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "Lesspercent must be between 0 and 10");
+    if (nLessPercent < 1 || nLessPercent > 10)
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Lesspercent must be between 1 and 10");
 
     int nMoreHours = 2;
     if (params.size() > 4)
@@ -474,11 +474,11 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     if (nMoreHours < 1 || nMoreHours > 12)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Morehours must be between 1 and 12");
 
-    int64_t nNow = GetAdjustedTime();
-    int64_t nTime = nNow + months*30*24*60*60 + (nMoreHours*60*60);
+    int64_t nHeight = chainActive.Height();
+    int64_t nLockTime = nHeight + months*30*144 + (nMoreHours*6);
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to two hours on testnet
-        nTime = nNow + months*2*60*60 + (nMoreHours*60*60);
+        nLockTime = nHeight + months*2*6 + (nMoreHours*6);
     }
 
     CKeyID keyID;
@@ -486,7 +486,7 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     if(address.GetKeyID(keyID)) {
         CPubKey vchPubKey;
         pwalletMain->GetPubKey(keyID, vchPubKey);
-        inner = GetScriptForHodldeposit(nTime, vchPubKey);
+        inner = GetScriptForHodldeposit(nLockTime, vchPubKey);
     }
 
     // Construct using pay-to-script-hash:
@@ -498,6 +498,11 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
     bool useIX = false;
     if (!pwalletMain->GetHodlDepositCollateralTX(wtx, depositScript, nAmount, nAmount * GetHodlDepositRate(months, nLessPercent), inner, useIX)) {
         throw runtime_error("Error making collateral transaction for hodl deposit. Please check your wallet balance.");
+    }
+
+    // sanity check
+    if (!IsValidHODLDeposit(wtx)) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Invalid HODL Deposit");
     }
 
     // make our change address

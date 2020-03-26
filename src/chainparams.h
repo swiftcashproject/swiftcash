@@ -100,7 +100,7 @@ public:
     int64_t Budget_Fee_Confirmations() const { return nBudget_Fee_Confirmations; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
     int DrawBlocks() const { return nDrawBlocks; }
-    int DrawDrift(bool fMempool = false) const { return fMempool ? nDrawDrift*2 : nDrawDrift; }
+    int DrawDrift(bool fMempool = false) const { return fMempool ? nDrawDrift*2 - 10 : nDrawDrift; }
 
 protected:
     CChainParams() {}

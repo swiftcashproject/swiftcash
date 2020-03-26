@@ -23,7 +23,7 @@ static const unsigned int MAX_SCRIPT_ELEMENT_SIZE = 520; // bytes
 
 // Threshold for nLockTime: below this value it is interpreted as block number,
 // otherwise as UNIX timestamp.
-static const unsigned int LOCKTIME_THRESHOLD = 500000000; // Tue Nov  5 00:53:20 1985 UTC
+static const unsigned int LOCKTIME_THRESHOLD = 1000000000; // Sun, 09 Sep 2001 01:46:40 UTC
 
 template <typename T>
 std::vector<unsigned char> ToByteVector(const T& in)

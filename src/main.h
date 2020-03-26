@@ -255,7 +255,7 @@ bool HaveLotteryWinners(CBlockIndex* pindexPrev, vector<string>& winners);
 double GetHodlDepositRate(int months, int lessPercent=0);
 
 /** Is our transaction a valid HODLDeposit **/
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewards = ZERO_AMOUNT, int64_t nBlockTime = 0);
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewards = ZERO_AMOUNT, int nBlockHeight = 0);
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee = false, bool ignoreFees = false);
@@ -346,7 +346,7 @@ unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& ma
  * This does not modify the UTXO set. If pvChecks is not NULL, script checks are pushed onto it
  * instead of being performed inline.
  */
-bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL, int64_t blocktime = 0);
+bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL);
 
 /** Apply the effects of this transaction on the UTXO set represented by view */
 void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);

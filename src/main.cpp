@@ -998,7 +998,7 @@ double GetHodlDepositRate(int months, int lessPercent)
     return rate * (100-lessPercent*0.1)/100;
 }
 
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards, int64_t nBlockTime)
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards, int nBlockHeight)
 {
     bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
     if (!fCLTVHasMajority) return false;
@@ -1027,13 +1027,18 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
 
     pc = script.begin();
     script.GetOp(pc, opcode, vch);
-    int64_t nTime = CScriptNum(vch, false).getint();
-    if (nBlockTime == 0) nBlockTime = GetAdjustedTime();
-    if (fToMemPool) nBlockTime += 1*50*60;
-    int nMonths = (nTime - nBlockTime) / (60*60*24*30);
 
+    if (vch.size() > 4) return false;
+    int nBlockHeightTo = CScriptNum(vch, false).getint();
+
+    if (nBlockHeight == 0) nBlockHeight = chainActive.Height();
+    if (fToMemPool) nBlockHeight += 6;
+
+    if (nBlockHeightTo < nBlockHeight || nBlockHeightTo >= (int)LOCKTIME_THRESHOLD) return false;
+
+    int nMonths = (nBlockHeightTo - nBlockHeight) / (30*144);
     if (Params().NetworkID() == CBaseChainParams::TESTNET) { // one month is equal to two hours on testnet
-        nMonths = (nTime - nBlockTime) / (60*60*2);
+        nMonths = (nBlockHeightTo - nBlockHeight) / (2*6);
     }
 
     if (nMonths < 1 || nMonths > 12) return false;
@@ -1069,7 +1074,8 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
 
     CAmount nInterestMinted = nValuesOut - nValuesIn;
     CAmount nDeposit = tx.vout[0].nValue - nInterestMinted;
-    CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, 0);
+    int nLessPercent = fToMemPool ? 1 : 0;
+    CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, nLessPercent);
 
     if (nInterestMinted > nInterestExpected) {
         LogPrintf("IsValidHODLDeposit(): too much interest! nInterestMinted=%d, nInterestExpected=%d\n, nMonths=%d\n",
@@ -1907,7 +1913,7 @@ bool CScriptCheck::operator()()
     return true;
 }
 
-bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks, int64_t blocktime)
+bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks)
 {
     if (!tx.IsCoinBase()) {
         if (pvChecks)
@@ -1944,7 +1950,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                     REJECT_INVALID, "bad-txns-inputvalues-outofrange");
         }
 
-        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, blocktime)) {
+        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, nSpendHeight)) {
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
                                           tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
@@ -2247,7 +2253,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (nSigOps > nMaxBlockSigOps)
                 return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
-            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, block.GetBlockTime()))
+            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, pindex->nHeight))
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
             nValueIn += view.GetValueIn(tx);
 
@@ -2279,7 +2285,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (fCLTVHasMajority)
                 flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
 
-            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL, block.GetBlockTime()))
+            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL))
                 if (!Checkpoints::CheckBlock(pindex->nHeight, *pindex->phashBlock))
                     return false;
             control.Add(vChecks);
