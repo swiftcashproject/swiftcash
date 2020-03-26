@@ -298,7 +298,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
             CAmount nInterestMinted = 0;
             int nMonths = 0;
-            if (tx.IsHodlDeposit() && IsValidHODLDeposit(tx, false, nInterestMinted, nMonths, nHeight)) {
+            if (IsValidHODLDeposit(tx, false, nInterestMinted, nMonths, nHeight)) {
                 CAmount nDeposit = tx.vout[0].nValue - nInterestMinted;
                 CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, 0);
                 nTxFees = 10 * CENT + (nInterestExpected - nInterestMinted);
