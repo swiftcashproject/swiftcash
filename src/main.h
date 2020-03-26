@@ -55,8 +55,9 @@ class CValidationState;
 struct CBlockTemplate;
 struct CNodeStateStats;
 
-/** Default variable for nBudgetPaid passed by reference **/
+/** Dummy variables for defaulting optional pass by reference arguments **/
 static CAmount ZERO_AMOUNT = 0;
+static int ZERO_INT = 0;
 /** Default for -blockmaxsize and -blockminsize, which control the range of sizes the mining code will create **/
 static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 1048576; // 1MB
 static const unsigned int DEFAULT_BLOCK_MIN_SIZE = 0;
@@ -255,7 +256,7 @@ bool HaveLotteryWinners(CBlockIndex* pindexPrev, vector<string>& winners);
 double GetHodlDepositRate(int months, int lessPercent=0);
 
 /** Is our transaction a valid HODLDeposit **/
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewards = ZERO_AMOUNT, int nBlockHeight = 0);
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewardsRet = ZERO_AMOUNT, int& nMonthsRet = ZERO_INT, int nBlockHeight = 0);
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee = false, bool ignoreFees = false);

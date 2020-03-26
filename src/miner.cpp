@@ -296,8 +296,13 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
             CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
 
-            if (tx.IsHodlDeposit()) nTxFees = 10 * CENT;
-            else if (tx.IsLotteryTicket()) nTxFees += tx.vout[0].nValue*0.2;
+            CAmount nInterestMinted = 0;
+            int nMonths = 0;
+            if (tx.IsHodlDeposit() && IsValidHODLDeposit(tx, false, nInterestMinted, nMonths, nHeight)) {
+                CAmount nDeposit = tx.vout[0].nValue - nInterestMinted;
+                CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, 0);
+                nTxFees = 10 * CENT + (nInterestExpected - nInterestMinted);
+            } else if (tx.IsLotteryTicket()) { nTxFees += tx.vout[0].nValue*0.2; }
 
             nTxSigOps += GetP2SHSigOpCount(tx, view);
             if (nBlockSigOps + nTxSigOps >= nMaxBlockSigOps)

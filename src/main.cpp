@@ -998,7 +998,7 @@ double GetHodlDepositRate(int months, int lessPercent)
     return rate * (100-lessPercent*0.1)/100;
 }
 
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards, int nBlockHeight)
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsRet, int& nMonthsRet, int nBlockHeight)
 {
     bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
     if (!fCLTVHasMajority) return false;
@@ -1087,7 +1087,9 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewards,
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     if (nMoneySupply + nInterestMinted > Params().MaxMoneyOut()) return false;
 
-    nHODLRewards += nInterestMinted;
+    nHODLRewardsRet += nInterestMinted;
+    nMonthsRet = nMonths;
+
     return true;
 }
 
@@ -1950,7 +1952,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                     REJECT_INVALID, "bad-txns-inputvalues-outofrange");
         }
 
-        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, nSpendHeight)) {
+        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, ZERO_INT, nSpendHeight)) {
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
                                           tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
@@ -2253,7 +2255,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (nSigOps > nMaxBlockSigOps)
                 return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
-            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, pindex->nHeight))
+            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, ZERO_INT, pindex->nHeight))
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
             nValueIn += view.GetValueIn(tx);
 
