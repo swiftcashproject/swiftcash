@@ -131,8 +131,6 @@ int64_t GetSporkValue(int nSporkID)
         if (nSporkID == SPORK_10_RECONSIDER_BLOCKS) r = SPORK_10_RECONSIDER_BLOCKS_DEFAULT;
         if (nSporkID == SPORK_11_SUPERBLOCKS) r = SPORK_11_SUPERBLOCKS_DEFAULT;
         if (nSporkID == SPORK_12_NEW_PROTOCOL_ENFORCEMENT) r = SPORK_12_NEW_PROTOCOL_ENFORCEMENT_DEFAULT;
-        if (nSporkID == SPORK_13_HODLDEPOSITS) r = SPORK_13_HODLDEPOSITS_DEFAULT;
-        if (nSporkID == SPORK_14_LOTTERIES) r = SPORK_14_LOTTERIES_DEFAULT;
 
         if (r == -1) LogPrintf("%s : Unknown Spork %d\n", __func__, nSporkID);
     }
@@ -277,8 +275,6 @@ int CSporkManager::GetSporkIDByName(std::string strName)
     if (strName == "SPORK_10_RECONSIDER_BLOCKS") return SPORK_10_RECONSIDER_BLOCKS;
     if (strName == "SPORK_11_SUPERBLOCKS") return SPORK_11_SUPERBLOCKS;
     if (strName == "SPORK_12_NEW_PROTOCOL_ENFORCEMENT") return SPORK_12_NEW_PROTOCOL_ENFORCEMENT;
-    if (strName == "SPORK_13_HODLDEPOSITS") return SPORK_13_HODLDEPOSITS;
-    if (strName == "SPORK_14_LOTTERIES") return SPORK_14_LOTTERIES;
 
     return -1;
 }
@@ -294,8 +290,6 @@ std::string CSporkManager::GetSporkNameByID(int id)
     if (id == SPORK_10_RECONSIDER_BLOCKS) return "SPORK_10_RECONSIDER_BLOCKS";
     if (id == SPORK_11_SUPERBLOCKS) return "SPORK_11_SUPERBLOCKS";
     if (id == SPORK_12_NEW_PROTOCOL_ENFORCEMENT) return "SPORK_12_NEW_PROTOCOL_ENFORCEMENT";
-    if (id == SPORK_13_HODLDEPOSITS) return "SPORK_13_HODLDEPOSITS";
-    if (id == SPORK_14_LOTTERIES) return "SPORK_14_LOTTERIES";
 
     return "Unknown";
 }
