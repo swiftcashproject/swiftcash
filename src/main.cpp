@@ -986,6 +986,8 @@ double GetHodlDepositRate(int months, int lessPercent)
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     int blockHeight = (int)chainActive.Height();
 
+    if (blockHeight < Params().LAST_POW_BLOCK()) return 0;
+
     // 80% of maximum inflation in 12 months - GetBlockValue() returns 10%
     int64_t blockRewards = GetBlockValue(blockHeight, false) * 8 * 144 * 30 * 12;
 
