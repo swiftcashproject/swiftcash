@@ -11,15 +11,15 @@
 
 BOOST_AUTO_TEST_SUITE(main_tests)
 
-CAmount nMoneySupplyPoWEnd = 500000 * COIN;
+CAmount nMoneySupplyPoWEnd = 131000000 * COIN;
 
 BOOST_AUTO_TEST_CASE(subsidy_limit_test)
 {
     CAmount nSum = 0;
     for (int nHeight = 0; nHeight < 1; nHeight += 1) {
-        /* premine in block 1 (500,001 SWIFT) */
+        /* v3.0 HF/Reset - Mining all forkdrops in block 1 appx. (130,481,000 SWIFT) */
         CAmount nSubsidy = GetBlockValue(nHeight);
-        BOOST_CHECK(nSubsidy <= 500000 * COIN);
+        BOOST_CHECK(nSubsidy <= 131000000 * COIN);
         nSum += nSubsidy;
     }
 
