@@ -1700,13 +1700,9 @@ int64_t GetBlockValue(int nHeight, bool fLottoFees)
     }
 
     if (nHeight == 0)
-	nSubsidy = 0;
-    else if (nHeight < 14)
-        nSubsidy = 10000000 * COIN; // mining forkdrops - appx. 130M SWIFT needed
-    else if (nHeight == 14)
-	nSubsidy = 481000 * COIN; // exact amount of forkdrops = 130,481,000 SWIFT
+        nSubsidy = 130481000 * COIN; // Mining the forkdrops appx. 130,481,000 SWIFT
     else if (nHeight < 2000)
-        nSubsidy = 10 * COIN; // fair launch - give about 1 week to users to set up their wallets and swiftnodes
+        nSubsidy = 10 * COIN; // Fair launch - Give about 1 week to users to set up their wallets for mining
     else {
         // Add 58.3K to nHeight for v3.0 HF/RESET which happened at block 583,000 in the previous chain
         nSubsidy = ( (double)(4*200 * 52560)/(4*52560 + nHeight + 58300 - 2000) ) * COIN; // 10% of actual subsidy planned
