@@ -336,6 +336,12 @@ void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeF
 
 UniValue lottery(const UniValue& params, bool fHelp)
 {
+    int nDrawBlocks = Params().DrawBlocks();
+    int nDrawDrift = Params().DrawDrift(true) + 10;
+
+    if (params.size() == 1 && params[0].get_str() == "nextblock")
+        return (int)((((chainActive.Height()/nDrawBlocks)+1)*nDrawBlocks)+1);
+
     if (params.size() == 1 && params[0].get_str() == "jackpot")
         return ValueFromAmount(chainActive.Tip()->nLotteryJackpot);
 
@@ -372,9 +378,6 @@ UniValue lottery(const UniValue& params, bool fHelp)
             HelpExampleCli("lottery", "listplayers") +
             HelpExampleCli("lottery", "play 10") +
             HelpExampleCli("lottery", "play 100"));
-
-    int nDrawBlocks = Params().DrawBlocks();
-    int nDrawDrift = Params().DrawDrift(true) + 10;
 
     int nDrawWithin = chainActive.Height() % nDrawBlocks;
 
