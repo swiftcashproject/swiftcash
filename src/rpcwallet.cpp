@@ -435,7 +435,7 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
             "3. \"months\"                 (numeric, required) The deposit tier(1=1month, 2=2months, 3=3months, ..., 12=12months).\n"
             "4. \"lesspercent\"            (numeric, 1-10, optional, default=2) To request less interest in case the transaction is mined much later.\n"
             "5. \"morehours\"              (numeric, 1-12, optional, default=2) To request less interest in case the transaction is mined much later.\n"
-            "                               transaction, just kept in your wallet.\n"
+            "\n"
             "\nResult:\n"
             "\"transactionid\"             (string) The transaction id.\n"
             "\nExamples:\n" +
