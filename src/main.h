@@ -253,10 +253,10 @@ void FlushStateToDisk();
 bool HaveLotteryWinners(CBlockIndex* pindexPrev, vector<string>& winners);
 
 /** Get HODL Deposit rate **/
-double GetHodlDepositRate(int months, int lessPercent=0);
+double GetHodlDepositRate(int months, int lessPercent=0, int blockHeight=0, CAmount nMoneySupply=0);
 
 /** Is our transaction a valid HODLDeposit **/
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewardsRet = ZERO_AMOUNT, int& nMonthsRet = ZERO_INT, int nBlockHeight = 0);
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewardsRet = ZERO_AMOUNT, int& nMonthsRet = ZERO_INT, int nBlockHeight = 0, CAmount nMoneySupply = 0);
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee = false, bool ignoreFees = false);

@@ -979,12 +979,12 @@ CAmount GetMinRelayFee(const CTransaction& tx, unsigned int nBytes, bool fAllowF
     return nMinFee;
 }
 
-double GetHodlDepositRate(int months, int lessPercent)
+double GetHodlDepositRate(int months, int lessPercent, int blockHeight, CAmount nMoneySupply)
 {
     if (months < 1 || months > 12) return 0;
 
-    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
-    int blockHeight = (int)chainActive.Height();
+    if (nMoneySupply == 0) nMoneySupply = chainActive.Tip()->nMoneySupply;
+    if (blockHeight == 0) blockHeight = (int)chainActive.Height();
 
     if (blockHeight < Params().LAST_POW_BLOCK()) return 0;
 
@@ -1000,7 +1000,7 @@ double GetHodlDepositRate(int months, int lessPercent)
     return rate * (100-lessPercent*0.1)/100;
 }
 
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsRet, int& nMonthsRet, int nBlockHeight)
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsRet, int& nMonthsRet, int nBlockHeight, CAmount nMoneySupply)
 {
     bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
     if (!fCLTVHasMajority) return false;
@@ -1073,16 +1073,16 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsR
     CAmount nInterestMinted = nValuesOut - nValuesIn;
     CAmount nDeposit = tx.vout[0].nValue - nInterestMinted;
     int nLessPercent = fToMemPool ? 1 : 0;
-    CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, nLessPercent);
+    CAmount nInterestExpected = nDeposit * GetHodlDepositRate(nMonths, nLessPercent, nBlockHeight, nMoneySupply);
 
     if (nInterestMinted > nInterestExpected) {
-        LogPrintf("IsValidHODLDeposit(): too much interest! nInterestMinted=%d, nInterestExpected=%d\n, nMonths=%d\n",
-                   nInterestMinted, nInterestExpected, nMonths);
+        LogPrintf("IsValidHODLDeposit(): too much interest! nInterestMinted=%s, nInterestExpected=%s\n, nMonths=%d\n",
+                   FormatMoney(nInterestMinted), FormatMoney(nInterestExpected), nMonths);
         return false;
     }
 
     // Check if we reached the coin max supply.
-    int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+    if (nMoneySupply == 0) nMoneySupply = chainActive.Tip()->nMoneySupply;
     if (nMoneySupply + nInterestMinted > Params().MaxMoneyOut()) return false;
 
     nHODLRewardsRet += nInterestMinted;
@@ -1924,6 +1924,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
         // This is also true for mempool checks.
         CBlockIndex* pindexPrev = mapBlockIndex.find(inputs.GetBestBlock())->second;
         int nSpendHeight = pindexPrev->nHeight + 1;
+        CAmount nMoneySupply = pindexPrev->nMoneySupply;
         CAmount nValueIn = 0;
         CAmount nFees = 0;
         for (unsigned int i = 0; i < tx.vin.size(); i++) {
@@ -1946,7 +1947,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                     REJECT_INVALID, "bad-txns-inputvalues-outofrange");
         }
 
-        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, ZERO_INT, nSpendHeight)) {
+        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, ZERO_INT, nSpendHeight, nMoneySupply)) {
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
                                           tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
@@ -2249,7 +2250,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (nSigOps > nMaxBlockSigOps)
                 return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
-            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, ZERO_INT, pindex->nHeight))
+            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, ZERO_INT, pindex->nHeight, pindex->pprev->nMoneySupply))
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
             nValueIn += view.GetValueIn(tx);
 
