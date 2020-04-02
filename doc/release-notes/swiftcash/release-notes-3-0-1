@@ -1,4 +1,4 @@
--swiftcash (3.0.1-xenial1) xenial; urgency=medium
+v3.0.1
 
   * Fixed the intermittent issue with "corrupted block database detected"
 
