@@ -363,8 +363,7 @@ UniValue lottery(const UniValue& params, bool fHelp)
 
     if (fHelp || params.size() != 2 || params[0].get_str() != "play")
         throw runtime_error(
-            "lottery jackpot | players | listplayers\n"
-            "lottery play amount\n"
+            "lottery jackpot | nextblock | players | listplayers | play amount\n"
             "\nBurn an amount of your coins to enter the blockchain lottery!\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
