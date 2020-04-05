@@ -200,14 +200,14 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     const int nStartThreshold = 12 * 144;
     int nBlockStart = params[3].get_int();
     int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
-    if (CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {
+    if (Params().NetworkID() == CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {
         throw runtime_error(strprintf("Invalid block start - must be at least 12 days before a budget cycle block. Next valid block: %d", nNext));
     } else if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
         nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
         throw runtime_error(strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nNext));
     }
 
-    int nBlockEnd = nBlockStart + GetBudgetPaymentCycleBlocks() * nPaymentCount; // End must be AFTER current cycle
+    int nBlockEnd = nBlockStart + (GetBudgetPaymentCycleBlocks() * nPaymentCount); // End must be AFTER current cycle
 
     if (nBlockStart < nBlockMin)
         throw runtime_error("Invalid block start, must be more than current height.");
@@ -289,8 +289,8 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
         throw runtime_error("Invalid url, limit of 64 characters.");
 
     int nPaymentCount = params[2].get_int();
-    if (nPaymentCount < 1)
-        throw runtime_error("Invalid payment count, must be more than zero.");
+    if (nPaymentCount < 1 || nPaymentCount > 12)
+        throw runtime_error("Invalid payment count, must be between 1-12.");
 
     // Start must be in the next budget cycle
     if (pindexPrev != NULL) nBlockMin = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
@@ -298,7 +298,7 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
     const int nStartThreshold = 12 * 144;
     int nBlockStart = params[3].get_int();
     int nNext = (pindexPrev->nHeight + nStartThreshold) - (pindexPrev->nHeight + nStartThreshold) % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
-    if (CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {
+    if (Params().NetworkID() == CBaseChainParams::MAIN && (nBlockStart % GetBudgetPaymentCycleBlocks() != 0 || (nBlockStart < nNext && (pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() > GetBudgetPaymentCycleBlocks() - nStartThreshold)))) {
         throw runtime_error(strprintf("Invalid block start - must be at least 12 days before a budget cycle block. Next valid block: %d", nNext));
     } else if (nBlockStart % GetBudgetPaymentCycleBlocks() != 0) {
         nNext = pindexPrev->nHeight - pindexPrev->nHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
