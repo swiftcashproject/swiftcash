@@ -1000,7 +1000,7 @@ double GetHodlDepositRate(int months, int lessPercent, int blockHeight, CAmount 
     return rate * (100-lessPercent*0.1)/100;
 }
 
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsRet, int& nMonthsRet, int nBlockHeight, CAmount nMoneySupply)
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsRet, int& nMonthsRet, int nBlockHeight, CAmount nMoneySupply, const CBlock &block)
 {
     bool fCLTVHasMajority = CBlockIndex::IsSuperMajority(5, chainActive.Tip(), Params().EnforceBlockUpgradeMajority());
     if (!fCLTVHasMajority) return false;
@@ -1062,7 +1062,7 @@ bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool, CAmount& nHODLRewardsR
        // First try finding the previous transaction in database
        CTransaction txPrev;
        uint256 hashBlockPrev;
-       if (!GetTransaction(txin.prevout.hash, txPrev, hashBlockPrev, true)) {
+       if (!GetTransaction(txin.prevout.hash, txPrev, hashBlockPrev, true, block)) {
             LogPrintf("IsValidHODLDeposit(): failed to find vin transaction \n");
             return false; // previous transaction not in the main chain
        }
@@ -1536,7 +1536,7 @@ bool AcceptableInputs(CTxMemPool& pool, CValidationState& state, const CTransact
 }
 
 /** Return transaction in tx, and if it was found inside a block, its hash is placed in hashBlock */
-bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow)
+bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock, bool fAllowSlow, const CBlock &block)
 {
     CBlockIndex* pindexSlow = NULL;
     {
@@ -1597,9 +1597,19 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
         }
     }
 
+    // Otherwise look into the current block id provided
+    auto foundTx = std::find_if(block.vtx.begin(), block.vtx.end(), [&hash] (const auto &tx) -> bool {
+        return tx.GetHash() == hash;
+    });
+
+    if (foundTx != block.vtx.end()) {
+        txOut = *foundTx;
+        hashBlock = block.GetHash();
+        return true;
+    }
+
     return false;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -1909,7 +1919,7 @@ bool CScriptCheck::operator()()
     return true;
 }
 
-bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks)
+bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks, const CBlock &block)
 {
     if (!tx.IsCoinBase()) {
         if (pvChecks)
@@ -1947,7 +1957,8 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                     REJECT_INVALID, "bad-txns-inputvalues-outofrange");
         }
 
-        if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, ZERO_INT, nSpendHeight, nMoneySupply)) {
+        if (!tx.IsCoinStake() &&
+               !IsValidHODLDeposit(tx, false, ZERO_AMOUNT, ZERO_INT, nSpendHeight, nMoneySupply, block)) {
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)",
                                           tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
@@ -2250,7 +2261,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (nSigOps > nMaxBlockSigOps)
                 return state.DoS(100, error("ConnectBlock() : too many sigops"), REJECT_INVALID, "bad-blk-sigops");
 
-            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, ZERO_INT, pindex->nHeight, pindex->pprev->nMoneySupply))
+            if (!tx.IsCoinStake() && !IsValidHODLDeposit(tx, false, nHODLRewards, ZERO_INT, pindex->nHeight, pindex->pprev->nMoneySupply, block))
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
             nValueIn += view.GetValueIn(tx);
 
@@ -2258,7 +2269,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (nDrawWithin > nDrawDrift && nDrawWithin < (nDrawBlocks - nDrawDrift) && tx.IsLotteryTicket()) {
                 CTransaction txPrev;
                 uint256 hashBlockPrev;
-                if (!GetTransaction(tx.vin[0].prevout.hash, txPrev, hashBlockPrev, true)) {
+                if (!GetTransaction(tx.vin[0].prevout.hash, txPrev, hashBlockPrev, true, block)) {
                      LogPrintf("ConnectBlock() - Lottery : failed to find vin transaction \n");
                 } else if (ExtractDestination(txPrev.vout[tx.vin[0].prevout.n].scriptPubKey, txDest)) {
                     pindex->nLotteryJackpot += tx.vout[0].nValue * 0.8;
@@ -2282,7 +2293,8 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (fCLTVHasMajority)
                 flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
 
-            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false, nScriptCheckThreads ? &vChecks : NULL))
+            if (!CheckInputs(tx, state, view, fScriptChecks, flags, false,
+                    nScriptCheckThreads ? &vChecks : NULL, block))
                 if (!Checkpoints::CheckBlock(pindex->nHeight, *pindex->phashBlock))
                     return false;
             control.Add(vChecks);

@@ -225,7 +225,9 @@ bool IsInitialBlockDownload();
 /** Format a string that describes several potential problems detected by the core */
 std::string GetWarnings(std::string strFor);
 /** Retrieve a transaction (from memory pool, or from disk, if possible) */
-bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false);
+bool GetTransaction(const uint256& hash, CTransaction& tx, uint256& hashBlock, bool fAllowSlow = false,
+    const CBlock &block = {});
+
 /** Find the best known block, and make it the tip of the block chain */
 
 bool DisconnectBlocksAndReprocess(int blocks);
@@ -256,7 +258,7 @@ bool HaveLotteryWinners(CBlockIndex* pindexPrev, vector<string>& winners);
 double GetHodlDepositRate(int months, int lessPercent=0, int blockHeight=0, CAmount nMoneySupply=0);
 
 /** Is our transaction a valid HODLDeposit **/
-bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewardsRet = ZERO_AMOUNT, int& nMonthsRet = ZERO_INT, int nBlockHeight = 0, CAmount nMoneySupply = 0);
+bool IsValidHODLDeposit(CTransaction tx, bool fToMemPool = false, CAmount& nHODLRewardsRet = ZERO_AMOUNT, int& nMonthsRet = ZERO_INT, int nBlockHeight = 0, CAmount nMoneySupply = 0, const CBlock &block = {});
 
 /** (try to) add transaction to memory pool **/
 bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransaction& tx, bool fLimitFree, bool* pfMissingInputs, bool fRejectInsaneFee = false, bool ignoreFees = false);
@@ -347,7 +349,7 @@ unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& ma
  * This does not modify the UTXO set. If pvChecks is not NULL, script checks are pushed onto it
  * instead of being performed inline.
  */
-bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL);
+bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& view, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks = NULL, const CBlock &block = {});
 
 /** Apply the effects of this transaction on the UTXO set represented by view */
 void UpdateCoins(const CTransaction& tx, CValidationState& state, CCoinsViewCache& inputs, CTxUndo& txundo, int nHeight);
