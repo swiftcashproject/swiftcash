@@ -1568,14 +1568,12 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
             }
 
             // Otherwise look into the current block id provided
-            auto foundTx = std::find_if(block.vtx.begin(), block.vtx.end(), [&hash] (const auto &tx) -> bool {
-                return tx.GetHash() == hash;
-            });
-
-            if (foundTx != block.vtx.end()) {
-                txOut = *foundTx;
-                hashBlock = block.GetHash();
-                return true;
+            BOOST_FOREACH (const CTransaction& tx, block.vtx) {
+                if (tx.GetHash() == hash) {
+                    txOut = tx;
+                    hashBlock = block.GetHash();
+                    return true;
+                }
             }
 
             // transaction not found in the index, nothing more can be done

@@ -1,5 +1,5 @@
 ---
-name: "swiftcash-osx-3.0.3"
+name: "swiftcash-osx-3.0.4"
 enable_cache: true
 suites:
 - "bionic"
