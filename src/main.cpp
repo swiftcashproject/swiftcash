@@ -1567,6 +1567,17 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
                 return true;
             }
 
+            // Otherwise look into the current block id provided
+            auto foundTx = std::find_if(block.vtx.begin(), block.vtx.end(), [&hash] (const auto &tx) -> bool {
+                return tx.GetHash() == hash;
+            });
+
+            if (foundTx != block.vtx.end()) {
+                txOut = *foundTx;
+                hashBlock = block.GetHash();
+                return true;
+            }
+
             // transaction not found in the index, nothing more can be done
             return false;
         }
@@ -1595,17 +1606,6 @@ bool GetTransaction(const uint256& hash, CTransaction& txOut, uint256& hashBlock
                 }
             }
         }
-    }
-
-    // Otherwise look into the current block id provided
-    auto foundTx = std::find_if(block.vtx.begin(), block.vtx.end(), [&hash] (const auto &tx) -> bool {
-        return tx.GetHash() == hash;
-    });
-
-    if (foundTx != block.vtx.end()) {
-        txOut = *foundTx;
-        hashBlock = block.GetHash();
-        return true;
     }
 
     return false;
@@ -1760,7 +1760,7 @@ bool IsInitialBlockDownload()
     static bool lockIBDState = false;
     if (lockIBDState)
         return false;
-    bool state = (chainActive.Height() < pindexBestHeader->nHeight - 24 * 6 ||
+    bool state = (chainActive.Height() < pindexBestHeader->nHeight - 36 ||
                   pindexBestHeader->GetBlockTime() < GetTime() - 36 * 10 * 60); // ~36 blocks behind -> 2 x fork detection time
     if (!state)
         lockIBDState = true;
