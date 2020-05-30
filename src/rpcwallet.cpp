@@ -363,7 +363,7 @@ UniValue lottery(const UniValue& params, bool fHelp)
 
     if (fHelp || params.size() != 2 || params[0].get_str() != "play")
         throw runtime_error(
-            "lottery jackpot | nextblock | players | listplayers | play amount\n"
+            "lottery play amount | jackpot | nextblock | players | listplayers\n"
             "\nBurn an amount of your coins to enter the blockchain lottery!\n" +
             HelpRequiringPassphrase() +
             "\nArguments:\n"
@@ -424,7 +424,7 @@ UniValue hodldeposit(const UniValue& params, bool fHelp)
 
     if (fHelp || params.size() < 3 || params.size() > 5)
         throw runtime_error(
-            "hodldeposit bestrate | rate months\n"
+            "hodldeposit swiftaddress amount months | bestrate | rate months\n"
             "hodldeposit \"swiftaddress\" amount months ( \"lesspercent\" \"morehours\" )\n"
             "\nLock an amount for 1-12 months and get an instant reward in your HODL deposit address!\n" +
             HelpRequiringPassphrase() +
