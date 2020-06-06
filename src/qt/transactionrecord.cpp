@@ -40,7 +40,6 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
     std::map<std::string, std::string> mapValue = wtx.mapValue;
 
     if (wtx.IsCoinStake()) {
-        TransactionRecord sub(hash, nTime);
         CTxDestination address;
         if (!ExtractDestination(wtx.vout[1].scriptPubKey, address))
             return parts;
@@ -52,22 +51,39 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
                 if (ExtractDestination(wtx.vout[i].scriptPubKey, outAddress)) {
                     if (IsMine(*wallet, outAddress)) {
                         isminetype mine = wallet->IsMine(wtx.vout[i]);
-                        sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
-                        sub.type = TransactionRecord::MNReward;
-                        sub.address = CBitcoinAddress(outAddress).ToString();
-                        sub.credit = wtx.vout[i].nValue;
+                        bool mergedOutputs = false;
+
+                        // If another output in the tx was already sent to the same address, just add up
+                        // the amount to the previous entry
+                        BOOST_FOREACH(TransactionRecord &rec, parts) {
+                            if (rec.address == CBitcoinAddress(outAddress).ToString()) {
+                                rec.credit += wtx.vout[i].nValue;
+                                mergedOutputs = true;
+                                break;
+                            }
+                        }
+
+                        if (!mergedOutputs) {
+                            parts.append({hash,
+                                          nTime,
+                                          TransactionRecord::MNReward,
+                                          CBitcoinAddress(outAddress).ToString(),
+                                          wtx.vout[i].nValue,
+                                          (mine & ISMINE_WATCH_ONLY) != 0});
+                        }
                     }
                 }
             }
         } else {
             //stake reward
             isminetype mine = wallet->IsMine(wtx.vout[1]);
-            sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
-            sub.type = TransactionRecord::StakeMint;
-            sub.address = CBitcoinAddress(address).ToString();
-            sub.credit = nNet;
+            parts.append({hash,
+                          nTime,
+                          TransactionRecord::StakeMint,
+                          CBitcoinAddress(address).ToString(),
+                          nNet,
+                          (mine & ISMINE_WATCH_ONLY) != 0});
         }
-        parts.append(sub);
     } else if (nNet > 0 || wtx.IsCoinBase()) {
         //
         // Credit
@@ -180,7 +196,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
             //
             // Mixed debit transaction, can't break down payees
             //
-            parts.append(TransactionRecord(hash, nTime, TransactionRecord::Other, "", nNet, 0));
+            parts.append(TransactionRecord(hash, nTime, TransactionRecord::Other, "", nNet, CAmount(0)));
             parts.last().involvesWatchAddress = involvesWatchAddress;
         }
     }
