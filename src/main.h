@@ -238,7 +238,7 @@ int64_t GetSwiftnodePayment(int nHeight, int64_t blockValue, int nSwiftnodeCount
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock, bool fProofOfStake);
 
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL, bool fAlreadyChecked = false);
-CAmount GetBlockValue(int nHeight, bool fLottoFees = true);
+CAmount GetBlockValue(int nHeight, bool fLottoFees = true, int64_t _nLotteryFees_ = -1);
 
 /** Create a new block index entry for a given block hash */
 CBlockIndex* InsertBlockIndex(uint256 hash);

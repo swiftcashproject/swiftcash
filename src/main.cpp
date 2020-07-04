@@ -1691,10 +1691,10 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-int64_t GetBlockValue(int nHeight, bool fLottoFees)
+int64_t GetBlockValue(int nHeight, bool fLottoFees, int64_t _nLotteryFees_)
 {
     int64_t nSubsidy = 0;
-    int64_t nLotteryFees = chainActive.Tip()->nLotteryFees;
+    int64_t nLotteryFees = _nLotteryFees_ == -1 ? chainActive.Tip()->nLotteryFees : _nLotteryFees_;
     int nDrawBlocks = Params().DrawBlocks();
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
@@ -1704,7 +1704,7 @@ int64_t GetBlockValue(int nHeight, bool fLottoFees)
 
         // Add the lottery fees
         if (fLottoFees && nLotteryFees > 0)
-            nSubsidy += chainActive.Tip()->nLotteryFees/nDrawBlocks;
+            nSubsidy += nLotteryFees/nDrawBlocks;
 
         return nSubsidy;
     }
@@ -2341,7 +2341,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     }
 
     // burn the fees during the pos phase
-    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight) + nHODLRewards + nLotteryRewards;
+    CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight, true, pindex->pprev->nLotteryFees) + nHODLRewards + nLotteryRewards;
 
     //Check that the block does not overmint
     if (!IsBlockValueValid(block, nExpectedMint, pindex->nMint, nBudgetPaid)) {
