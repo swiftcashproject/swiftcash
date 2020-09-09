@@ -1,7 +1,10 @@
-swiftcash (3.0.5-xenial1) xenial; urgency=medium
+v3.0.5
 
   * Fixed a minor issue that avoids a wallet reset within 100 blocks of a lottery draw that has less fees for Miners
   * Fixed a few minor typos in the RPC
   * Fixed a minor issue with the UI under Transactions
 
  -- Markus GH <msg768@hotmail.com>  Wed, 09 Sept 2020 18:01:00 +1100
+
+
+
