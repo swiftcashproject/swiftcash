@@ -368,7 +368,9 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp)
         if (nOutput < 0)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid parameter, vout must be positive");
 
-        CTxIn in(COutPoint(txid, nOutput));
+        uint32_t nSequence = rawTx.nLockTime ? 0 : std::numeric_limits<uint32_t>::max();
+
+        CTxIn in(COutPoint(txid, nOutput), CScript(), nSequence);
         rawTx.vin.push_back(in);
     }
 

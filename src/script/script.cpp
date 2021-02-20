@@ -210,6 +210,38 @@ unsigned int CScript::GetSigOpCount(const CScript& scriptSig) const
     return subscript.GetSigOpCount(true);
 }
 
+bool CScript::IsPayToPublicKeyHash() const
+{
+    // Extra-fast test for pay-to-pubkey-hash CScripts:
+    return (this->size() == 25 &&
+            (*this)[0] == OP_DUP &&
+            (*this)[1] == OP_HASH160 &&
+            (*this)[2] == 0x14 &&
+            (*this)[23] == OP_EQUALVERIFY &&
+            (*this)[24] == OP_CHECKSIG);
+}
+
+bool CScript::IsPayToPublicKeyHashLocked() const
+{
+    // Extra-fast test for pay-to-pubkey-hash CScripts with OP_CHECKLOCKTIMEVERIFY:
+
+    if( this->size() < 29 || this->size() > 33){
+        return false;
+    }
+
+    int nLockTimeLength = (*this)[0];
+    int nOffset = nLockTimeLength + 1;
+
+    return (nLockTimeLength >= 1 && nLockTimeLength <= 5 &&
+            (*this)[nOffset + 0] == OP_CHECKLOCKTIMEVERIFY &&
+            (*this)[nOffset + 1] == OP_DROP &&
+            (*this)[nOffset + 2] == OP_DUP &&
+            (*this)[nOffset + 3] == OP_HASH160 &&
+            (*this)[nOffset + 4] == 0x14 &&
+            (*this)[nOffset + 25] == OP_EQUALVERIFY &&
+            (*this)[nOffset + 26] == OP_CHECKSIG);
+}
+
 bool CScript::IsNormalPaymentScript() const
 {
     if(this->size() != 25) return false;
@@ -241,6 +273,25 @@ bool CScript::IsPayToScriptHash() const
             this->at(0) == OP_HASH160 &&
             this->at(1) == 0x14 &&
             this->at(22) == OP_EQUAL);
+}
+
+bool CScript::IsPayToScriptHashLocked() const
+{
+    // Extra-fast test for pay-to-script-hash CScripts with OP_CHECKLOCKTIMEVERIFY:
+
+    if( this->size() < 26 || this->size() > 31){
+        return false;
+    }
+
+    int nLockTimeLength = (*this)[0];
+    int nOffset = nLockTimeLength + 1;
+
+    return (nLockTimeLength >= 1 && nLockTimeLength <= 5 &&
+            (*this)[nOffset + 0] == OP_CHECKLOCKTIMEVERIFY &&
+            (*this)[nOffset + 1] == OP_DROP &&
+            (*this)[nOffset + 2] == OP_HASH160 &&
+            (*this)[nOffset + 3] == 0x14 &&
+            (*this)[nOffset + 24] == OP_EQUAL);
 }
 
 bool CScript::IsPushOnly(const_iterator pc) const
