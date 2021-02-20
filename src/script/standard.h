@@ -33,7 +33,7 @@ extern unsigned nMaxDatacarrierBytes;
  * them to be valid. (but old blocks may not comply with) Currently just P2SH,
  * but in the future other flags may be added, such as a soft-fork to enforce
  * strict DER encoding.
- * 
+ *
  * Failing one of these tests may trigger a DoS ban - see CheckInputs() for
  * details.
  */
@@ -61,7 +61,9 @@ enum txnouttype
     // 'standard' transaction types:
     TX_PUBKEY,
     TX_PUBKEYHASH,
+    TX_PUBKEYHASHLOCKED,
     TX_SCRIPTHASH,
+    TX_SCRIPTHASHLOCKED,
     TX_MULTISIG,
     TX_NULL_DATA,
 };
@@ -72,7 +74,7 @@ public:
     friend bool operator<(const CNoDestination &a, const CNoDestination &b) { return true; }
 };
 
-/** 
+/**
  * A txout script template with a specific destination. It is either:
  *  * CNoDestination: no destination set
  *  * CKeyID: TX_PUBKEYHASH destination
@@ -90,6 +92,7 @@ bool ExtractDestination(const CScript& scriptPubKey, CTxDestination& addressRet)
 bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, std::vector<CTxDestination>& addressRet, int& nRequiredRet);
 
 CScript GetScriptForDestination(const CTxDestination& dest);
+CScript GetLockedScriptForDestination(const CTxDestination& dest, int lockTime);
 CScript GetScriptForMultisig(int nRequired, const std::vector<CPubKey>& keys);
 CScript GetScriptForHodldeposit(int nLockTime, const CPubKey pubkey);
 
