@@ -1,7 +1,7 @@
 Multi swiftnode config
 =======================
 
-The multi swiftnode config allows you to control multiple swiftnodes from a single wallet. The wallet needs to have a valid collateral output of 20,000 coins for each swiftnode. To use this, place a file named swiftnode.conf in the data directory of your install:
+The multi swiftnode config allows you to control multiple swiftnodes from a single wallet. The wallet needs to have a valid collateral output of 50,000 coins for each swiftnode. To use this, place a file named swiftnode.conf in the data directory of your install:
  * Windows: %APPDATA%\SwiftCash\
  * Mac OS: ~/Library/Application Support/SwiftCash/
  * Unix/Linux: ~/.swiftcash/
@@ -14,7 +14,7 @@ mn1 127.0.0.2:28544 73HaYBVUCYjEMeeH1Y4sBGLALQZE1Yc1K64xiqgX37tGBDQL8Xg 2bcd3c84
 ```
 
 In the example above:
-* the collateral for mn1 consists of transaction 2bcd3c84c84f87eaa86e4e56834c92927a07f9e18718810b92e0d0324456a67c, output index 0 has amount 20000
+* the collateral for mn1 consists of transaction 2bcd3c84c84f87eaa86e4e56834c92927a07f9e18718810b92e0d0324456a67c, output index 0 has amount 50000
 
 
 The following new RPC commands are supported:
