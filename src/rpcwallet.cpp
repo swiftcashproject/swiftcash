@@ -302,7 +302,7 @@ UniValue getaddressesbyaccount(const UniValue& params, bool fHelp)
     return ret;
 }
 
-void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, bool fUseIX = false)
+void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeFromAmount, CWalletTx& wtxNew, bool fUseIX = false, int lockTime = 0)
 {
     // Check amount
     if (nValue <= 0)
@@ -319,7 +319,7 @@ void SendMoney(const CTxDestination& address, CAmount nValue, bool fSubtractFeeF
     }
 
     // Parse SWIFT address
-    CScript scriptPubKey = GetScriptForDestination(address);
+    CScript scriptPubKey = lockTime > 0 ? GetLockedScriptForDestination(address, lockTime) : GetScriptForDestination(address);
 
     // Create and send the transaction
     CReserveKey reservekey(pwalletMain);
@@ -563,6 +563,64 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp)
     EnsureWalletIsUnlocked();
 
     SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx);
+
+    return wtx.GetHash().GetHex();
+}
+
+UniValue sendtoaddresslocked(const UniValue& params, bool fHelp)
+{
+    if (fHelp || params.size() < 3 || params.size() > 6)
+        throw runtime_error(
+            "sendtoaddresslocked \"swiftaddress\" amount blockheight ( \"comment\" \"comment-to\" \"subtractfeefromamount\" )\n"
+            "\nSend a time-locked amount to a given address, not spendable until a specific blockheight.\n"
+            "The amount is a real and is rounded to the nearest 0.00000001\n" +
+            HelpRequiringPassphrase() +
+            "\nArguments:\n"
+            "1. \"swiftaddress\"           (string, required) The swift address to send to.\n"
+            "2. \"amount\"                 (numeric, required) The amount in btc to send. eg 0.1\n"
+            "3. \"blockheight\"            (numeric, required) The blockheight at which the output becomes spendable/unlocked. \n"
+            "4. \"comment\"                (string, optional) A comment used to store what the transaction is for. \n"
+            "                               This is not part of the transaction, just kept in your wallet.\n"
+            "5. \"comment-to\"             (string, optional) A comment to store the name of the person or organization \n"
+            "                               to which you're sending the transaction. This is not part of the \n"
+            "                               transaction, just kept in your wallet.\n"
+            "6. \"subtractfeefromamount\"  (bool, optional, default=false) The fee will be deducted from the amount being sent.\n"
+            "                               The recipient will receive less swiftcash than you enter in the amount field.\n"
+            "\nResult:\n"
+            "\"transactionid\"             (string) The transaction id.\n"
+            "\nExamples:\n" +
+            HelpExampleCli("sendtoaddress", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1") +
+            HelpExampleCli("sendtoaddress", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\" 0.1 \"donation\" \"seans outpost\"") +
+            HelpExampleRpc("sendtoaddress", "\"SwnLY9Tf7Zsef8gMGL2fhWA9ZmMjt4KPwg\", 0.1, \"donation\", \"seans outpost\""));
+
+    LOCK2(cs_main, pwalletMain->cs_wallet);
+
+    CBitcoinAddress address(params[0].get_str());
+    if (!address.IsValid())
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SWIFT address");
+
+    // Amount
+    CAmount nAmount = AmountFromValue(params[1]);
+
+    // Lock time
+    int nLockTime = params[2].get_int();
+    if (nLockTime >= LOCKTIME_THRESHOLD)
+        throw JSONRPCError(RPC_TYPE_ERROR, strprintf("blockheight needs to be < %d", LOCKTIME_THRESHOLD));
+
+    // Wallet comments
+    CWalletTx wtx;
+    if (params.size() > 3 && !params[3].isNull() && !params[3].get_str().empty())
+        wtx.mapValue["comment"] = params[3].get_str();
+    if (params.size() > 4 && !params[4].isNull() && !params[4].get_str().empty())
+        wtx.mapValue["to"] = params[4].get_str();
+
+    bool fSubtractFeeFromAmount = false;
+    if (params.size() > 5)
+        fSubtractFeeFromAmount = params[5].get_bool();
+
+    EnsureWalletIsUnlocked();
+
+    SendMoney(address.Get(), nAmount, fSubtractFeeFromAmount, wtx, false, nLockTime);
 
     return wtx.GetHash().GetHex();
 }

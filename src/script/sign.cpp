@@ -83,6 +83,7 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
         }
         return true;
     case TX_PUBKEYHASH:
+    case TX_PUBKEYHASHLOCKED:
         keyID = CKeyID(uint160(vSolutions[0]));
         if (!Sign1(keyID, keystore, hash, nHashType, scriptSigRet))
         {
@@ -97,6 +98,7 @@ bool Solver(const CKeyStore& keystore, const CScript& scriptPubKey, uint256 hash
         }
         return true;
     case TX_SCRIPTHASH:
+    case TX_SCRIPTHASHLOCKED:
         return keystore.GetCScript(uint160(vSolutions[0]), scriptSigRet);
 
     case TX_MULTISIG:
@@ -120,7 +122,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
     if (!Solver(keystore, fromPubKey, hash, nHashType, txin.scriptSig, whichType))
         return false;
 
-    if (whichType == TX_SCRIPTHASH)
+    if (whichType == TX_SCRIPTHASH || whichType == TX_SCRIPTHASHLOCKED)
     {
         // Solver returns the subscript that need to be evaluated;
         // the final scriptSig is the signatures from that
@@ -229,11 +231,13 @@ static CScript CombineSignatures(const CScript& scriptPubKey, const CTransaction
         return PushAll(sigs2);
     case TX_PUBKEY:
     case TX_PUBKEYHASH:
+    case TX_PUBKEYHASHLOCKED:
         // Signatures are bigger than placeholders or empty scripts:
         if (sigs1.empty() || sigs1[0].empty())
             return PushAll(sigs2);
         return PushAll(sigs1);
     case TX_SCRIPTHASH:
+    case TX_SCRIPTHASHLOCKED:
         if (sigs1.empty() || sigs1.back().empty())
             return PushAll(sigs2);
         else if (sigs2.empty() || sigs2.back().empty())

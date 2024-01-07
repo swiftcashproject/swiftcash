@@ -190,6 +190,7 @@ extern UniValue setaccount(const UniValue& params, bool fHelp);
 extern UniValue getaccount(const UniValue& params, bool fHelp);
 extern UniValue getaddressesbyaccount(const UniValue& params, bool fHelp);
 extern UniValue sendtoaddress(const UniValue& params, bool fHelp);
+extern UniValue sendtoaddresslocked(const UniValue& params, bool fHelp);
 extern UniValue lottery(const UniValue& params, bool fHelp);
 extern UniValue hodldeposit(const UniValue& params, bool fHelp);
 extern UniValue sendtoaddressix(const UniValue& params, bool fHelp);
