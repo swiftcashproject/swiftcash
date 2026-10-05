@@ -29,9 +29,8 @@ Each eligible account may make one rate adjustment per calendar month.
 
 ## Interest
 
-Deposited SWIFT is represented internally through staking shares.
-Interest is calculated across the entire staking pool, with each account receiving a proportional share based on its staking shares.
-Anyone can call `mintInterest()` to crystallize all currently accrued interest for the staking pool.
+Deposited `SWIFT` is represented internally through staking shares.
+Interest is calculated across the entire staking pool, with each account receiving a proportional share based on its staking shares. Anyone can call `mintInterest()` to crystallize all currently accrued interest for the staking pool.
 
 ## Core Functions
 
@@ -65,28 +64,26 @@ Anyone can call `mintInterest()` to crystallize all currently accrued interest f
 
 ### Token Functions
 
-- `transfer(address to, uint256 amount)`
 - `transfer(address to, uint256 amount, bytes data)`
-- `burn(uint256 amount)`
 
-Standard ERC-20 functions inherited from OpenZeppelin are also available.
+Standard `ERC-20`, `ERC-20Permit` and `ERC20Burnable` functions inherited from `OpenZeppelin` are also available.
 
 ## Smart Contract
 
-SwiftCash is implemented in Solidity using OpenZeppelin's ERC-20 and ERC-20 Permit implementations.
+`SwiftCash` is implemented in `Solidity` using OpenZeppelin's implementations.
 
 ### Compiler
 
-Solidity ^0.8.34
+`Solidity ^0.8.34`
 
 ### Dependencies
 
-* OpenZeppelin Contracts
+* `OpenZeppelin` Contracts
 
 ### Initial Supply
 
-~315,000,000 SWIFT => 1:1 claims available by legacy private keys via the Migration contract. 
-~15,000,000 SWIFT => Locked Protocol Liquidity 
+- `~315,000,000 SWIFT` 1:1 claims by legacy private keys via the Migration contract. 
+- `~15,000,000 SWIFT` For setting up permanent locked liquidity pools.
 
 ### Mainnet Contract on the BNB Smart Chain
 
@@ -94,8 +91,7 @@ Solidity ^0.8.34
 
 ## Development
 
-The contract can be compiled and tested using [Remix](https://remix.ethereum.org/) or other standard Solidity development environments.
-The repository contains the source code and supporting documentation for the SwiftCash protocol.
+The contract can be compiled and tested using [Remix](https://remix.ethereum.org/) or other standard Solidity development environments. The repository contains the source code and supporting documentation for the SwiftCash protocol.
 
 ## License
 
