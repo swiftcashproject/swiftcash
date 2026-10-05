@@ -37,37 +37,37 @@ Anyone can call `mintInterest()` to crystallize all currently accrued interest f
 
 ### Deposits
 
-deposit(uint256 amount)
-withdraw(uint256 amount)
-withdrawAll()
+- `deposit(uint256 amount)`
+- `withdraw(uint256 amount)`
+- `withdrawAll()`<br>
 
 ### Interest
 
-accruedInterest(address account)
-mintInterest()
-currentAnnualInterestRate()
+- `currentAnnualInterestRate()`
+- `accruedInterest(address account)`
+- `mintInterest()`
 
 ### Monetary Governance
 
-canAdjustInterestRate(address account)
-adjustmentPower(address account)
-hikeInterest()
-cutInterest()
+- `canAdjustInterestRate(address account)`
+- `adjustmentPower(address account)`
+- `hikeInterest()`
+- `cutInterest()`
 
 
 ### Staking Information
 
-stakedBalance(address account)
-accountStakingSharesOf(address account)
-totalStakedSharesCount()
-lastStakingDepositMonthOf(address account)
-lastRateAdjustmentMonthOf(address account)
+- `stakedBalance(address account)`
+- `accountStakingSharesOf(address account)`
+- `totalStakedSharesCount()`
+- `lastStakingDepositMonthOf(address account)`
+- `lastRateAdjustmentMonthOf(address account)`
 
 ### Token Functions
 
-transfer(address to, uint256 amount)
-transfer(address to, uint256 amount, bytes data)
-burn(uint256 amount)
+- `transfer(address to, uint256 amount)`
+- `transfer(address to, uint256 amount, bytes data)`
+- `burn(uint256 amount)`
 
 Standard ERC-20 functions inherited from OpenZeppelin are also available.
 
