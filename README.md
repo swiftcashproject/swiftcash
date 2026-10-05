@@ -1,16 +1,16 @@
 # SwiftCash
 
-SwiftCash (SWIFT) is an ERC-20 compatible digital cash protocol deployed on the BNB Smart Chain.
+`SwiftCash` (`SWIFT`) is an `ERC-20` compatible digital cash protocol deployed on the `BNB Smart Chain`.
 The protocol combines an interest-bearing deposit system with decentralized, stake-weighted monetary governance.
 
 ## Features
 
-- **ERC-20 compatible token** — Standard ERC-20 interface and OpenZeppelin implementation.
-- **ERC-20 Permit** — Supports EIP-2612 off-chain approvals and gasless approval flows through relayers.
+- **ERC-20 compatible token** — Standard `ERC-20` interface and `OpenZeppelin` implementation.
+- **ERC-20 Permit** — Supports `EIP-2612` off-chain approvals and gasless approval flows through relayers.
 - **Transfer with data** — Supports `transfer(address,uint256,bytes)` for arbitrary data and off-chain metadata.
 - **Interest-bearing deposits** — Users can deposit SWIFT into the protocol and earn interest.
 - **1%–10% annual interest rate** — The protocol rate is constrained between 1% and 10%.
-- **Stake-weighted rate adjustment** — Deposit holders can influence the annual interest rate in proportion to their share of the total staking pool.
+- **Stake-weighted rate adjustment** — Deposit holders can hike/cut the rate based on their stake.
 - **Monthly rate adjustment** — Each eligible account may adjust the interest rate once per calendar month.
 - **On-chain interest compounding** — Accrued interest is periodically minted directly to the deposit pool.
 - **No predefined minimum deposit** — There is no fixed minimum deposit balance.
@@ -82,6 +82,11 @@ Solidity ^0.8.34
 ### Dependencies
 
 * OpenZeppelin Contracts
+
+### Initial Supply
+
+~315,000,000 SWIFT => 1:1 claims available by legacy private keys via the Migration contract. 
+~15,000,000 SWIFT => Locked Protocol Liquidity 
 
 ### Mainnet Contract on the BNB Smart Chain
 
