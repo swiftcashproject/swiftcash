@@ -43,20 +43,20 @@ Interest is calculated across the entire staking pool, with each account receivi
 ### Interest
 
 - `currentAnnualInterestRate()`
-- `accruedInterest(address account)`
+- `accruedInterestOf(address account)`
 - `mintInterest()`
 
 ### Monetary Governance
 
 - `canAdjustInterestRate(address account)`
-- `adjustmentPower(address account)`
+- `adjustmentPowerOf(address account)`
 - `hikeInterest()`
 - `cutInterest()`
 
 
 ### Staking Information
 
-- `stakedBalance(address account)`
+- `stakedBalanceOf(address account)`
 - `accountStakingSharesOf(address account)`
 - `totalStakedSharesCount()`
 - `lastStakingDepositMonthOf(address account)`
@@ -65,6 +65,9 @@ Interest is calculated across the entire staking pool, with each account receivi
 ### Token Functions
 
 - `transfer(address to, uint256 amount, bytes data)`
+- `accountInfoOf(address account)`
+- `virtualTotalSupply()`
+- `protocolInfo()`
 
 Standard `ERC-20`, `ERC-20Permit` and `ERC20Burnable` functions inherited from `OpenZeppelin` are also available.
 
