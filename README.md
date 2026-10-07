@@ -8,8 +8,8 @@ The protocol combines an interest-bearing deposit system with decentralized, sta
 - **ERC-20 compatible token** — Standard `ERC-20` interface and `OpenZeppelin` implementation.
 - **ERC-20 Permit** — Supports `EIP-2612` off-chain approvals and gasless approval flows through relayers.
 - **Transfer with data** — Supports `transfer(address,uint256,bytes)` for arbitrary data and off-chain metadata.
-- **Interest-bearing deposits** — Users can deposit SWIFT into the protocol and earn interest.
-- **1%–10% annual interest rate** — The protocol rate is constrained between 1% and 10%.
+- **Interest-bearing deposits** — Users can deposit `SWIFT` into the protocol and earn interest.
+- **1%–10% annual interest rate** — The protocol rate is constrained between `1%` and `10%`.
 - **Stake-weighted rate adjustment** — Deposit holders can hike/cut the rate based on their stake.
 - **Monthly rate adjustment** — Each eligible account may adjust the interest rate once per calendar month.
 - **On-chain interest compounding** — Accrued interest is periodically minted directly to the deposit pool.
