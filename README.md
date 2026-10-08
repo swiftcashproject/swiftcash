@@ -65,9 +65,7 @@ Interest is calculated across the entire staking pool, with each account receivi
 ### Token Functions
 
 - `transfer(address to, uint256 amount, bytes data)`
-- `accountInfoOf(address account)`
 - `virtualTotalSupply()`
-- `protocolInfo()`
 
 Standard `ERC-20`, `ERC-20Permit` and `ERC20Burnable` functions inherited from `OpenZeppelin` are also available.
 
