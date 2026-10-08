@@ -18,11 +18,11 @@ The protocol combines an interest-bearing deposit system with decentralized, sta
 
 ## Monetary Policy
 
-The initial annual interest rate is **3%**.
+The initial annual interest rate is **`3%`**.
 The protocol defines:
-- Minimum annual interest rate: **1%**
-- Maximum annual interest rate: **10%**
-- Maximum aggregate monthly rate movement: **1 percentage point**
+- Minimum annual interest rate: **`1%`**
+- Maximum annual interest rate: **`10%`**
+- Maximum aggregate monthly rate movement: **`1 percentage point`**
 
 An account's rate-adjustment power is proportional to its share of the total staking pool.
 Each eligible account may make one rate adjustment per calendar month.
@@ -88,7 +88,7 @@ Standard `ERC-20`, `ERC-20Permit` and `ERC20Burnable` functions inherited from `
 
 ### Mainnet Contract on the BNB Smart Chain
 
-[TBA]
+`[TBA]`
 
 ## Development
 
@@ -96,5 +96,5 @@ The contract can be compiled and tested using [Remix](https://remix.ethereum.org
 
 ## License
 
-MIT
+`MIT`
 
