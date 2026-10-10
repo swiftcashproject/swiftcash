@@ -79,7 +79,7 @@ Standard `ERC-20`, `ERC-20Permit` and `ERC20Burnable` functions inherited from `
 
 ### Dependencies
 
-* `OpenZeppelin` Contracts
+* `OpenZeppelin Contracts`
 
 ### Initial Supply
 
